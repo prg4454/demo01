@@ -1,0 +1,53 @@
+<div class="container mt-3 sticky-header">
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+        <h2 class="mb-0">Address Book</h2>
+        <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Contact</button>
+    </div>
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="previousPage()"
+            [disabled]="currentPage <= 1">&lt;&lt;</button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="nextPage()"
+            [disabled]="currentPage >= totalPages">&gt;&gt;</button>
+        <div class="small text-muted">Page {{ currentPage }} of {{ totalPages }}</div>
+    </div>
+</div>
+
+<div class="container text-break occasions-grid">
+    <hr>
+    @for (record of pagedOccasions; track record.id) {
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start occasion-row">
+        <div class="mb-1 col">
+            <b>Person</b><br>
+            <button type="button" class="btn btn-link p-0 text-start text-decoration-none shadow-none occasion-link"
+                (click)="openEditModal(record)">
+                {{ record.personName }}
+            </button>
+        </div>
+        <div class="mb-1 col">
+            <b>Relationship</b><br>
+            {{ record.relationship }}
+        </div>
+        <div class="mb-1 col">
+            <b>Phone</b><br>
+            {{ record.phone || '-' }}
+        </div>
+        <div class="mb-1 col">
+            <b>Email</b><br>
+            {{ record.email || '-' }}
+        </div>
+        <div class="mb-1 col">
+            <b>Birthday</b><br>
+            {{ record.birthdayDate || '-' }}
+        </div>
+        <div class="mb-1 col">
+            <b>Anniversary</b><br>
+            {{ record.anniversaryDate || '-' }}
+        </div>
+        <div class="mb-1 col col-lg-6">
+            <b>Notes</b><br>
+            {{ record.notes || '-' }}
+        </div>
+    </div>
+    <hr>
+    }
+</div>

@@ -1,0 +1,134 @@
+<div class="edit-modal-frame">
+    <div class="modal-header">
+        <h5 class="modal-title">{{ allowDelete ? 'Edit Contact' : 'Add Contact' }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="requestCancel()"></button>
+    </div>
+
+    <div class="modal-body">
+        @if (editDraft) {
+        <div class="row g-3 entry-grid">
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Record ID</label>
+                <input type="text" class="form-control" [value]="editDraft.id" readonly>
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Person <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.personName"
+                    [class.is-invalid]="saveAttempted && !editDraft.personName.trim().length">
+                @if (saveAttempted && !editDraft.personName.trim().length) {
+                <div class="invalid-feedback d-block">Person is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Relationship</label>
+                <select class="form-select" [(ngModel)]="editDraft.relationship">
+                    @for (item of relationships; track item) {
+                    <option [value]="item">{{ item }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Phone</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.phone">
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" [(ngModel)]="editDraft.email">
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Birthday</label>
+                <input type="date" class="form-control" [(ngModel)]="editDraft.birthdayDate">
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Anniversary</label>
+                <input type="date" class="form-control" [(ngModel)]="editDraft.anniversaryDate">
+            </div>
+
+            @if (saveAttempted && (!editDraft.phone.trim().length && !editDraft.email.trim().length)) {
+            <div class="col-12">
+                <div class="invalid-feedback d-block">Provide at least one contact method: phone or email.</div>
+            </div>
+            }
+
+            @if (saveAttempted && !editDraft.personName.trim().length) {
+            <div class="col-12">
+                <div class="invalid-feedback d-block">Person is required.</div>
+            </div>
+            }
+
+            <div class="col-12 field-block">
+                <label class="form-label">Notes</label>
+                <textarea rows="3" class="form-control" [(ngModel)]="editDraft.notes"></textarea>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="modal-footer">
+        @if (allowDelete) {
+        <button type="button" class="btn btn-outline-danger me-auto" (click)="requestDelete()">Delete</button>
+        }
+
+        <button type="button" class="btn btn-outline-secondary" (click)="requestCancel()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!canSave()">{{ allowDelete ? 'Save' :
+            'Add' }}</button>
+    </div>
+</div>
+
+<ng-template #deleteConfirmModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Confirm Delete</h5>
+    </div>
+    <div class="modal-body">
+        @if (editDraft) {
+        <p class="mb-1">Delete this contact record?</p>
+        <p class="mb-0"><strong>{{ editDraft.personName }}</strong> ({{ editDraft.id }})</p>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('delete')">Delete</button>
+    </div>
+</ng-template>
+
+<ng-template #unsavedChangesModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Unsaved Changes</h5>
+    </div>
+    <div class="modal-body">
+        <p class="mb-2">You have unsaved changes. Leave without saving?</p>
+
+        @if (getUnsavedChanges().length) {
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Before</th>
+                        <th>After</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (change of getUnsavedChanges(); track change.label) {
+                    <tr>
+                        <td>{{ change.label }}</td>
+                        <td>{{ change.before }}</td>
+                        <td>{{ change.after }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Keep Editing</button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('discard')">Discard Changes</button>
+    </div>
+</ng-template>

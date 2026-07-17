@@ -1,0 +1,29 @@
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #fff;
+    padding: 8px 0;
+}
+
+.sayings-grid {
+    font-size: 100%;
+}
+
+.saying-link {
+    color: #0d6efd;
+    font-weight: 700;
+}
+
+.saying-row {
+    border-radius: 0.375rem;
+    transition: background-color 0.2s ease;
+}
+
+.saying-row:hover {
+    background-color: #f8f9fa;
+}
+
+.active-row {
+    background-color: #e7f1ff;
+}

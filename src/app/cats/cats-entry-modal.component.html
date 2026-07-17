@@ -1,0 +1,142 @@
+<div class="edit-modal-frame">
+    <div class="modal-header">
+        <h5 class="modal-title">{{ allowDelete ? 'Edit Cat' : 'Add Cat' }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="requestCancel()"></button>
+    </div>
+
+    <div class="modal-body">
+        @if (editDraft) {
+        <div class="row g-3 entry-grid">
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Cat ID</label>
+                <input type="text" class="form-control" [value]="editDraft.id" readonly>
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.name"
+                    [class.is-invalid]="saveAttempted && !editDraft.name.trim().length">
+                @if (saveAttempted && !editDraft.name.trim().length) {
+                <div class="invalid-feedback d-block">Name is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Breed <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.breed"
+                    [class.is-invalid]="saveAttempted && !editDraft.breed.trim().length">
+                @if (saveAttempted && !editDraft.breed.trim().length) {
+                <div class="invalid-feedback d-block">Breed is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Owner <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.owner"
+                    [class.is-invalid]="saveAttempted && !editDraft.owner.trim().length">
+                @if (saveAttempted && !editDraft.owner.trim().length) {
+                <div class="invalid-feedback d-block">Owner is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Reason <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.reason"
+                    [class.is-invalid]="saveAttempted && !editDraft.reason.trim().length">
+                @if (saveAttempted && !editDraft.reason.trim().length) {
+                <div class="invalid-feedback d-block">Reason is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Check-In <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.checkIn"
+                    [class.is-invalid]="saveAttempted && !editDraft.checkIn.trim().length">
+                @if (saveAttempted && !editDraft.checkIn.trim().length) {
+                <div class="invalid-feedback d-block">Check-In is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Status</label>
+                <select class="form-select" [(ngModel)]="editDraft.status">
+                    @for (status of statuses; track status) {
+                    <option [value]="status">{{ status }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Vet <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.vet"
+                    [class.is-invalid]="saveAttempted && !editDraft.vet.trim().length">
+                @if (saveAttempted && !editDraft.vet.trim().length) {
+                <div class="invalid-feedback d-block">Vet is required.</div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="modal-footer">
+        @if (allowDelete) {
+        <button type="button" class="btn btn-outline-danger me-auto" (click)="requestDelete()">Delete</button>
+        }
+
+        <button type="button" class="btn btn-outline-secondary" (click)="requestCancel()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!canSave()">{{ allowDelete ? 'Save' :
+            'Add' }}</button>
+    </div>
+</div>
+
+<ng-template #deleteConfirmModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Confirm Delete</h5>
+    </div>
+    <div class="modal-body">
+        @if (editDraft) {
+        <p class="mb-1">Delete this cat record?</p>
+        <p class="mb-0"><strong>{{ editDraft.name }}</strong> ({{ editDraft.id }})</p>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('delete')">Delete</button>
+    </div>
+</ng-template>
+
+<ng-template #unsavedChangesModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Unsaved Changes</h5>
+    </div>
+    <div class="modal-body">
+        <p class="mb-2">You have unsaved changes. Leave without saving?</p>
+
+        @if (getUnsavedChanges().length) {
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Before</th>
+                        <th>After</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (change of getUnsavedChanges(); track change.label) {
+                    <tr>
+                        <td>{{ change.label }}</td>
+                        <td>{{ change.before }}</td>
+                        <td>{{ change.after }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Keep Editing</button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('discard')">Discard Changes</button>
+    </div>
+</ng-template>
