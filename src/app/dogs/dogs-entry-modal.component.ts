@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalHistoryService } from '../modal-history.service';
 
 interface ChangedField {
     label: string;
@@ -37,6 +38,7 @@ type TrackedFieldKey = 'name' | 'breed' | 'owner' | 'reason' | 'checkIn' | 'stat
 export class DogsEntryModalComponent implements OnInit {
     activeModal = inject(NgbActiveModal);
     private modalService = inject(NgbModal);
+    private modalHistory = inject(ModalHistoryService);
 
     @ViewChild('deleteConfirmModal') private deleteConfirmModal?: TemplateRef<unknown>;
     @ViewChild('unsavedChangesModal') private unsavedChangesModal?: TemplateRef<unknown>;
@@ -107,15 +109,14 @@ export class DogsEntryModalComponent implements OnInit {
         return JSON.stringify(this.editDraft) !== JSON.stringify(this.originalDraft);
     }
 
-    async requestCancel(): Promise<void> {
+    handleBeforeDismiss(): Promise<boolean> | boolean {
         if (this.hasUnsavedChanges()) {
-            const shouldDiscard = await this.confirmDiscardChangesWithModal();
-            if (shouldDiscard) {
-                this.activeModal.dismiss('cancel');
-            }
-            return;
+            return this.confirmDiscardChangesWithModal();
         }
+        return true;
+    }
 
+    async requestCancel(): Promise<void> {
         this.activeModal.dismiss('cancel');
     }
 
@@ -161,6 +162,7 @@ export class DogsEntryModalComponent implements OnInit {
             keyboard: false,
             scrollable: true
         });
+        this.modalHistory.registerModal(dialogRef);
 
         return dialogRef.result
             .then(result => result === 'delete')
@@ -178,6 +180,7 @@ export class DogsEntryModalComponent implements OnInit {
             keyboard: false,
             scrollable: true
         });
+        this.modalHistory.registerModal(dialogRef);
 
         return dialogRef.result
             .then(result => result === 'discard')

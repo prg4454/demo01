@@ -11,26 +11,25 @@
 
         <div class="collapse navbar-collapse" id="navbarNav" [class.show]="isMenuOpen">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item" *ngFor="let item of menuItems" [ngClass]="{ 'dropdown': item.subItems }">
-                    <ng-container *ngIf="item.path; else submenuTemplate">
-                        <a class="nav-link" [routerLink]="item.path" routerLinkActive="active" (click)="closeMenu()">
+                <li class="nav-item" *ngFor="let item of menuItems; let i = index">
+                    <a class="nav-link" *ngIf="item.path" [routerLink]="item.path" routerLinkActive="active"
+                        (click)="closeMenu()">
+                        {{ item.label }}
+                    </a>
+
+                    <ng-container *ngIf="item.subItems">
+                        <a class="nav-link dropdown-toggle" href="#" (click)="toggleSubmenu(i, $event)">
                             {{ item.label }}
                         </a>
                     </ng-container>
-                    <ng-template #submenuTemplate>
-                        <a class="nav-link dropdown-toggle" href="#"
-                            (click)="toggleSubmenu(item); $event.preventDefault()">
-                            {{ item.label }}
-                        </a>
-                        <ul class="submenu" [class.show]="expandedItems[item.label]">
-                            <li *ngFor="let subItem of item.subItems">
-                                <a class="submenu-item" [routerLink]="subItem.path" routerLinkActive="active"
-                                    (click)="closeMenu(); expandedItems[item.label] = false">
-                                    {{ subItem.label }}
-                                </a>
-                            </li>
-                        </ul>
-                    </ng-template>
+                </li>
+            </ul>
+
+            <ul class="submenu show submenu-global" *ngIf="activeSubItems.length > 0">
+                <li *ngFor="let subItem of activeSubItems">
+                    <a class="submenu-item" [routerLink]="subItem.path" routerLinkActive="active" (click)="closeMenu()">
+                        {{ subItem.label }}
+                    </a>
                 </li>
             </ul>
         </div>

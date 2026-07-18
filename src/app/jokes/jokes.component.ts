@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ModalHistoryService } from '../modal-history.service';
 import { JokesEntryModalComponent, JokeRecord, JokesModalResult } from './jokes-entry-modal.component';
 
 @Component({
@@ -12,6 +13,7 @@ import { JokesEntryModalComponent, JokeRecord, JokesModalResult } from './jokes-
 })
 export class JokesComponent {
     private modalService = inject(NgbModal);
+    private modalHistory = inject(ModalHistoryService);
 
     readonly pageSize = 8;
     currentPage = 1;
@@ -103,10 +105,12 @@ export class JokesComponent {
         const modalRef = this.modalService.open(JokesEntryModalComponent, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             size: 'lg',
-            scrollable: true
+            scrollable: true,
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
+        this.modalHistory.registerModal(modalRef);
 
         modalRef.componentInstance.joke = {
             id: this.getNextId(),
@@ -137,10 +141,12 @@ export class JokesComponent {
         const modalRef = this.modalService.open(JokesEntryModalComponent, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             size: 'lg',
-            scrollable: true
+            scrollable: true,
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
+        this.modalHistory.registerModal(modalRef);
 
         modalRef.componentInstance.joke = structuredClone(joke);
         modalRef.componentInstance.allowDelete = true;

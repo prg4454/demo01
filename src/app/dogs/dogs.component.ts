@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ModalHistoryService } from '../modal-history.service';
 import { DogRecord, DogsEntryModalComponent, DogsModalResult } from './dogs-entry-modal.component';
 
 @Component({
@@ -12,6 +13,7 @@ import { DogRecord, DogsEntryModalComponent, DogsModalResult } from './dogs-entr
 })
 export class DogsComponent {
     private modalService = inject(NgbModal);
+    private modalHistory = inject(ModalHistoryService);
 
     readonly pageSize = 8;
     currentPage = 1;
@@ -108,10 +110,12 @@ export class DogsComponent {
         const modalRef = this.modalService.open(DogsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             size: 'lg',
-            scrollable: true
+            scrollable: true,
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
+        this.modalHistory.registerModal(modalRef);
 
         modalRef.componentInstance.dog = {
             id: this.getNextId(),
@@ -141,10 +145,12 @@ export class DogsComponent {
         const modalRef = this.modalService.open(DogsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             size: 'lg',
-            scrollable: true
+            scrollable: true,
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
+        this.modalHistory.registerModal(modalRef);
 
         modalRef.componentInstance.dog = structuredClone(dog);
         modalRef.componentInstance.allowDelete = true;

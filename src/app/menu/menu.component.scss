@@ -1,6 +1,9 @@
 .navbar {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background-color: #000 !important;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
 }
 
 .navbar-toggler {
@@ -44,6 +47,7 @@
 }
 
 .submenu {
+    display: none;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -62,9 +66,19 @@
 }
 
 .submenu.show {
+    display: block;
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+}
+
+.container-fluid {
+    position: relative;
+}
+
+.submenu-global {
+    left: auto;
+    right: 0.75rem;
 }
 
 .submenu-item {
@@ -86,114 +100,9 @@
     }
 }
 
-.dropdown {
-    position: relative;
-}
-
 @media (max-width: 991px) {
     .nav-link {
         margin-left: 0;
         padding: 0.5rem 0 !important;
-    }
-}
-
-.menu-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 auto;
-    width: 100%;
-    max-width: 400px;
-    flex-grow: 1;
-}
-
-.menu-item {
-    margin-bottom: 20px;
-    animation: slideIn 0.5s ease forwards;
-
-    @for $i from 1 through 5 {
-        &:nth-child(#{$i}) {
-            animation-delay: #{$i * 0.1}s;
-        }
-    }
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.menu-link {
-    display: flex;
-    align-items: center;
-    padding: 18px 25px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    text-decoration: none;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-    backdrop-filter: blur(10px);
-
-    &:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateX(10px);
-        border-color: rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    &:active {
-        transform: translateX(8px);
-    }
-}
-
-.menu-icon {
-    font-size: 1.5rem;
-    margin-right: 15px;
-    display: inline-block;
-    min-width: 30px;
-    text-align: center;
-}
-
-.menu-label {
-    flex-grow: 1;
-}
-
-.menu-footer {
-    text-align: center;
-    margin-top: 40px;
-    opacity: 0.8;
-
-    p {
-        margin: 0;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .menu-container {
-        padding: 20px;
-    }
-
-    .menu-header h1 {
-        font-size: 1.8rem;
-    }
-
-    .menu-link {
-        padding: 15px 20px;
-        font-size: 1rem;
-    }
-
-    .menu-icon {
-        font-size: 1.2rem;
-        margin-right: 12px;
     }
 }

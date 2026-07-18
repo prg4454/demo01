@@ -1,6 +1,9 @@
-import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+
+type MenuLinkItem = { label: string; path: string };
+type MenuItem = { label: string; path?: string; subItems?: MenuLinkItem[] };
 
 @Component({
     selector: 'app-menu',
@@ -11,10 +14,11 @@ import { RouterLink } from '@angular/router';
 })
 export class MenuComponent {
     isMenuOpen = false;
-    expandedItems: { [key: string]: boolean } = {};
-    @ViewChild('navBar') navBar!: ElementRef;
+    expandedMenuIndex: number | null = null;
 
-    menuItems = [
+    constructor(private elementRef: ElementRef<HTMLElement>) { }
+
+    menuItems: MenuItem[] = [
         { label: 'Home', path: '/home' },
         { label: 'About', path: '/about' },
         { label: 'Services', path: '/services' },
@@ -23,7 +27,8 @@ export class MenuComponent {
             subItems: [
                 { label: 'Silly Sayings', path: '/sayings' },
                 { label: 'Jokes', path: '/jokes' },
-                { label: 'Address Book', path: '/address-book' }
+                { label: 'Address Book', path: '/address-book' },
+                { label: 'Automobiles', path: '/automobiles' }
             ]
         },
         {
@@ -36,27 +41,44 @@ export class MenuComponent {
         { label: 'Contact', path: '/contact' }
     ];
 
+    get activeSubItems(): MenuLinkItem[] {
+        if (this.expandedMenuIndex === null) {
+            return [];
+        }
+
+        const item = this.menuItems[this.expandedMenuIndex];
+        return item?.subItems ?? [];
+    }
+
     toggleMenu() {
         this.isMenuOpen = !this.isMenuOpen;
     }
 
-    toggleSubmenu(item: any) {
-        const key = item.label;
-        this.expandedItems[key] = !this.expandedItems[key];
+    toggleSubmenu(index: number, event: MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Keep only one submenu expanded at a time.
+        if (this.expandedMenuIndex === index) {
+            this.expandedMenuIndex = null;
+            return;
+        }
+
+        this.expandedMenuIndex = index;
     }
 
     closeMenu() {
         this.isMenuOpen = false;
-        this.expandedItems = {};
+        this.expandedMenuIndex = null;
     }
 
     @HostListener('document:click', ['$event'])
     onDocumentClick(event: MouseEvent) {
         const target = event.target as HTMLElement;
-        const navElement = document.querySelector('nav.navbar');
+        const hostElement = this.elementRef.nativeElement;
 
-        if (navElement && !navElement.contains(target)) {
-            this.expandedItems = {};
+        if (!hostElement.contains(target)) {
+            this.expandedMenuIndex = null;
         }
     }
 }

@@ -10,32 +10,32 @@ interface ChangedField {
     after: string;
 }
 
-export interface AddressBookRecord {
+export interface AutomobileRecord {
     id: number;
-    personName: string;
-    relationship: 'Friend' | 'Relative' | 'Coworker' | 'Other';
-    phone: string;
-    email: string;
-    birthdayDate: string;
-    anniversaryDate: string;
-    notes: string;
+    make: string;
+    model: string;
+    year: number;
+    color: string;
+    vin: string;
+    owner: string;
+    status: 'Maintenance' | 'Ready' | 'In Use' | 'Sold';
 }
 
-export interface AddressBookModalResult {
+export interface AutomobileModalResult {
     action: 'save' | 'delete';
-    record: AddressBookRecord;
+    record: AutomobileRecord;
 }
 
-type TrackedFieldKey = 'personName' | 'relationship' | 'phone' | 'email' | 'birthdayDate' | 'anniversaryDate' | 'notes';
+type TrackedFieldKey = 'make' | 'model' | 'year' | 'color' | 'vin' | 'owner' | 'status';
 
 @Component({
-    selector: 'app-address-book-entry-modal',
+    selector: 'app-automobile-entry-modal',
     standalone: true,
     imports: [CommonModule, FormsModule],
-    templateUrl: './address-book-entry-modal.component.html',
-    styleUrl: './address-book-entry-modal.component.scss'
+    templateUrl: './automobile-entry-modal.component.html',
+    styleUrl: './automobile-entry-modal.component.scss'
 })
-export class AddressBookEntryModalComponent implements OnInit {
+export class AutomobileEntryModalComponent implements OnInit {
     activeModal = inject(NgbActiveModal);
     private modalService = inject(NgbModal);
     private modalHistory = inject(ModalHistoryService);
@@ -43,14 +43,13 @@ export class AddressBookEntryModalComponent implements OnInit {
     @ViewChild('deleteConfirmModal') private deleteConfirmModal?: TemplateRef<unknown>;
     @ViewChild('unsavedChangesModal') private unsavedChangesModal?: TemplateRef<unknown>;
 
-    @Input({ required: true }) record!: AddressBookRecord;
+    @Input({ required: true }) record!: AutomobileRecord;
     @Input() allowDelete = false;
 
-    editDraft: AddressBookRecord | null = null;
-    originalDraft: AddressBookRecord | null = null;
+    editDraft: AutomobileRecord | null = null;
+    originalDraft: AutomobileRecord | null = null;
     saveAttempted = false;
-
-    readonly relationships: AddressBookRecord['relationship'][] = ['Friend', 'Relative', 'Coworker', 'Other'];
+    readonly statuses: AutomobileRecord['status'][] = ['Maintenance', 'Ready', 'In Use', 'Sold'];
 
     ngOnInit(): void {
         this.editDraft = structuredClone(this.record);
@@ -62,8 +61,12 @@ export class AddressBookEntryModalComponent implements OnInit {
             return false;
         }
 
-        return this.editDraft.personName.trim().length > 0
-            && (this.editDraft.phone.trim().length > 0 || this.editDraft.email.trim().length > 0);
+        return this.editDraft.make.trim().length > 0
+            && this.editDraft.model.trim().length > 0
+            && this.editDraft.year >= 1900
+            && this.editDraft.color.trim().length > 0
+            && this.editDraft.vin.trim().length > 0
+            && this.editDraft.owner.trim().length > 0;
     }
 
     save(): void {
@@ -72,15 +75,16 @@ export class AddressBookEntryModalComponent implements OnInit {
             return;
         }
 
-        const updated: AddressBookRecord = {
+        const updated: AutomobileRecord = {
             ...this.editDraft,
-            personName: this.editDraft.personName.trim(),
-            phone: this.editDraft.phone.trim(),
-            email: this.editDraft.email.trim(),
-            notes: this.editDraft.notes.trim()
+            make: this.editDraft.make.trim(),
+            model: this.editDraft.model.trim(),
+            color: this.editDraft.color.trim(),
+            vin: this.editDraft.vin.trim(),
+            owner: this.editDraft.owner.trim()
         };
 
-        this.activeModal.close({ action: 'save', record: updated } satisfies AddressBookModalResult);
+        this.activeModal.close({ action: 'save', record: updated } satisfies AutomobileModalResult);
     }
 
     async requestDelete(): Promise<void> {
@@ -93,7 +97,22 @@ export class AddressBookEntryModalComponent implements OnInit {
             return;
         }
 
-        this.activeModal.close({ action: 'delete', record: this.editDraft } satisfies AddressBookModalResult);
+        this.activeModal.close({ action: 'delete', record: this.editDraft } satisfies AutomobileModalResult);
+    }
+
+    async handleBeforeDismiss(): Promise<boolean> {
+        if (this.hasUnsavedChanges()) {
+            const shouldDiscard = await this.confirmDiscardChangesWithModal();
+            if (!shouldDiscard) {
+                this.modalHistory.restoreHistoryIfPending();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    async requestCancel(): Promise<void> {
+        this.activeModal.dismiss('cancel');
     }
 
     hasUnsavedChanges(): boolean {
@@ -104,36 +123,25 @@ export class AddressBookEntryModalComponent implements OnInit {
         return JSON.stringify(this.editDraft) !== JSON.stringify(this.originalDraft);
     }
 
-    handleBeforeDismiss(): Promise<boolean> | boolean {
-        if (this.hasUnsavedChanges()) {
-            return this.confirmDiscardChangesWithModal();
-        }
-        return true;
-    }
-
-    async requestCancel(): Promise<void> {
-        this.activeModal.dismiss('cancel');
-    }
-
     getUnsavedChanges(): ChangedField[] {
         if (!this.editDraft || !this.originalDraft) {
             return [];
         }
 
         const fields: Array<{ key: TrackedFieldKey; label: string }> = [
-            { key: 'personName', label: 'Person' },
-            { key: 'relationship', label: 'Relationship' },
-            { key: 'phone', label: 'Phone' },
-            { key: 'email', label: 'Email' },
-            { key: 'birthdayDate', label: 'Birthday' },
-            { key: 'anniversaryDate', label: 'Anniversary' },
-            { key: 'notes', label: 'Notes' }
+            { key: 'make', label: 'Make' },
+            { key: 'model', label: 'Model' },
+            { key: 'year', label: 'Year' },
+            { key: 'color', label: 'Color' },
+            { key: 'vin', label: 'VIN' },
+            { key: 'owner', label: 'Owner' },
+            { key: 'status', label: 'Status' }
         ];
 
         const changes: ChangedField[] = [];
         for (const field of fields) {
-            const beforeVal = this.originalDraft[field.key];
-            const afterVal = this.editDraft[field.key];
+            const beforeVal = (this.originalDraft as any)[field.key];
+            const afterVal = (this.editDraft as any)[field.key];
             if (beforeVal !== afterVal) {
                 changes.push({
                     label: field.label,
@@ -146,20 +154,25 @@ export class AddressBookEntryModalComponent implements OnInit {
         return changes;
     }
 
+    private formatChangedValue(value: any): string {
+        const text = String(value ?? '').trim();
+        return text.length ? text : '(blank)';
+    }
+
     private confirmDeleteWithModal(): Promise<boolean> {
         if (!this.deleteConfirmModal) {
             return Promise.resolve(false);
         }
 
-        const dialogRef = this.modalService.open(this.deleteConfirmModal, {
+        const modalRef = this.modalService.open(this.deleteConfirmModal, {
             centered: true,
             backdrop: 'static',
             keyboard: false,
             scrollable: true
         });
-        this.modalHistory.registerModal(dialogRef);
+        this.modalHistory.registerModal(modalRef);
 
-        return dialogRef.result
+        return modalRef.result
             .then(result => result === 'delete')
             .catch(() => false);
     }
@@ -169,25 +182,16 @@ export class AddressBookEntryModalComponent implements OnInit {
             return Promise.resolve(false);
         }
 
-        const dialogRef = this.modalService.open(this.unsavedChangesModal, {
+        const modalRef = this.modalService.open(this.unsavedChangesModal, {
             centered: true,
             backdrop: 'static',
             keyboard: false,
             scrollable: true
         });
-        this.modalHistory.registerModal(dialogRef);
+        this.modalHistory.registerModal(modalRef);
 
-        return dialogRef.result
+        return modalRef.result
             .then(result => result === 'discard')
             .catch(() => false);
-    }
-
-    private formatChangedValue(value: string | number | null): string {
-        if (value === null || value === undefined) {
-            return '(blank)';
-        }
-
-        const text = String(value).trim();
-        return text.length ? text : '(blank)';
     }
 }

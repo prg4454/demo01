@@ -1,0 +1,27 @@
+:host {
+    display: block;
+}
+
+.edit-modal-frame {
+    border: 5px solid #198754;
+    max-height: calc(100vh - 3.5rem);
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-modal-frame .modal-body {
+    overflow-y: auto;
+}
+
+.modal-body .form-label {
+    font-weight: 700;
+}
+
+.modal-body .form-control,
+.modal-body .form-select {
+    border: 2px solid #495057;
+}
+
+.list-unstyled li {
+    padding: 2px 0;
+}

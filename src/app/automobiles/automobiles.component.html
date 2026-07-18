@@ -1,0 +1,58 @@
+<div class="container mt-3 sticky-header">
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+        <h2 class="mb-0">Automobile Inventory</h2>
+        <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Automobile</button>
+    </div>
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="previousPage()"
+            [disabled]="currentPage <= 1">&lt;&lt;</button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)='nextPage()'
+            [disabled]="currentPage >= totalPages">&gt;&gt;</button>
+        <div class="small text-muted">Page {{ currentPage }} of {{ totalPages }}</div>
+    </div>
+</div>
+
+<div class="container text-break automobile-grid">
+    <hr>
+    @for (car of pagedAutomobiles; track car.id) {
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start automobile-row">
+        <div class="mb-1 col">
+            <b>Make</b><br>
+            <button type="button" class="btn btn-link p-0 text-start text-decoration-none shadow-none automobile-link"
+                (click)="openEditModal(car)">
+                {{ car.make }}
+            </button>
+        </div>
+        <div class="mb-1 col">
+            <b>Model</b><br>
+            {{ car.model }}
+        </div>
+        <div class="mb-1 col">
+            <b>Year</b><br>
+            {{ car.year }}
+        </div>
+        <div class="mb-1 col">
+            <b>Color</b><br>
+            {{ car.color }}
+        </div>
+        <div class="mb-1 col">
+            <b>VIN</b><br>
+            <code class="small">{{ car.vin }}</code>
+        </div>
+        <div class="mb-1 col">
+            <b>Status</b><br>
+            <span class="badge" [ngClass]="{
+                'bg-success': car.status === 'Ready',
+                'bg-warning text-dark': car.status === 'Maintenance',
+                'bg-info text-dark': car.status === 'In Use',
+                'bg-secondary': car.status === 'Sold'
+            }">{{ car.status }}</span>
+        </div>
+        <div class="mb-1 col">
+            <b>Owner</b><br>
+            {{ car.owner }}
+        </div>
+    </div>
+    <hr>
+    }
+</div>

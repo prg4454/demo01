@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ModalHistoryService } from '../modal-history.service';
 import {
     AddressBookRecord,
     AddressBookEntryModalComponent,
@@ -16,6 +17,7 @@ import {
 })
 export class AddressBookComponent {
     private modalService = inject(NgbModal);
+    private modalHistory = inject(ModalHistoryService);
 
     readonly pageSize = 8;
     currentPage = 1;
@@ -92,10 +94,12 @@ export class AddressBookComponent {
         const modalRef = this.modalService.open(AddressBookEntryModalComponent, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             size: 'lg',
-            scrollable: true
+            scrollable: true,
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
+        this.modalHistory.registerModal(modalRef);
 
         modalRef.componentInstance.record = {
             id: this.getNextId(),
@@ -125,10 +129,12 @@ export class AddressBookComponent {
         const modalRef = this.modalService.open(AddressBookEntryModalComponent, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             size: 'lg',
-            scrollable: true
+            scrollable: true,
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
+        this.modalHistory.registerModal(modalRef);
 
         modalRef.componentInstance.record = structuredClone(record);
         modalRef.componentInstance.allowDelete = true;

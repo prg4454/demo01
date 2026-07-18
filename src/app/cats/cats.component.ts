@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ModalHistoryService } from '../modal-history.service';
 import { CatRecord, CatsEntryModalComponent, CatsModalResult } from './cats-entry-modal.component';
 
 @Component({
@@ -12,6 +13,7 @@ import { CatRecord, CatsEntryModalComponent, CatsModalResult } from './cats-entr
 })
 export class CatsComponent {
     private modalService = inject(NgbModal);
+    private modalHistory = inject(ModalHistoryService);
 
     readonly pageSize = 8;
     currentPage = 1;
@@ -110,8 +112,10 @@ export class CatsComponent {
             backdrop: 'static',
             keyboard: false,
             size: 'lg',
-            scrollable: true
+            scrollable: true,
+            beforeDismiss: () => modalRef.componentInstance.handleBeforeDismiss()
         });
+        this.modalHistory.registerModal(modalRef);
 
         modalRef.componentInstance.cat = {
             id: this.getNextId(),
@@ -143,8 +147,10 @@ export class CatsComponent {
             backdrop: 'static',
             keyboard: false,
             size: 'lg',
-            scrollable: true
+            scrollable: true,
+            beforeDismiss: () => modalRef.componentInstance.handleBeforeDismiss()
         });
+        this.modalHistory.registerModal(modalRef);
 
         modalRef.componentInstance.cat = structuredClone(cat);
         modalRef.componentInstance.allowDelete = true;

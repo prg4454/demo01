@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalHistoryService } from '../modal-history.service';
 
 interface ChangedField {
     label: string;
@@ -107,6 +108,7 @@ class SayingDiscardChangesModalComponent {
 class SayingEditModalComponent implements OnInit {
     activeModal = inject(NgbActiveModal);
     private modalService = inject(NgbModal);
+    private modalHistory = inject(ModalHistoryService);
 
     @Input({ required: true }) editCopy!: SillySaying;
     @Input() mode: 'add' | 'edit' = 'edit';
@@ -127,10 +129,7 @@ class SayingEditModalComponent implements OnInit {
 
     @HostListener('document:keydown.escape', ['$event'])
     handleEscape(event: Event): void {
-        const keyboardEvent = event as KeyboardEvent;
-        keyboardEvent.preventDefault();
-        keyboardEvent.stopPropagation();
-        void this.onDismiss();
+        // NgbModal handles escape by default and calls beforeDismiss
     }
 
     confirmDiscardChanges(): Promise<boolean> {
@@ -149,6 +148,7 @@ class SayingEditModalComponent implements OnInit {
             keyboard: false,
             scrollable: true
         });
+        this.modalHistory.registerModal(modalRef);
         modalRef.componentInstance.changes = changes;
 
         this.discardPrompt = modalRef.result
@@ -162,10 +162,18 @@ class SayingEditModalComponent implements OnInit {
     }
 
     async onDismiss(): Promise<void> {
-        const shouldDiscard = await this.confirmDiscardChanges();
-        if (shouldDiscard) {
-            this.activeModal.dismiss('dismiss');
+        this.activeModal.dismiss('dismiss');
+    }
+
+    hasUnsavedChanges(): boolean {
+        return this.getChangedFields().length > 0;
+    }
+
+    handleBeforeDismiss(): Promise<boolean> | boolean {
+        if (this.hasUnsavedChanges()) {
+            return this.confirmDiscardChanges();
         }
+        return true;
     }
 
     save(): void {
@@ -230,6 +238,7 @@ class SayingEditModalComponent implements OnInit {
 })
 export class SayingsComponent {
     private modalService = inject(NgbModal);
+    private modalHistory = inject(ModalHistoryService);
 
     page = 1;
     readonly pageSize = 5;
@@ -286,10 +295,12 @@ export class SayingsComponent {
         const modalRef = this.modalService.open(SayingEditModalComponent, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             size: 'lg',
-            scrollable: true
+            scrollable: true,
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
+        this.modalHistory.registerModal(modalRef);
         modalRef.componentInstance.editCopy = structuredClone(newSaying);
         modalRef.componentInstance.mode = 'add';
 
@@ -312,10 +323,12 @@ export class SayingsComponent {
         const modalRef = this.modalService.open(SayingEditModalComponent, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             size: 'lg',
-            scrollable: true
+            scrollable: true,
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
+        this.modalHistory.registerModal(modalRef);
         modalRef.componentInstance.editCopy = structuredClone(saying);
         modalRef.componentInstance.mode = 'edit';
 

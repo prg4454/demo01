@@ -1,0 +1,111 @@
+<div class="edit-modal-frame">
+    <div class="modal-header">
+        <h4 class="modal-title">{{ allowDelete ? 'Edit Automobile' : 'Add Automobile' }}</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="requestCancel()"></button>
+    </div>
+
+    <div class="modal-body">
+        <form id="automobileForm" #f="ngForm" (ngSubmit)="save()">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Make</label>
+                    <input type="text" class="form-control" name="make" [(ngModel)]="editDraft!.make" required
+                        [class.is-invalid]="f.submitted && !editDraft!.make">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Model</label>
+                    <input type="text" class="form-control" name="model" [(ngModel)]="editDraft!.model" required
+                        [class.is-invalid]="f.submitted && !editDraft!.model">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Year</label>
+                    <input type="number" class="form-control" name="year" [(ngModel)]="editDraft!.year" required
+                        min="1900" [class.is-invalid]="f.submitted && (editDraft!.year < 1900)">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Color</label>
+                    <input type="text" class="form-control" name="color" [(ngModel)]="editDraft!.color" required
+                        [class.is-invalid]="f.submitted && !editDraft!.color">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status" [(ngModel)]="editDraft!.status">
+                        <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label">VIN</label>
+                    <input type="text" class="form-control" name="vin" [(ngModel)]="editDraft!.vin" required
+                        [class.is-invalid]="f.submitted && !editDraft!.vin">
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label">Owner</label>
+                    <input type="text" class="form-control" name="owner" [(ngModel)]="editDraft!.owner" required
+                        [class.is-invalid]="f.submitted && !editDraft!.owner">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button *ngIf="allowDelete" type="button" class="btn btn-outline-danger me-auto" (click)="requestDelete()">
+            Delete
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="requestCancel()">Cancel</button>
+        <button type="submit" form="automobileForm" class="btn btn-primary">
+            {{ allowDelete ? 'Save Changes' : 'Add Automobile' }}
+        </button>
+    </div>
+</div>
+
+<ng-template #deleteConfirmModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Confirm Delete</h5>
+    </div>
+    <div class="modal-body">
+        @if (editDraft) {
+        <p class="mb-1">Delete this automobile record?</p>
+        <p class="mb-0"><strong>{{ editDraft.make }} {{ editDraft.model }}</strong> ({{ editDraft.id }})</p>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('delete')">Delete</button>
+    </div>
+</ng-template>
+
+<ng-template #unsavedChangesModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Unsaved Changes</h5>
+    </div>
+    <div class="modal-body">
+        <p class="mb-2">You have unsaved changes. Leave without saving?</p>
+
+        @if (getUnsavedChanges().length) {
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Before</th>
+                        <th>After</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (change of getUnsavedChanges(); track change.label) {
+                    <tr>
+                        <td>{{ change.label }}</td>
+                        <td>{{ change.before }}</td>
+                        <td>{{ change.after }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Keep Editing</button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('discard')">Discard Changes</button>
+    </div>
+</ng-template>

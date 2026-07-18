@@ -1,7 +1,7 @@
 <div class="edit-modal-frame">
     <div class="modal-header">
         <h5 class="modal-title">{{ allowDelete ? 'Edit Cat' : 'Add Cat' }}</h5>
-        <button type="button" class="btn-close" aria-label="Close" (click)="requestCancel()"></button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('cancel')"></button>
     </div>
 
     <div class="modal-body">
@@ -83,7 +83,7 @@
         <button type="button" class="btn btn-outline-danger me-auto" (click)="requestDelete()">Delete</button>
         }
 
-        <button type="button" class="btn btn-outline-secondary" (click)="requestCancel()">Cancel</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('cancel')">Cancel</button>
         <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!canSave()">{{ allowDelete ? 'Save' :
             'Add' }}</button>
     </div>
