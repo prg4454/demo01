@@ -112,7 +112,7 @@ export class AddressBookEntryModalComponent implements OnInit {
     }
 
     async requestCancel(): Promise<void> {
-        this.activeModal.dismiss('cancel');
+        this.activeModal.close('cancel');
     }
 
     getUnsavedChanges(): ChangedField[] {

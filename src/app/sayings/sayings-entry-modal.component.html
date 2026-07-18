@@ -1,7 +1,7 @@
 <div class="app-edit-modal">
     <div class="modal-header">
         <h5 class="modal-title">{{ allowDelete ? "Edit Saying" : "Add Saying" }}</h5>
-        <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('cancel')"></button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.close('cancel')"></button>
     </div>
 
     <div class="modal-body">
@@ -46,7 +46,7 @@
             }
         </div>
         <div class="d-flex gap-2">
-            <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('cancel')">Cancel</button>
+            <button type="button" class="btn btn-secondary" (click)="activeModal.close('cancel')">Cancel</button>
             <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!canSave()">Save</button>
         </div>
     </div>

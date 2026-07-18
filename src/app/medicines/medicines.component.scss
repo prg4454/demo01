@@ -1,0 +1,28 @@
+:host {
+    .responsive-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+
+    .grid-item {
+        border: 1px solid #ccc;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        cursor: pointer;
+        transition: box-shadow 0.2s ease-in-out;
+
+        &:hover {
+            box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.15);
+        }
+    }
+
+    .grid-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 0.75rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 0.5rem;
+    }
+}

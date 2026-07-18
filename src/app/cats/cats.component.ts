@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalHistoryService } from '../modal-history.service';
+import { StorageService } from '../storage.service';
 import { CatRecord, CatsEntryModalComponent, CatsModalResult } from './cats-entry-modal.component';
 
 @Component({
@@ -11,75 +12,50 @@ import { CatRecord, CatsEntryModalComponent, CatsModalResult } from './cats-entr
     templateUrl: './cats.component.html',
     styleUrl: './cats.component.scss'
 })
-export class CatsComponent {
+export class CatsComponent implements OnInit {
     private modalService = inject(NgbModal);
     private modalHistory = inject(ModalHistoryService);
+    private storageService = inject(StorageService);
 
     readonly pageSize = 8;
     currentPage = 1;
 
-    cats: CatRecord[] = [
-        {
-            id: 201,
-            name: 'Whiskers',
-            breed: 'Tabby',
-            owner: 'Miller',
-            reason: 'Annual checkup',
-            checkIn: '8:20 AM',
-            status: 'Waiting',
-            vet: 'Dr. Hernandez'
-        },
-        {
-            id: 202,
-            name: 'Luna',
-            breed: 'Siamese',
-            owner: 'Johnson',
-            reason: 'Sneezing',
-            checkIn: '8:50 AM',
-            status: 'Exam',
-            vet: 'Dr. Patel'
-        },
-        {
-            id: 203,
-            name: 'Mittens',
-            breed: 'Calico',
-            owner: 'Nguyen',
-            reason: 'Vaccinations',
-            checkIn: '9:10 AM',
-            status: 'Treatment',
-            vet: 'Dr. Kim'
-        },
-        {
-            id: 204,
-            name: 'Shadow',
-            breed: 'Black',
-            owner: 'Garcia',
-            reason: 'Low appetite',
-            checkIn: '9:35 AM',
-            status: 'Ready',
-            vet: 'Dr. Adams'
-        },
-        {
-            id: 205,
-            name: 'Fluffy',
-            breed: 'Persian',
-            owner: 'Taylor',
-            reason: 'Skin irritation',
-            checkIn: '9:55 AM',
-            status: 'Waiting',
-            vet: 'Dr. Hernandez'
-        },
-        {
-            id: 206,
-            name: 'Tiger',
-            breed: 'Orange',
-            owner: 'Lee',
-            reason: 'Nail trim',
-            checkIn: '10:10 AM',
-            status: 'Exam',
-            vet: 'Dr. Patel'
+    cats: CatRecord[] = [];
+
+    async ngOnInit() {
+        await this.loadData();
+    }
+
+    private async loadData() {
+        const count = await this.storageService.getCount('cats');
+        if (count === 0) {
+            const initialCats = this.generateCats(50);
+            await this.storageService.saveAll('cats', initialCats);
         }
-    ];
+        this.cats = await this.storageService.getAll<CatRecord>('cats');
+        // Sort by ID descending so new adds show up first if we want
+        this.cats.sort((a, b) => b.id - a.id);
+    }
+
+    private generateCats(count: number): CatRecord[] {
+        const breeds = ['Siamese', 'Persian', 'Maine Coon', 'Bengal', 'Sphynx', 'Abyssinian', 'Ragdoll', 'Tabby', 'Calico', 'Savannah'];
+        const owners = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
+        const reasons = ['Annual checkup', 'Vaccinations', 'Flea treatment', 'Dental cleaning', 'Ear infection', 'Limping', 'Scratching', 'Coughing'];
+        const vets = ['Dr. Hernandez', 'Dr. Patel', 'Dr. Kim', 'Dr. Adams', 'Dr. Brown'];
+        const statuses: CatRecord['status'][] = ['Waiting', 'Exam', 'Treatment', 'Ready'];
+        const catNames = ['Misty', 'Whiskers', 'Luna', 'Shadow', 'Oliver', 'Bella', 'Charlie', 'Lucy', 'Leo', 'Molly', 'Simba', 'Sophie', 'Jack', 'Chloe', 'Tiger', 'Nala', 'Smokey', 'Lily', 'Oreo', 'Coco'];
+
+        return Array.from({ length: count }, (_, i) => ({
+            id: 1000 + i,
+            name: catNames[Math.floor(Math.random() * catNames.length)] + ' ' + (i + 1),
+            breed: breeds[Math.floor(Math.random() * breeds.length)],
+            owner: owners[Math.floor(Math.random() * owners.length)],
+            reason: reasons[Math.floor(Math.random() * reasons.length)],
+            checkIn: `${8 + Math.floor(Math.random() * 4)}:${Math.floor(Math.random() * 6)}0 AM`,
+            status: statuses[Math.floor(Math.random() * statuses.length)],
+            vet: vets[Math.floor(Math.random() * vets.length)]
+        }));
+    }
 
     get totalCats(): number {
         return this.cats.length;
@@ -130,11 +106,12 @@ export class CatsComponent {
         modalRef.componentInstance.allowDelete = false;
 
         void modalRef.result
-            .then((result: CatsModalResult) => {
+            .then(async (result: CatsModalResult) => {
                 if (!result || result.action !== 'save') {
                     return;
                 }
 
+                await this.storageService.save('cats', result.cat);
                 this.cats = [result.cat, ...this.cats];
                 this.currentPage = 1;
             })
@@ -156,17 +133,13 @@ export class CatsComponent {
         modalRef.componentInstance.allowDelete = true;
 
         void modalRef.result
-            .then((result: CatsModalResult) => {
+            .then(async (result: CatsModalResult) => {
                 if (!result) {
                     return;
                 }
 
-                const idx = this.cats.findIndex(c => c.id === result.cat.id);
-                if (idx < 0) {
-                    return;
-                }
-
                 if (result.action === 'delete') {
+                    await this.storageService.delete('cats', result.cat.id);
                     this.cats = this.cats.filter(c => c.id !== result.cat.id);
                     if (this.currentPage > this.totalPages) {
                         this.currentPage = this.totalPages;
@@ -174,6 +147,7 @@ export class CatsComponent {
                     return;
                 }
 
+                await this.storageService.save('cats', result.cat);
                 this.cats = this.cats.map(c => c.id === result.cat.id ? result.cat : c);
             })
             .catch(() => undefined);

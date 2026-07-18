@@ -10,33 +10,32 @@ interface ChangedField {
     after: string;
 }
 
-export interface JokeRecord {
+export interface MedicineRecord {
     id: number;
-    setup: string;
-    punchline: string;
-    category: string;
-    comedian: string;
-    audience: string;
-    slotTime: string;
-    status: 'Draft' | 'Testing' | 'Polished' | 'Retired';
-    rating: number | null;
+    name: string;
+    form: 'Tablet' | 'Capsule' | 'Liquid' | 'Inhaler' | 'Cream';
+    strength: string;
+    quantity: number;
+    instructions: string;
+    doctor: string;
+    lastDispensed: Date;
 }
 
-export interface JokesModalResult {
+export interface MedicinesModalResult {
     action: 'save' | 'delete';
-    joke: JokeRecord;
+    medicine: MedicineRecord;
 }
 
-type TrackedFieldKey = 'setup' | 'punchline' | 'category' | 'comedian' | 'audience' | 'slotTime' | 'status' | 'rating';
+type TrackedFieldKey = 'name' | 'form' | 'strength' | 'quantity' | 'instructions' | 'doctor' | 'lastDispensed';
 
 @Component({
-    selector: 'app-jokes-entry-modal',
+    selector: 'app-medicines-entry-modal',
     standalone: true,
     imports: [CommonModule, FormsModule],
-    templateUrl: './jokes-entry-modal.component.html',
-    styleUrl: './jokes-entry-modal.component.scss'
+    templateUrl: './medicines-entry-modal.component.html',
+    styleUrl: './medicines-entry-modal.component.scss'
 })
-export class JokesEntryModalComponent implements OnInit {
+export class MedicinesEntryModalComponent implements OnInit {
     activeModal = inject(NgbActiveModal);
     private modalService = inject(NgbModal);
     private modalHistory = inject(ModalHistoryService);
@@ -44,17 +43,17 @@ export class JokesEntryModalComponent implements OnInit {
     @ViewChild('deleteConfirmModal') private deleteConfirmModal?: TemplateRef<unknown>;
     @ViewChild('unsavedChangesModal') private unsavedChangesModal?: TemplateRef<unknown>;
 
-    @Input({ required: true }) joke!: JokeRecord;
+    @Input({ required: true }) medicine!: MedicineRecord;
     @Input() allowDelete = false;
 
-    editDraft: JokeRecord | null = null;
-    originalDraft: JokeRecord | null = null;
+    editDraft: MedicineRecord | null = null;
+    originalDraft: MedicineRecord | null = null;
     saveAttempted = false;
-    readonly statuses: JokeRecord['status'][] = ['Draft', 'Testing', 'Polished', 'Retired'];
+    readonly forms: MedicineRecord['form'][] = ['Tablet', 'Capsule', 'Liquid', 'Inhaler', 'Cream'];
 
     ngOnInit(): void {
-        this.editDraft = structuredClone(this.joke);
-        this.originalDraft = structuredClone(this.joke);
+        this.editDraft = structuredClone(this.medicine);
+        this.originalDraft = structuredClone(this.medicine);
     }
 
     canSave(): boolean {
@@ -62,15 +61,12 @@ export class JokesEntryModalComponent implements OnInit {
             return false;
         }
 
-        return this.editDraft.setup.trim().length > 0
-            && this.editDraft.punchline.trim().length > 0
-            && this.editDraft.category.trim().length > 0
-            && this.editDraft.comedian.trim().length > 0
-            && this.editDraft.audience.trim().length > 0
-            && this.editDraft.slotTime.trim().length > 0
-            && this.editDraft.rating !== null
-            && this.editDraft.rating >= 1
-            && this.editDraft.rating <= 10;
+        return this.editDraft.name.trim().length > 0
+            && this.editDraft.strength.trim().length > 0
+            && this.editDraft.quantity > 0
+            && this.editDraft.instructions.trim().length > 0
+            && this.editDraft.doctor.trim().length > 0
+            && this.editDraft.lastDispensed != null;
     }
 
     save(): void {
@@ -79,17 +75,15 @@ export class JokesEntryModalComponent implements OnInit {
             return;
         }
 
-        const updated: JokeRecord = {
+        const updated: MedicineRecord = {
             ...this.editDraft,
-            setup: this.editDraft.setup.trim(),
-            punchline: this.editDraft.punchline.trim(),
-            category: this.editDraft.category.trim(),
-            comedian: this.editDraft.comedian.trim(),
-            audience: this.editDraft.audience.trim(),
-            slotTime: this.editDraft.slotTime.trim()
+            name: this.editDraft.name.trim(),
+            strength: this.editDraft.strength.trim(),
+            instructions: this.editDraft.instructions.trim(),
+            doctor: this.editDraft.doctor.trim(),
         };
 
-        this.activeModal.close({ action: 'save', joke: updated } satisfies JokesModalResult);
+        this.activeModal.close({ action: 'save', medicine: updated } satisfies MedicinesModalResult);
     }
 
     async requestDelete(): Promise<void> {
@@ -102,7 +96,7 @@ export class JokesEntryModalComponent implements OnInit {
             return;
         }
 
-        this.activeModal.close({ action: 'delete', joke: this.editDraft } satisfies JokesModalResult);
+        this.activeModal.close({ action: 'delete', medicine: this.editDraft } satisfies MedicinesModalResult);
     }
 
     hasUnsavedChanges(): boolean {
@@ -113,15 +107,15 @@ export class JokesEntryModalComponent implements OnInit {
         return JSON.stringify(this.editDraft) !== JSON.stringify(this.originalDraft);
     }
 
-    handleBeforeDismiss(): Promise<boolean> | boolean {
+    async handleBeforeDismiss(): Promise<boolean> {
         if (this.hasUnsavedChanges()) {
-            return this.confirmDiscardChangesWithModal();
+            const shouldDiscard = await this.confirmDiscardChangesWithModal();
+            if (!shouldDiscard) {
+                this.modalHistory.restoreHistoryIfPending();
+                return false;
+            }
         }
         return true;
-    }
-
-    async requestCancel(): Promise<void> {
-        this.activeModal.close('cancel');
     }
 
     getUnsavedChanges(): ChangedField[] {
@@ -130,14 +124,13 @@ export class JokesEntryModalComponent implements OnInit {
         }
 
         const fields: Array<{ key: TrackedFieldKey; label: string }> = [
-            { key: 'setup', label: 'Setup' },
-            { key: 'punchline', label: 'Punchline' },
-            { key: 'category', label: 'Category' },
-            { key: 'comedian', label: 'Comedian' },
-            { key: 'audience', label: 'Audience' },
-            { key: 'slotTime', label: 'Slot' },
-            { key: 'status', label: 'Status' },
-            { key: 'rating', label: 'Rating' }
+            { key: 'name', label: 'Name' },
+            { key: 'form', label: 'Form' },
+            { key: 'strength', label: 'Strength' },
+            { key: 'quantity', label: 'Quantity' },
+            { key: 'instructions', label: 'Instructions' },
+            { key: 'doctor', label: 'Doctor' },
+            { key: 'lastDispensed', label: 'Last Dispensed' }
         ];
 
         const changes: ChangedField[] = [];
@@ -192,12 +185,16 @@ export class JokesEntryModalComponent implements OnInit {
             .catch(() => false);
     }
 
-    private formatChangedValue(value: string | number | null): string {
-        if (value === null || value === undefined) {
-            return '(blank)';
+    private formatChangedValue(value: string | number | Date): string {
+        if (value instanceof Date) {
+            return value.toISOString().split('T')[0];
         }
-
         const text = String(value).trim();
         return text.length ? text : '(blank)';
+    }
+
+    parseDate(dateString: string): Date | null {
+        const date = new Date(dateString);
+        return isNaN(date.getTime()) ? null : date;
     }
 }
