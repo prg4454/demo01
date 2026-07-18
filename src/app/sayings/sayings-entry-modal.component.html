@@ -1,48 +1,109 @@
-<div class="edit-modal-frame">
+<div class="app-edit-modal">
     <div class="modal-header">
-        <h5 class="modal-title" id="edit-saying-title">{{ title }}</h5>
-        <button type="button" class="btn-close" (click)="onDismiss()"></button>
+        <h5 class="modal-title">{{ allowDelete ? "Edit Saying" : "Add Saying" }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('cancel')"></button>
     </div>
-    <div class="modal-body" *ngIf="editCopy">
-        <form id="editSayingForm" autocomplete="off" (ngSubmit)="save()">
-            <div class="row g-3 entry-grid">
-                <div class="col-12 field-block">
-                    <label class="form-label">Saying</label>
-                    <textarea class="form-control" rows="3" [(ngModel)]="editCopy.text" name="text"></textarea>
-                </div>
-                <div class="col-12 col-sm-6 field-block">
-                    <label class="form-label">Category</label>
-                    <input class="form-control" [(ngModel)]="editCopy.category" name="category" autocomplete="off">
-                </div>
-                <div class="col-12 col-sm-6 field-block">
-                    <label class="form-label">Vibe</label>
-                    <input class="form-control" [(ngModel)]="editCopy.vibe" name="vibe" autocomplete="off">
-                </div>
-                <div class="col-12 col-sm-6 field-block">
-                    <label class="form-label">Word Count</label>
-                    <input class="form-control" type="number" [(ngModel)]="editCopy.wordCount" name="wordCount"
-                        autocomplete="off">
-                </div>
-                <div class="col-12 col-sm-6 field-block">
-                    <label class="form-label">Laugh Level</label>
-                    <input class="form-control" type="number" min="1" max="10" [(ngModel)]="editCopy.laughLevel"
-                        name="laughLevel" autocomplete="off">
-                </div>
-                <div class="col-12 col-sm-6 field-block">
-                    <label class="form-label">Origin</label>
-                    <input class="form-control" [(ngModel)]="editCopy.origin" name="origin" autocomplete="off">
-                </div>
-                <div class="col-12 col-sm-6 field-block">
-                    <label class="form-label">Last Heard</label>
-                    <input class="form-control" type="date" [(ngModel)]="editCopy.lastHeard" name="lastHeard"
-                        autocomplete="off">
-                </div>
+
+    <div class="modal-body">
+        @if (editDraft) {
+        <div class="row g-3 entry-grid">
+            <div class="col-12 field-block">
+                <label class="form-label">Saying</label>
+                <textarea class="form-control" rows="3" [(ngModel)]="editDraft.text"></textarea>
             </div>
-        </form>
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Category</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.category">
+            </div>
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Vibe</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.vibe">
+            </div>
+            <div class="col-12 col-md-4 field-block">
+                <label class="form-label">Word Count</label>
+                <input type="number" class="form-control" [(ngModel)]="editDraft.wordCount">
+            </div>
+            <div class="col-12 col-md-4 field-block">
+                <label class="form-label">Laugh Level</label>
+                <input type="number" class="form-control" [(ngModel)]="editDraft.laughLevel" min="1" max="10">
+            </div>
+            <div class="col-12 col-md-4 field-block">
+                <label class="form-label">Last Heard</label>
+                <input type="date" class="form-control" [(ngModel)]="editDraft.lastHeard">
+            </div>
+            <div class="col-12 field-block">
+                <label class="form-label">Origin</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.origin">
+            </div>
+        </div>
+        }
     </div>
-    <div class="modal-footer">
-        <button *ngIf="mode === 'edit'" class="btn btn-outline-danger me-auto" type="button" (click)="requestDelete()">Delete</button>
-        <button class="btn btn-outline-secondary" type="button" (click)="onDismiss()">Cancel</button>
-        <button class="btn btn-primary" type="submit" form="editSayingForm">{{ mode === 'add' ? 'Add' : 'Save' }}</button>
+
+    <div class="modal-footer d-flex justify-content-between">
+        <div>
+            @if (allowDelete) {
+            <button type="button" class="btn btn-danger" (click)="requestDelete()">Delete</button>
+            }
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('cancel')">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!canSave()">Save</button>
+        </div>
     </div>
 </div>
+
+<ng-template #deleteConfirmModal let-modal>
+    <div class="app-confirm-modal">
+        <div class="modal-header">
+            <h5 class="modal-title">Confirm Delete</h5>
+        </div>
+        <div class="modal-body">
+            @if (editDraft) {
+            <p class="mb-1">Delete this saying?</p>
+            <p class="mb-0 text-muted small">"{{ editDraft.text }}"</p>
+            }
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Cancel</button>
+            <button type="button" class="btn btn-danger" (click)="modal.close('delete')">Delete</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #unsavedChangesModal let-modal>
+    <div class="app-confirm-modal">
+        <div class="modal-header">
+            <h5 class="modal-title">Unsaved Changes</h5>
+        </div>
+        <div class="modal-body">
+            <p class="mb-2">You have unsaved changes. Leave without saving?</p>
+
+            @if (getUnsavedChanges().length) {
+            <div class="table-responsive">
+                <table class="table table-changes table-bordered align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Before</th>
+                            <th>After</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (change of getUnsavedChanges(); track change.label) {
+                        <tr>
+                            <td>{{ change.label }}</td>
+                            <td>{{ change.before }}</td>
+                            <td>{{ change.after }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Keep Editing</button>
+            <button type="button" class="btn btn-danger" (click)="modal.close('discard')">Discard Changes</button>
+        </div>
+    </div>
+</ng-template>

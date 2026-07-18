@@ -1,1 +1,16 @@
-<h1>Services</h1>
+<div class="container mt-3 app-grid-container">
+    <h2 class="mb-4">Our Services</h2>
+    <div class="row g-4">
+        @for (service of services; track service.title) {
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="display-6 mb-3 text-primary">{{ service.icon }}</div>
+                    <h3 class="card-title h5">{{ service.title }}</h3>
+                    <p class="card-text text-muted">{{ service.description }}</p>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>

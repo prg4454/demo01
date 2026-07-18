@@ -1,177 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, inject } from '@angular/core';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalHistoryService } from '../modal-history.service';
-
-interface ChangedField {
-    label: string;
-    before: string;
-    after: string;
-}
-
-interface SillySaying {
-    id: number;
-    text: string;
-    category: string;
-    vibe: string;
-    wordCount: number | null;
-    laughLevel: number | null;
-    origin: string;
-    lastHeard: string;
-}
-
-interface SayingEditModalResult {
-    action: 'save' | 'delete';
-    saying: SillySaying;
-}
-
-@Component({
-    selector: 'app-saying-discard-changes-modal',
-    standalone: true,
-    imports: [CommonModule],
-    templateUrl: './sayings-discard-changes-modal.component.html'
-})
-class SayingDiscardChangesModalComponent {
-    activeModal = inject(NgbActiveModal);
-    changes: ChangedField[] = [];
-}
-
-@Component({
-    selector: 'app-saying-edit-modal',
-    standalone: true,
-    imports: [CommonModule, FormsModule],
-    templateUrl: './sayings-entry-modal.component.html',
-    styleUrl: './sayings-entry-modal.component.scss'
-})
-class SayingEditModalComponent implements OnInit {
-    activeModal = inject(NgbActiveModal);
-    private modalService = inject(NgbModal);
-    private modalHistory = inject(ModalHistoryService);
-
-    @Input({ required: true }) editCopy!: SillySaying;
-    @Input() mode: 'add' | 'edit' = 'edit';
-
-    private initialEditState: SillySaying | null = null;
-    private discardPrompt: Promise<boolean> | null = null;
-
-    ngOnInit(): void {
-        this.initialEditState = structuredClone(this.editCopy);
-    }
-
-    get title(): string {
-        if (this.mode === 'add') {
-            return 'Add New Saying';
-        }
-        return 'Edit Saying';
-    }
-
-    @HostListener('document:keydown.escape', ['$event'])
-    handleEscape(event: Event): void {
-        // NgbModal handles escape by default and calls beforeDismiss
-    }
-
-    confirmDiscardChanges(): Promise<boolean> {
-        if (this.discardPrompt) {
-            return this.discardPrompt;
-        }
-
-        const changes = this.getChangedFields();
-        if (!changes.length) {
-            return Promise.resolve(true);
-        }
-
-        const modalRef = this.modalService.open(SayingDiscardChangesModalComponent, {
-            centered: true,
-            backdrop: 'static',
-            keyboard: false,
-            scrollable: true
-        });
-        this.modalHistory.registerModal(modalRef);
-        modalRef.componentInstance.changes = changes;
-
-        this.discardPrompt = modalRef.result
-            .then(result => result === 'discard')
-            .catch(() => false)
-            .finally(() => {
-                this.discardPrompt = null;
-            });
-
-        return this.discardPrompt;
-    }
-
-    async onDismiss(): Promise<void> {
-        this.activeModal.dismiss('dismiss');
-    }
-
-    hasUnsavedChanges(): boolean {
-        return this.getChangedFields().length > 0;
-    }
-
-    handleBeforeDismiss(): Promise<boolean> | boolean {
-        if (this.hasUnsavedChanges()) {
-            return this.confirmDiscardChanges();
-        }
-        return true;
-    }
-
-    save(): void {
-        this.activeModal.close({ action: 'save', saying: this.editCopy } satisfies SayingEditModalResult);
-    }
-
-    requestDelete(): void {
-        if (this.mode !== 'edit') {
-            return;
-        }
-
-        const shouldDelete = window.confirm('Delete this saying?');
-        if (!shouldDelete) {
-            return;
-        }
-
-        this.confirmDelete();
-    }
-
-    confirmDelete(): void {
-        this.activeModal.close({ action: 'delete', saying: this.editCopy } satisfies SayingEditModalResult);
-    }
-
-    private getChangedFields(): ChangedField[] {
-        if (!this.initialEditState) {
-            return [];
-        }
-
-        const fieldLabels: Array<[keyof SillySaying, string]> = [
-            ['text', 'Saying'],
-            ['category', 'Category'],
-            ['vibe', 'Vibe'],
-            ['wordCount', 'Word Count'],
-            ['laughLevel', 'Laugh Level'],
-            ['origin', 'Origin'],
-            ['lastHeard', 'Last Heard']
-        ];
-
-        return fieldLabels
-            .filter(([key]) => this.initialEditState?.[key] !== this.editCopy?.[key])
-            .map(([key, label]) => ({
-                label,
-                before: this.formatValue(this.initialEditState?.[key]),
-                after: this.formatValue(this.editCopy?.[key])
-            }));
-    }
-
-    private formatValue(value: SillySaying[keyof SillySaying] | undefined): string {
-        if (value === undefined || value === null || value === '') {
-            return '(empty)';
-        }
-        return String(value);
-    }
-}
+import { SayingsEntryModalComponent, SayingsModalResult, SillySaying } from './sayings-entry-modal.component';
 
 @Component({
     selector: 'app-sayings',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, NgbModalModule],
     templateUrl: './sayings.component.html',
     styleUrl: './sayings.component.scss'
 })
@@ -188,7 +24,7 @@ export class SayingsComponent {
         { id: 2, text: 'My brain has too many tabs and one is playing kazoo music.', category: 'Brain Fog', vibe: 'Absurd', wordCount: 12, laughLevel: 9, origin: 'Office Slack', lastHeard: '2026-06-18' },
         { id: 3, text: 'I run on iced coffee and unreasonable confidence.', category: 'Work Life', vibe: 'Spicy', wordCount: 8, laughLevel: 8, origin: 'Break Room', lastHeard: '2026-06-27' },
         { id: 4, text: 'Do not disturb, I am negotiating with my houseplants.', category: 'Home', vibe: 'Whimsical', wordCount: 9, laughLevel: 6, origin: 'Neighbor Joe', lastHeard: '2026-04-03' },
-        { id: 5, text: 'This meeting could have been an aggressively worded sticky note.', category: 'Work Life', vibe: 'Snarky', wordCount: 10, laughLevel: 8, origin: 'Team Chat', lastHeard: '2026-07-05' },
+        { id: 5, text: 'This meeting could have been an aggressively worded sticky note.', category: 'Work Life', vibe: 'Snarky', wordCount: 10, laughLevel: 8, origin: 'Team Chat', lastHeard: '2027-07-15' },
         { id: 6, text: 'I am not late, I am on side-quest time.', category: 'Daily Excuses', vibe: 'Playful', wordCount: 9, laughLevel: 7, origin: 'Gym Lobby', lastHeard: '2026-03-29' },
         { id: 7, text: 'My wallet is on a diet and thriving.', category: 'Money', vibe: 'Dry', wordCount: 7, laughLevel: 7, origin: 'Family Group Text', lastHeard: '2026-05-19' },
         { id: 8, text: 'I clean my room by rotating clutter clockwise.', category: 'Home', vibe: 'Messy', wordCount: 8, laughLevel: 6, origin: 'Roommate', lastHeard: '2026-07-01' },
@@ -219,7 +55,7 @@ export class SayingsComponent {
         }
     }
 
-    openAddNew(): void {
+    openAddModal(): void {
         const newSaying: SillySaying = {
             id: this.getNextId(),
             text: '',
@@ -231,20 +67,20 @@ export class SayingsComponent {
             lastHeard: ''
         };
 
-        const modalRef = this.modalService.open(SayingEditModalComponent, {
+        const modalRef = this.modalService.open(SayingsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
             keyboard: true,
             size: 'lg',
             scrollable: true,
-            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
+            beforeDismiss: () => modalRef.componentInstance.handleBeforeDismiss()
         });
         this.modalHistory.registerModal(modalRef);
-        modalRef.componentInstance.editCopy = structuredClone(newSaying);
-        modalRef.componentInstance.mode = 'add';
+        modalRef.componentInstance.saying = newSaying;
+        modalRef.componentInstance.allowDelete = false;
 
         void modalRef.result
-            .then((result: SayingEditModalResult) => {
+            .then((result: SayingsModalResult) => {
                 if (result.action !== 'save') {
                     return;
                 }
@@ -256,23 +92,23 @@ export class SayingsComponent {
             .catch(() => undefined);
     }
 
-    openEdit(saying: SillySaying): void {
+    openEditModal(saying: SillySaying): void {
         this.selectedSayingId = saying.id;
 
-        const modalRef = this.modalService.open(SayingEditModalComponent, {
+        const modalRef = this.modalService.open(SayingsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
             keyboard: true,
             size: 'lg',
             scrollable: true,
-            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
+            beforeDismiss: () => modalRef.componentInstance.handleBeforeDismiss()
         });
         this.modalHistory.registerModal(modalRef);
-        modalRef.componentInstance.editCopy = structuredClone(saying);
-        modalRef.componentInstance.mode = 'edit';
+        modalRef.componentInstance.saying = structuredClone(saying);
+        modalRef.componentInstance.allowDelete = true;
 
         void modalRef.result
-            .then((result: SayingEditModalResult) => {
+            .then((result: SayingsModalResult) => {
                 if (result.action === 'save') {
                     this.sayings = this.sayings.map(existing => existing.id === result.saying.id ? result.saying : existing);
                     return;

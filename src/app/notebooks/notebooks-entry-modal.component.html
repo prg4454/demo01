@@ -1,0 +1,154 @@
+<div class="app-edit-modal">
+    <div class="modal-header">
+        <h5 class="modal-title">{{ allowDelete ? "Edit Notebook" : "Add Notebook" }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('cancel')"></button>
+    </div>
+
+    <div class="modal-body">
+        @if (editDraft) {
+        <div class="row g-3 entry-grid">
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Serial Number <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.serialNumber"
+                    [class.is-invalid]="saveAttempted && !editDraft.serialNumber.trim().length">
+                @if (saveAttempted && !editDraft.serialNumber.trim().length) {
+                <div class="invalid-feedback d-block">Serial Number is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Model <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.model"
+                    [class.is-invalid]="saveAttempted && !editDraft.model.trim().length">
+                @if (saveAttempted && !editDraft.model.trim().length) {
+                <div class="invalid-feedback d-block">Model is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Brand <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.brand"
+                    [class.is-invalid]="saveAttempted && !editDraft.brand.trim().length">
+                @if (saveAttempted && !editDraft.brand.trim().length) {
+                <div class="invalid-feedback d-block">Brand is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Processor <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.processor"
+                    [class.is-invalid]="saveAttempted && !editDraft.processor.trim().length">
+                @if (saveAttempted && !editDraft.processor.trim().length) {
+                <div class="invalid-feedback d-block">Processor is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">RAM</label>
+                <select class="form-select" [(ngModel)]="editDraft.ram">
+                    @for (ram of ramOptions; track ram) {
+                    <option [value]="ram">{{ ram }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Storage</label>
+                <select class="form-select" [(ngModel)]="editDraft.storage">
+                    @for (st of storageOptions; track st) {
+                    <option [value]="st">{{ st }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Price <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" [(ngModel)]="editDraft.price"
+                    [class.is-invalid]="saveAttempted && (editDraft.price === null || editDraft.price < 0)">
+                @if (saveAttempted && (editDraft.price === null || editDraft.price < 0)) {
+                <div class="invalid-feedback d-block">Valid price is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Status</label>
+                <select class="form-select" [(ngModel)]="editDraft.status">
+                    @for (stat of statusOptions; track stat) {
+                    <option [value]="stat">{{ stat }}</option>
+                    }
+                </select>
+            </div>
+            
+            <div class="col-12 field-block">
+                <label class="form-label">Notes</label>
+                <textarea rows="2" class="form-control" [(ngModel)]="editDraft.notes"></textarea>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="modal-footer">
+        @if (allowDelete) {
+        <button type="button" class="btn btn-outline-danger me-auto" (click)="requestDelete()">Delete</button>
+        }
+
+        <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('cancel')">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!canSave()">{{ allowDelete ? "Save" : "Add" }}</button>
+    </div>
+</div>
+
+<ng-template #deleteConfirmModal let-modal>
+    <div class="app-confirm-modal">
+        <div class="modal-header">
+            <h5 class="modal-title">Confirm Delete</h5>
+        </div>
+        <div class="modal-body">
+            @if (editDraft) {
+            <p class="mb-1">Delete this notebook record?</p>
+            <p class="mb-0"><strong>{{ editDraft.serialNumber }}</strong> ({{ editDraft.brand }} {{ editDraft.model }})</p>
+            }
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Cancel</button>
+            <button type="button" class="btn btn-danger" (click)="modal.close('delete')">Delete</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #unsavedChangesModal let-modal>
+    <div class="app-confirm-modal">
+        <div class="modal-header">
+            <h5 class="modal-title">Unsaved Changes</h5>
+        </div>
+        <div class="modal-body">
+            <p class="mb-2">You have unsaved changes. Leave without saving?</p>
+
+            @if (getUnsavedChanges().length) {
+            <div class="table-responsive">
+                <table class="table table-changes table-bordered align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Before</th>
+                            <th>After</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (change of getUnsavedChanges(); track change.label) {
+                        <tr>
+                            <td>{{ change.label }}</td>
+                            <td>{{ change.before }}</td>
+                            <td>{{ change.after }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Keep Editing</button>
+            <button type="button" class="btn btn-danger" (click)="modal.close('discard')">Discard Changes</button>
+        </div>
+    </div>
+</ng-template>
