@@ -1,0 +1,48 @@
+<div class="edit-modal-frame">
+    <div class="modal-header">
+        <h5 class="modal-title" id="edit-saying-title">{{ title }}</h5>
+        <button type="button" class="btn-close" (click)="onDismiss()"></button>
+    </div>
+    <div class="modal-body" *ngIf="editCopy">
+        <form id="editSayingForm" autocomplete="off" (ngSubmit)="save()">
+            <div class="row g-3 entry-grid">
+                <div class="col-12 field-block">
+                    <label class="form-label">Saying</label>
+                    <textarea class="form-control" rows="3" [(ngModel)]="editCopy.text" name="text"></textarea>
+                </div>
+                <div class="col-12 col-sm-6 field-block">
+                    <label class="form-label">Category</label>
+                    <input class="form-control" [(ngModel)]="editCopy.category" name="category" autocomplete="off">
+                </div>
+                <div class="col-12 col-sm-6 field-block">
+                    <label class="form-label">Vibe</label>
+                    <input class="form-control" [(ngModel)]="editCopy.vibe" name="vibe" autocomplete="off">
+                </div>
+                <div class="col-12 col-sm-6 field-block">
+                    <label class="form-label">Word Count</label>
+                    <input class="form-control" type="number" [(ngModel)]="editCopy.wordCount" name="wordCount"
+                        autocomplete="off">
+                </div>
+                <div class="col-12 col-sm-6 field-block">
+                    <label class="form-label">Laugh Level</label>
+                    <input class="form-control" type="number" min="1" max="10" [(ngModel)]="editCopy.laughLevel"
+                        name="laughLevel" autocomplete="off">
+                </div>
+                <div class="col-12 col-sm-6 field-block">
+                    <label class="form-label">Origin</label>
+                    <input class="form-control" [(ngModel)]="editCopy.origin" name="origin" autocomplete="off">
+                </div>
+                <div class="col-12 col-sm-6 field-block">
+                    <label class="form-label">Last Heard</label>
+                    <input class="form-control" type="date" [(ngModel)]="editCopy.lastHeard" name="lastHeard"
+                        autocomplete="off">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button *ngIf="mode === 'edit'" class="btn btn-outline-danger me-auto" type="button" (click)="requestDelete()">Delete</button>
+        <button class="btn btn-outline-secondary" type="button" (click)="onDismiss()">Cancel</button>
+        <button class="btn btn-primary" type="submit" form="editSayingForm">{{ mode === 'add' ? 'Add' : 'Save' }}</button>
+    </div>
+</div>

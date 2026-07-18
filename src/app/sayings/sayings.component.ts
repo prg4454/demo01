@@ -30,25 +30,7 @@ interface SayingEditModalResult {
     selector: 'app-saying-discard-changes-modal',
     standalone: true,
     imports: [CommonModule],
-    template: `
-        <div class="modal-header">
-            <h5 class="modal-title">Unsaved Changes</h5>
-        </div>
-        <div class="modal-body">
-            <p class="mb-3">You have unsaved changes. Review them below before closing this editor.</p>
-            <div class="list-group">
-                <div *ngFor="let field of changes" class="list-group-item">
-                    <div class="fw-bold">{{ field.label }}</div>
-                    <div class="small text-muted">Before: {{ field.before }}</div>
-                    <div class="small">After: {{ field.after }}</div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" (click)="activeModal.dismiss('keep-editing')">Keep Editing</button>
-            <button class="btn btn-warning" type="button" (click)="activeModal.close('discard')">Discard Changes</button>
-        </div>
-    `
+    templateUrl: './sayings-discard-changes-modal.component.html'
 })
 class SayingDiscardChangesModalComponent {
     activeModal = inject(NgbActiveModal);
@@ -59,51 +41,8 @@ class SayingDiscardChangesModalComponent {
     selector: 'app-saying-edit-modal',
     standalone: true,
     imports: [CommonModule, FormsModule],
-    template: `
-        <div class="modal-header">
-            <h5 class="modal-title" id="edit-saying-title">{{ title }}</h5>
-            <button type="button" class="btn-close" (click)="onDismiss()"></button>
-        </div>
-        <div class="modal-body" *ngIf="editCopy">
-            <form id="editSayingForm" autocomplete="off" (ngSubmit)="save()">
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label class="form-label fw-bold">Saying</label>
-                        <textarea class="form-control" rows="3" [(ngModel)]="editCopy.text" name="text"></textarea>
-                    </div>
-                    <div class="col-12 col-sm-6">
-                        <label class="form-label fw-bold">Category</label>
-                        <input class="form-control" [(ngModel)]="editCopy.category" name="category" autocomplete="off">
-                    </div>
-                    <div class="col-12 col-sm-6">
-                        <label class="form-label fw-bold">Vibe</label>
-                        <input class="form-control" [(ngModel)]="editCopy.vibe" name="vibe" autocomplete="off">
-                    </div>
-                    <div class="col-12 col-sm-6">
-                        <label class="form-label fw-bold">Word Count</label>
-                        <input class="form-control" type="number" [(ngModel)]="editCopy.wordCount" name="wordCount" autocomplete="off">
-                    </div>
-                    <div class="col-12 col-sm-6">
-                        <label class="form-label fw-bold">Laugh Level</label>
-                        <input class="form-control" type="number" min="1" max="10" [(ngModel)]="editCopy.laughLevel" name="laughLevel" autocomplete="off">
-                    </div>
-                    <div class="col-12 col-sm-6">
-                        <label class="form-label fw-bold">Origin</label>
-                        <input class="form-control" [(ngModel)]="editCopy.origin" name="origin" autocomplete="off">
-                    </div>
-                    <div class="col-12 col-sm-6">
-                        <label class="form-label fw-bold">Last Heard</label>
-                        <input class="form-control" type="date" [(ngModel)]="editCopy.lastHeard" name="lastHeard" autocomplete="off">
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button *ngIf="mode === 'edit'" class="btn btn-outline-danger me-auto" type="button" (click)="requestDelete()">Delete</button>
-            <button class="btn btn-secondary" type="button" (click)="onDismiss()">Cancel</button>
-            <button class="btn btn-primary" type="submit" form="editSayingForm">{{ mode === 'add' ? 'Add' : 'Save' }}</button>
-        </div>
-    `
+    templateUrl: './sayings-entry-modal.component.html',
+    styleUrl: './sayings-entry-modal.component.scss'
 })
 class SayingEditModalComponent implements OnInit {
     activeModal = inject(NgbActiveModal);

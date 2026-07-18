@@ -28,7 +28,8 @@ export class MenuComponent {
                 { label: 'Silly Sayings', path: '/sayings' },
                 { label: 'Jokes', path: '/jokes' },
                 { label: 'Address Book', path: '/address-book' },
-                { label: 'Automobiles', path: '/automobiles' }
+                { label: 'Automobiles', path: '/automobiles' },
+                { label: 'Notebooks', path: '/notebooks' }
             ]
         },
         {

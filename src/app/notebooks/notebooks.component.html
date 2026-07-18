@@ -1,0 +1,57 @@
+<div class="container mt-3 sticky-header">
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+        <h2 class="mb-0">Notebook Inventory</h2>
+        <button type="button" class="btn btn-success" (click)="openAddModal()">+ Add Notebook</button>
+    </div>
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+        <button type="button" class="btn btn-outline-success btn-sm" (click)="previousPage()"
+            [disabled]="currentPage <= 1">&lt;&lt;</button>
+        <button type="button" class="btn btn-outline-success btn-sm" (click)="nextPage()"
+            [disabled]="currentPage >= totalPages">&gt;&gt;</button>
+        <div class="small text-muted">Page {{ currentPage }} of {{ totalPages }} (Total: {{ totalNotebooks }})</div>
+    </div>
+</div>
+
+<div class="container text-break notebooks-grid">
+    <hr>
+    @for (notebook of pagedNotebooks; track notebook.id) {
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start notebook-row">
+        <div class="mb-1 col">
+            <b>Brand</b><br>
+            <button type="button" class="btn btn-link p-0 text-start text-decoration-none shadow-none notebook-link"
+                (click)="openEditModal(notebook)">
+                {{ notebook.brand }}
+            </button>
+        </div>
+        <div class="mb-1 col">
+            <b>Type</b><br>
+            {{ notebook.type }}
+        </div>
+        <div class="mb-1 col">
+            <b>Size</b><br>
+            {{ notebook.size }}
+        </div>
+        <div class="mb-1 col">
+            <b>Pages</b><br>
+            {{ notebook.pages }}
+        </div>
+        <div class="mb-1 col">
+            <b>Color</b><br>
+            {{ notebook.color }}
+        </div>
+        <div class="mb-1 col">
+            <b>Status</b><br>
+            <span class="status-pill shadow-sm" [ngClass]="{
+                'status-in-stock': notebook.status === 'In Stock',
+                'status-ordered': notebook.status === 'Ordered',
+                'status-discontinued': notebook.status === 'Discontinued'
+            }">{{ notebook.status }}</span>
+        </div>
+    </div>
+    <hr>
+    } @empty {
+    <div class="text-center py-5">
+        <p class="text-muted mb-0">No notebooks found.</p>
+    </div>
+    }
+</div>

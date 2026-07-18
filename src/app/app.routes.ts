@@ -8,6 +8,7 @@ import { SayingsComponent } from './sayings/sayings.component';
 import { JokesComponent } from './jokes/jokes.component';
 import { AddressBookComponent } from './address-book/address-book.component';
 import { AutomobilesComponent } from './automobiles/automobiles.component';
+import { NotebooksComponent } from './notebooks/notebooks.component';
 import { pendingChangesGuard } from './pending-changes.guard';
 
 export const routes: Routes = [
@@ -19,6 +20,7 @@ export const routes: Routes = [
     { path: 'jokes', component: JokesComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'address-book', component: AddressBookComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'automobiles', component: AutomobilesComponent, canDeactivate: [pendingChangesGuard] },
+    { path: 'notebooks', component: NotebooksComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'cats', component: CatsComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'dogs', component: DogsComponent, canDeactivate: [pendingChangesGuard] }
 ];
