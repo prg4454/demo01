@@ -1,0 +1,27 @@
+.status-pill {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 0.05rem 0.55rem;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.status-waiting {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
+.status-in-service {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+.status-parts-hold {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.status-ready {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}

@@ -115,6 +115,17 @@ export class SayingsEntryModalComponent implements OnInit {
         return true;
     }
 
+    async requestCancel(): Promise<void> {
+        if (this.hasUnsavedChanges()) {
+            const shouldDiscard = await this.confirmDiscardChangesWithModal();
+            if (!shouldDiscard) {
+                return;
+            }
+        }
+
+        this.activeModal.close('cancel');
+    }
+
     getUnsavedChanges(): ChangedField[] {
         if (!this.editDraft || !this.originalDraft) {
             return [];

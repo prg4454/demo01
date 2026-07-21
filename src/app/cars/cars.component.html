@@ -1,0 +1,49 @@
+<div class="container mt-3 app-grid-container">
+    <div class="sticky-header">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Cars Management</h2>
+            <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Car</button>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="previousPage()"
+                [disabled]="currentPage <= 1">&lt;&lt;</button>
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="nextPage()"
+                [disabled]="currentPage >= totalPages">&gt;&gt;</button>
+            <div class="small text-muted">Page {{ currentPage }} of {{ totalPages }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="container text-break">
+    @for (car of pagedCars; track car.id) {
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
+        <div class="mb-1 col">
+            <b>Vehicle</b>
+            <button type="button" class="grid-link" (click)="openEditModal(car)">
+                {{ car.make }} {{ car.model }}
+            </button>
+        </div>
+        <div class="mb-1 col">
+            <b>Owner</b>
+            {{ car.owner }}
+        </div>
+        <div class="mb-1 col">
+            <b>Advisor</b>
+            {{ car.advisor }}
+        </div>
+        <div class="mb-1 col">
+            <b>Check-In</b>
+            {{ car.checkIn }}
+        </div>
+        <div class="mb-1 col">
+            <b>Service</b>
+            {{ car.service }}
+        </div>
+        <div class="mb-1 col">
+            <b>Status</b>
+            <span class="status-pill" [class]="'status-pill status-' + car.status.toLowerCase().replace(' ', '-')">{{
+                car.status }}</span>
+        </div>
+    </div>
+    }
+</div>

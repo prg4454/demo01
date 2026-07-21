@@ -112,6 +112,13 @@ export class AutomobileEntryModalComponent implements OnInit {
     }
 
     async requestCancel(): Promise<void> {
+        if (this.hasUnsavedChanges()) {
+            const shouldDiscard = await this.confirmDiscardChangesWithModal();
+            if (!shouldDiscard) {
+                return;
+            }
+        }
+
         this.activeModal.close('cancel');
     }
 

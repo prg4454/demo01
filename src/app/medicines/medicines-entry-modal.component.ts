@@ -99,6 +99,16 @@ export class MedicinesEntryModalComponent implements OnInit {
         this.activeModal.close({ action: 'delete', medicine: this.editDraft } satisfies MedicinesModalResult);
     }
 
+    async cancel(): Promise<void> {
+        if (this.hasUnsavedChanges()) {
+            const shouldDiscard = await this.confirmDiscardChangesWithModal();
+            if (!shouldDiscard) {
+                return;
+            }
+        }
+        this.activeModal.close('cancel');
+    }
+
     hasUnsavedChanges(): boolean {
         if (!this.editDraft || !this.originalDraft) {
             return false;

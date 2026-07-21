@@ -1,44 +1,43 @@
 <div class="app-edit-modal">
     <div class="modal-header">
-        <h5 class="modal-title">{{ allowDelete ? "Edit Medicine" : "Add Medicine" }}</h5>
-        <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+        <h5 class="modal-title">{{ allowDelete ? "Edit Car" : "Add Car" }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="requestCancel()"></button>
     </div>
 
     <div class="modal-body">
         @if (editDraft) {
         <div class="row g-3 entry-grid">
-            <div class="col-12 col-md-8 field-block">
-                <label class="form-label">Name</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.name">
-            </div>
-            <div class="col-12 col-md-4 field-block">
-                <label class="form-label">Strength</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.strength">
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Make</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.make">
             </div>
             <div class="col-12 col-md-6 field-block">
-                <label class="form-label">Form</label>
-                <select class="form-select" [(ngModel)]="editDraft.form">
-                    @for (form of forms; track form) {
-                    <option [value]="form">{{ form }}</option>
+                <label class="form-label">Model</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.model">
+            </div>
+            <div class="col-12 field-block">
+                <label class="form-label">Service</label>
+                <textarea class="form-control" rows="2" [(ngModel)]="editDraft.service"></textarea>
+            </div>
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Advisor</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.advisor">
+            </div>
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Check-In</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.checkIn">
+            </div>
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Status</label>
+                <select class="form-select" [(ngModel)]="editDraft.status">
+                    @for (status of statuses; track status) {
+                    <option [value]="status">{{ status }}</option>
                     }
                 </select>
             </div>
             <div class="col-12 col-md-6 field-block">
-                <label class="form-label">Quantity</label>
-                <input type="number" class="form-control" [(ngModel)]="editDraft.quantity">
-            </div>
-            <div class="col-12 field-block">
-                <label class="form-label">Instructions</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.instructions">
-            </div>
-            <div class="col-12 col-md-6 field-block">
-                <label class="form-label">Doctor</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.doctor">
-            </div>
-            <div class="col-12 col-md-6 field-block">
-                <label class="form-label">Last Dispensed</label>
-                <input type="date" class="form-control" [ngModel]="editDraft.lastDispensed | date:'yyyy-MM-dd'"
-                    (ngModelChange)="editDraft.lastDispensed = $event ? (parseDate($event) ?? editDraft.lastDispensed) : editDraft.lastDispensed">
+                <label class="form-label">Owner</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.owner">
             </div>
         </div>
         }
@@ -51,8 +50,8 @@
             }
         </div>
         <div class="d-flex gap-2">
-            <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
-            <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!canSave()">Save</button>
+            <button type="button" class="btn btn-secondary" (click)="requestCancel()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="save()">Save</button>
         </div>
     </div>
 </div>
@@ -64,8 +63,8 @@
         </div>
         <div class="modal-body">
             @if (editDraft) {
-            <p class="mb-1">Delete this medicine record?</p>
-            <p class="mb-0 text-muted small">{{ editDraft.name }} {{ editDraft.strength }}</p>
+            <p class="mb-1">Delete this car record?</p>
+            <p class="mb-0"><strong>{{ editDraft.make }} {{ editDraft.model }}</strong> ({{ editDraft.id }})</p>
             }
         </div>
         <div class="modal-footer">

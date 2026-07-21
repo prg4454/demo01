@@ -109,14 +109,25 @@ export class DogsEntryModalComponent implements OnInit {
         return JSON.stringify(this.editDraft) !== JSON.stringify(this.originalDraft);
     }
 
-    handleBeforeDismiss(): Promise<boolean> | boolean {
+    async handleBeforeDismiss(): Promise<boolean> {
         if (this.hasUnsavedChanges()) {
-            return this.confirmDiscardChangesWithModal();
+            const shouldDiscard = await this.confirmDiscardChangesWithModal();
+            if (!shouldDiscard) {
+                this.modalHistory.restoreHistoryIfPending();
+                return false;
+            }
         }
         return true;
     }
 
     async requestCancel(): Promise<void> {
+        if (this.hasUnsavedChanges()) {
+            const shouldDiscard = await this.confirmDiscardChangesWithModal();
+            if (!shouldDiscard) {
+                return;
+            }
+        }
+
         this.activeModal.close('cancel');
     }
 

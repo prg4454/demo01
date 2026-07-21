@@ -10,32 +10,32 @@ interface ChangedField {
     after: string;
 }
 
-export interface CatRecord {
+export interface CarRecord {
     id: number;
-    name: string;
-    breed: string;
+    make: string;
+    model: string;
     owner: string;
-    reason: string;
+    service: string;
     checkIn: string;
-    status: 'Waiting' | 'Exam' | 'Treatment' | 'Ready';
-    vet: string;
+    status: 'Waiting' | 'In Service' | 'Parts Hold' | 'Ready';
+    advisor: string;
 }
 
-export interface CatsModalResult {
+export interface CarsModalResult {
     action: 'save' | 'delete';
-    cat: CatRecord;
+    car: CarRecord;
 }
 
-type TrackedFieldKey = 'name' | 'breed' | 'owner' | 'reason' | 'checkIn' | 'status' | 'vet';
+type TrackedFieldKey = 'make' | 'model' | 'owner' | 'service' | 'checkIn' | 'status' | 'advisor';
 
 @Component({
-    selector: 'app-cats-entry-modal',
+    selector: 'app-cars-entry-modal',
     standalone: true,
     imports: [CommonModule, FormsModule],
-    templateUrl: './cats-entry-modal.component.html',
-    styleUrl: './cats-entry-modal.component.scss'
+    templateUrl: './cars-entry-modal.component.html',
+    styleUrl: './cars-entry-modal.component.scss'
 })
-export class CatsEntryModalComponent implements OnInit {
+export class CarsEntryModalComponent implements OnInit {
     activeModal = inject(NgbActiveModal);
     private modalService = inject(NgbModal);
     private modalHistory = inject(ModalHistoryService);
@@ -43,17 +43,17 @@ export class CatsEntryModalComponent implements OnInit {
     @ViewChild('deleteConfirmModal') private deleteConfirmModal?: TemplateRef<unknown>;
     @ViewChild('unsavedChangesModal') private unsavedChangesModal?: TemplateRef<unknown>;
 
-    @Input({ required: true }) cat!: CatRecord;
+    @Input({ required: true }) car!: CarRecord;
     @Input() allowDelete = false;
 
-    editDraft: CatRecord | null = null;
-    originalDraft: CatRecord | null = null;
+    editDraft: CarRecord | null = null;
+    originalDraft: CarRecord | null = null;
     saveAttempted = false;
-    readonly statuses: CatRecord['status'][] = ['Waiting', 'Exam', 'Treatment', 'Ready'];
+    readonly statuses: CarRecord['status'][] = ['Waiting', 'In Service', 'Parts Hold', 'Ready'];
 
     ngOnInit(): void {
-        this.editDraft = structuredClone(this.cat);
-        this.originalDraft = structuredClone(this.cat);
+        this.editDraft = structuredClone(this.car);
+        this.originalDraft = structuredClone(this.car);
     }
 
     canSave(): boolean {
@@ -61,12 +61,12 @@ export class CatsEntryModalComponent implements OnInit {
             return false;
         }
 
-        return this.editDraft.name.trim().length > 0
-            && this.editDraft.breed.trim().length > 0
+        return this.editDraft.make.trim().length > 0
+            && this.editDraft.model.trim().length > 0
             && this.editDraft.owner.trim().length > 0
-            && this.editDraft.reason.trim().length > 0
+            && this.editDraft.service.trim().length > 0
             && this.editDraft.checkIn.trim().length > 0
-            && this.editDraft.vet.trim().length > 0;
+            && this.editDraft.advisor.trim().length > 0;
     }
 
     save(): void {
@@ -75,17 +75,17 @@ export class CatsEntryModalComponent implements OnInit {
             return;
         }
 
-        const updated: CatRecord = {
+        const updated: CarRecord = {
             ...this.editDraft,
-            name: this.editDraft.name.trim(),
-            breed: this.editDraft.breed.trim(),
+            make: this.editDraft.make.trim(),
+            model: this.editDraft.model.trim(),
             owner: this.editDraft.owner.trim(),
-            reason: this.editDraft.reason.trim(),
+            service: this.editDraft.service.trim(),
             checkIn: this.editDraft.checkIn.trim(),
-            vet: this.editDraft.vet.trim()
+            advisor: this.editDraft.advisor.trim()
         };
 
-        this.activeModal.close({ action: 'save', cat: updated } satisfies CatsModalResult);
+        this.activeModal.close({ action: 'save', car: updated } satisfies CarsModalResult);
     }
 
     async requestDelete(): Promise<void> {
@@ -98,7 +98,7 @@ export class CatsEntryModalComponent implements OnInit {
             return;
         }
 
-        this.activeModal.close({ action: 'delete', cat: this.editDraft } satisfies CatsModalResult);
+        this.activeModal.close({ action: 'delete', car: this.editDraft } satisfies CarsModalResult);
     }
 
     hasUnsavedChanges(): boolean {
@@ -137,13 +137,13 @@ export class CatsEntryModalComponent implements OnInit {
         }
 
         const fields: Array<{ key: TrackedFieldKey; label: string }> = [
-            { key: 'name', label: 'Name' },
-            { key: 'breed', label: 'Breed' },
+            { key: 'make', label: 'Make' },
+            { key: 'model', label: 'Model' },
             { key: 'owner', label: 'Owner' },
-            { key: 'reason', label: 'Reason' },
+            { key: 'service', label: 'Service' },
             { key: 'checkIn', label: 'Check-In' },
             { key: 'status', label: 'Status' },
-            { key: 'vet', label: 'Vet' }
+            { key: 'advisor', label: 'Advisor' }
         ];
 
         const changes: ChangedField[] = [];
