@@ -1,0 +1,55 @@
+<div class="container mt-3 app-grid-container">
+    <div class="sticky-header">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Friends</h2>
+            <div class="d-flex align-items-center gap-2">
+                <app-export-dropdown [rows]="friends" fileBaseName="export-friends"
+                    (statusMessage)="exportMessage = $event"></app-export-dropdown>
+                <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Friend</button>
+            </div>
+        </div>
+        @if (exportMessage) {
+        <div class="small text-muted mb-2">{{ exportMessage }}</div>
+        }
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="previousPage()"
+                [disabled]="currentPage <= 1">&lt;&lt;</button>
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="nextPage()"
+                [disabled]="currentPage >= totalPages">&gt;&gt;</button>
+            <div class="small text-muted">Page {{ currentPage }} of {{ totalPages }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="container text-break">
+    @for (friend of pagedFriends; track friend.id) {
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
+        <div class="mb-1 col">
+            <b>Name</b>
+            <button type="button" class="grid-link" (click)="openEditModal(friend)">
+                {{ friend.name }}
+            </button>
+        </div>
+        <div class="mb-1 col">
+            <b>Status</b>
+            <div>{{ friend.status }}</div>
+        </div>
+        <div class="mb-1 col">
+            <b>City</b>
+            <div>{{ friend.city }}</div>
+        </div>
+        <div class="mb-1 col">
+            <b>Hobby</b>
+            <div>{{ friend.hobby }}</div>
+        </div>
+        <div class="mb-1 col">
+            <b>Birthday</b>
+            <div>{{ friend.birthday | date:'MMM d' }}</div>
+        </div>
+        <div class="mb-1 col">
+            <b>Years Known</b>
+            <div>{{ friend.yearsKnown }}</div>
+        </div>
+    </div>
+    }
+</div>

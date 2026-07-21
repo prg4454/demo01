@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class StorageService {
     private readonly dbName = 'AppDB';
-    private readonly dbVersion = 2;
+    private readonly dbVersion = 3;
 
     async getDb(): Promise<IDBDatabase> {
         return new Promise((resolve, reject) => {
@@ -21,6 +21,9 @@ export class StorageService {
                 }
                 if (!db.objectStoreNames.contains('constructionSkills')) {
                     db.createObjectStore('constructionSkills', { keyPath: 'id' });
+                }
+                if (!db.objectStoreNames.contains('friends')) {
+                    db.createObjectStore('friends', { keyPath: 'id' });
                 }
             };
 

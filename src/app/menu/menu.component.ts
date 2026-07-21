@@ -32,7 +32,8 @@ export class MenuComponent {
                 { label: 'Cars', path: '/cars' },
                 { label: 'Notebooks', path: '/notebooks' },
                 { label: 'Medicines', path: '/medicines' },
-                { label: 'Construction Skills', path: '/construction-skills' }
+                { label: 'Construction Skills', path: '/construction-skills' },
+                { label: 'Friends', path: '/friends' }
             ]
         },
         {

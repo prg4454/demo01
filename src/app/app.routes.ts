@@ -13,6 +13,7 @@ import { NotebooksComponent } from './notebooks/notebooks.component';
 import { MedicinesComponent } from './medicines/medicines.component';
 import { BudgetComponent } from './budget/budget.component';
 import { ConstructionSkillsComponent } from './construction-skills/construction-skills.component';
+import { FriendsComponent } from './friends/friends.component';
 import { pendingChangesGuard } from './pending-changes.guard';
 
 export const routes: Routes = [
@@ -30,5 +31,6 @@ export const routes: Routes = [
     { path: 'cats', component: CatsComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'dogs', component: DogsComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'medicines', component: MedicinesComponent, canDeactivate: [pendingChangesGuard] },
-    { path: 'construction-skills', component: ConstructionSkillsComponent, canDeactivate: [pendingChangesGuard] }
+    { path: 'construction-skills', component: ConstructionSkillsComponent, canDeactivate: [pendingChangesGuard] },
+    { path: 'friends', component: FriendsComponent, canDeactivate: [pendingChangesGuard] }
 ];
