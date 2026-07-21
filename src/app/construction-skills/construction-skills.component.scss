@@ -1,0 +1,27 @@
+.skill-level-pill {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 0.05rem 0.55rem;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.level-apprentice {
+    background-color: #e2e3e5;
+    color: #41464b;
+}
+
+.level-journeyman {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.level-expert {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+.level-master {
+    background-color: #fff3cd;
+    color: #664d03;
+}

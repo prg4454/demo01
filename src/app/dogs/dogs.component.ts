@@ -1,13 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import { DogRecord, DogsEntryModalComponent, DogsModalResult } from './dogs-entry-modal.component';
 
 @Component({
     selector: 'app-dogs',
     standalone: true,
-    imports: [CommonModule, NgbModalModule],
+    imports: [CommonModule, NgbModalModule, ExportDropdownComponent],
     templateUrl: './dogs.component.html',
     styleUrl: './dogs.component.scss'
 })
@@ -17,6 +18,7 @@ export class DogsComponent {
 
     readonly pageSize = 8;
     currentPage = 1;
+    exportMessage = '';
 
     dogs: DogRecord[] = [
         {
@@ -185,4 +187,5 @@ export class DogsComponent {
         }
         return Math.max(...this.dogs.map(d => d.id)) + 1;
     }
+
 }

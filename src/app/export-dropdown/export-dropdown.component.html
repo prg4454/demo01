@@ -1,0 +1,18 @@
+<div ngbDropdown>
+    <button type="button" class="btn btn-outline-secondary" ngbDropdownToggle [disabled]="!hasRows">{{ menuLabel
+        }}</button>
+    <div ngbDropdownMenu class="dropdown-menu-end">
+        <button type="button" ngbDropdownItem (click)="exportCsvFile()" [disabled]="!hasRows">Export to CSV
+            file</button>
+        <button type="button" ngbDropdownItem (click)="exportTsvFile()" [disabled]="!hasRows">Export to TSV
+            file</button>
+        <button type="button" ngbDropdownItem (click)="exportJsonFile()" [disabled]="!hasRows">Export to JSON
+            file</button>
+        <button type="button" ngbDropdownItem (click)="exportCsvClipboard()" [disabled]="!hasRows">Export CSV to
+            clipboard</button>
+        <button type="button" ngbDropdownItem (click)="exportTsvClipboard()" [disabled]="!hasRows">Export TSV to
+            clipboard</button>
+        <button type="button" ngbDropdownItem (click)="exportJsonClipboard()" [disabled]="!hasRows">Export JSON to
+            clipboard</button>
+    </div>
+</div>

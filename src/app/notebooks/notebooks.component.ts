@@ -1,13 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import { NotebookRecord, NotebookEntryModalComponent, NotebookModalResult } from './notebook-entry-modal.component';
 
 @Component({
     selector: 'app-notebooks',
     standalone: true,
-    imports: [CommonModule, NgbModalModule],
+    imports: [CommonModule, NgbModalModule, ExportDropdownComponent],
     templateUrl: './notebooks.component.html',
     styleUrl: './notebooks.component.scss'
 })
@@ -17,6 +18,7 @@ export class NotebooksComponent {
 
     readonly pageSize = 10;
     currentPage = 1;
+    exportMessage = '';
 
     notebooks: NotebookRecord[] = [];
 

@@ -11,12 +11,15 @@ import { AddressBookComponent } from './address-book/address-book.component';
 import { AutomobilesComponent } from './automobiles/automobiles.component';
 import { NotebooksComponent } from './notebooks/notebooks.component';
 import { MedicinesComponent } from './medicines/medicines.component';
+import { BudgetComponent } from './budget/budget.component';
+import { ConstructionSkillsComponent } from './construction-skills/construction-skills.component';
 import { pendingChangesGuard } from './pending-changes.guard';
 
 export const routes: Routes = [
-    { path: '', component: HomeComponent, canDeactivate: [pendingChangesGuard] },
+    { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: 'home', component: HomeComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'about', component: AboutComponent, canDeactivate: [pendingChangesGuard] },
+    { path: 'budget', component: BudgetComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'services', component: ServicesComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'sayings', component: SayingsComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'jokes', component: JokesComponent, canDeactivate: [pendingChangesGuard] },
@@ -26,5 +29,6 @@ export const routes: Routes = [
     { path: 'cars', component: CarsComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'cats', component: CatsComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'dogs', component: DogsComponent, canDeactivate: [pendingChangesGuard] },
-    { path: 'medicines', component: MedicinesComponent, canDeactivate: [pendingChangesGuard] }
+    { path: 'medicines', component: MedicinesComponent, canDeactivate: [pendingChangesGuard] },
+    { path: 'construction-skills', component: ConstructionSkillsComponent, canDeactivate: [pendingChangesGuard] }
 ];

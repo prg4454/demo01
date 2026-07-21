@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import { StorageService } from '../storage.service';
 import { CatRecord, CatsEntryModalComponent, CatsModalResult } from './cats-entry-modal.component';
@@ -8,7 +9,7 @@ import { CatRecord, CatsEntryModalComponent, CatsModalResult } from './cats-entr
 @Component({
     selector: 'app-cats',
     standalone: true,
-    imports: [CommonModule, NgbModalModule],
+    imports: [CommonModule, NgbModalModule, ExportDropdownComponent],
     templateUrl: './cats.component.html',
     styleUrl: './cats.component.scss'
 })
@@ -19,6 +20,7 @@ export class CatsComponent implements OnInit {
 
     readonly pageSize = 8;
     currentPage = 1;
+    exportMessage = '';
 
     cats: CatRecord[] = [];
 

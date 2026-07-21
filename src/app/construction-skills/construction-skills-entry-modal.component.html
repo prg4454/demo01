@@ -1,0 +1,110 @@
+<div class="app-edit-modal">
+    <div class="modal-header">
+        <h5 class="modal-title">{{ allowDelete ? "Edit Skill" : "Add Skill" }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="requestCancel()"></button>
+    </div>
+
+    <div class="modal-body">
+        @if (editDraft) {
+        <div class="row g-3 entry-grid">
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Skill</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.skill">
+            </div>
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Category</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.category">
+            </div>
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Level</label>
+                <select class="form-select" [(ngModel)]="editDraft.level">
+                    <option value="Apprentice">Apprentice</option>
+                    <option value="Journeyman">Journeyman</option>
+                    <option value="Expert">Expert</option>
+                    <option value="Master">Master</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Certified By</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.certifiedBy">
+            </div>
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Expires On</label>
+                <input type="date" class="form-control" [(ngModel)]="editDraft.expiresOn">
+            </div>
+            <div class="col-12 field-block">
+                <label class="form-label">Notes</label>
+                <textarea class="form-control" rows="2" [(ngModel)]="editDraft.notes"></textarea>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="modal-footer d-flex justify-content-between">
+        <div>
+            @if (allowDelete) {
+            <button type="button" class="btn btn-danger" (click)="requestDelete()">Delete</button>
+            }
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-secondary" (click)="requestCancel()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+        </div>
+    </div>
+</div>
+
+<ng-template #deleteConfirmModal let-modal>
+    <div class="app-confirm-modal">
+        <div class="modal-header">
+            <h5 class="modal-title">Confirm Delete</h5>
+        </div>
+        <div class="modal-body">
+            @if (editDraft) {
+            <p class="mb-1">Delete this construction skill record?</p>
+            <p class="mb-0"><strong>{{ editDraft.skill }}</strong> ({{ editDraft.id }})</p>
+            }
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Cancel</button>
+            <button type="button" class="btn btn-danger" (click)="modal.close('delete')">Delete</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #unsavedChangesModal let-modal>
+    <div class="app-confirm-modal">
+        <div class="modal-header">
+            <h5 class="modal-title">Unsaved Changes</h5>
+        </div>
+        <div class="modal-body">
+            <p class="mb-2">You have unsaved changes. Leave without saving?</p>
+
+            @if (getUnsavedChanges().length) {
+            <div class="table-responsive">
+                <table class="table table-changes table-bordered align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Before</th>
+                            <th>After</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (change of getUnsavedChanges(); track change.label) {
+                        <tr>
+                            <td>{{ change.label }}</td>
+                            <td>{{ change.before }}</td>
+                            <td>{{ change.after }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Keep Editing</button>
+            <button type="button" class="btn btn-danger" (click)="modal.close('discard')">Discard Changes</button>
+        </div>
+    </div>
+</ng-template>

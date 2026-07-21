@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import {
     AddressBookRecord,
@@ -11,7 +12,7 @@ import {
 @Component({
     selector: 'app-address-book',
     standalone: true,
-    imports: [CommonModule, NgbModalModule],
+    imports: [CommonModule, NgbModalModule, ExportDropdownComponent],
     templateUrl: './address-book.component.html',
     styleUrl: './address-book.component.scss'
 })
@@ -21,6 +22,7 @@ export class AddressBookComponent {
 
     readonly pageSize = 8;
     currentPage = 1;
+    exportMessage = '';
 
     occasions: AddressBookRecord[] = [
         {

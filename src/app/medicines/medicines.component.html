@@ -2,8 +2,15 @@
     <div class="sticky-header">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="mb-0">Medicines</h2>
-            <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Medicine</button>
+            <div class="d-flex align-items-center gap-2">
+                <app-export-dropdown [rows]="medicines" fileBaseName="export-medicines"
+                    (statusMessage)="exportMessage = $event"></app-export-dropdown>
+                <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Medicine</button>
+            </div>
         </div>
+        @if (exportMessage) {
+        <div class="small text-muted mb-2">{{ exportMessage }}</div>
+        }
         <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
             <button type="button" class="btn btn-outline-primary btn-sm" (click)="previousPage()"
                 [disabled]="currentPage <= 1">&lt;&lt;</button>

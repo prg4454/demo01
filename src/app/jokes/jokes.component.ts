@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import { JokesEntryModalComponent, JokeRecord, JokesModalResult } from './jokes-entry-modal.component';
 
 @Component({
     selector: 'app-jokes',
     standalone: true,
-    imports: [CommonModule, NgbModalModule],
+    imports: [CommonModule, NgbModalModule, ExportDropdownComponent],
     templateUrl: './jokes.component.html',
     styleUrl: './jokes.component.scss'
 })
@@ -17,6 +18,7 @@ export class JokesComponent {
 
     readonly pageSize = 8;
     currentPage = 1;
+    exportMessage = '';
 
     jokes: JokeRecord[] = [
         {

@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import { SayingsEntryModalComponent, SayingsModalResult, SillySaying } from './sayings-entry-modal.component';
 
 @Component({
     selector: 'app-sayings',
     standalone: true,
-    imports: [CommonModule, NgbModalModule],
+    imports: [CommonModule, NgbModalModule, ExportDropdownComponent],
     templateUrl: './sayings.component.html',
     styleUrl: './sayings.component.scss'
 })
@@ -18,6 +19,7 @@ export class SayingsComponent {
     page = 1;
     readonly pageSize = 5;
     selectedSayingId: number | null = null;
+    exportMessage = '';
 
     sayings: SillySaying[] = [
         { id: 1, text: 'If toast lands butter-side down, call it floor seasoning.', category: 'Kitchen Chaos', vibe: 'Goofy', wordCount: 9, laughLevel: 7, origin: 'Aunt Nelly', lastHeard: '2026-05-10' },

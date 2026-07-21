@@ -1,11 +1,11 @@
 <div class="container mt-3 app-grid-container">
     <div class="sticky-header">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="mb-0">Address Book</h2>
+            <h2 class="mb-0">Construction Worker Skills</h2>
             <div class="d-flex align-items-center gap-2">
-                <app-export-dropdown [rows]="occasions" fileBaseName="export-address-book"
+                <app-export-dropdown [rows]="skills" fileBaseName="export-construction-skills"
                     (statusMessage)="exportMessage = $event"></app-export-dropdown>
-                <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Contact</button>
+                <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Skill</button>
             </div>
         </div>
         @if (exportMessage) {
@@ -22,25 +22,34 @@
 </div>
 
 <div class="container text-break">
-    @for (person of pagedOccasions; track person.id) {
+    @for (skillRecord of pagedSkills; track skillRecord.id) {
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
-        <div class="mb-1 col-12 col-md-4">
-            <b>Name</b>
-            <button type="button" class="grid-link text-start" (click)="openEditModal(person)">
-                {{ person.personName }}
+        <div class="mb-1 col">
+            <b>Skill</b>
+            <button type="button" class="grid-link" (click)="openEditModal(skillRecord)">
+                {{ skillRecord.skill }}
             </button>
         </div>
-        <div class="mb-1 col-12 col-md-4">
-            <b>Email</b>
-            {{ person.email }}
-        </div>
-        <div class="mb-1 col-12 col-md-4">
-            <b>Phone</b>
-            {{ person.phone }}
+        <div class="mb-1 col">
+            <b>Category</b>
+            {{ skillRecord.category }}
         </div>
         <div class="mb-1 col">
-            <b>Relationship</b>
-            {{ person.relationship }}
+            <b>Level</b>
+            <span class="skill-level-pill" [class]="'skill-level-pill level-' + skillRecord.level.toLowerCase()">{{
+                skillRecord.level }}</span>
+        </div>
+        <div class="mb-1 col">
+            <b>Certified By</b>
+            {{ skillRecord.certifiedBy }}
+        </div>
+        <div class="mb-1 col">
+            <b>Expires On</b>
+            {{ skillRecord.expiresOn }}
+        </div>
+        <div class="mb-1 col">
+            <b>Notes</b>
+            {{ skillRecord.notes || '-' }}
         </div>
     </div>
     }

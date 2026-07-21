@@ -1,13 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import { CarRecord, CarsEntryModalComponent, CarsModalResult } from './cars-entry-modal.component';
 
 @Component({
     selector: 'app-cars',
     standalone: true,
-    imports: [CommonModule, NgbModalModule],
+    imports: [CommonModule, NgbModalModule, ExportDropdownComponent],
     templateUrl: './cars.component.html',
     styleUrl: './cars.component.scss'
 })
@@ -17,6 +18,7 @@ export class CarsComponent {
 
     readonly pageSize = 8;
     currentPage = 1;
+    exportMessage = '';
 
     cars: CarRecord[] = [
         {

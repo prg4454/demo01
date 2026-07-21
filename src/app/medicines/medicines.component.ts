@@ -1,13 +1,14 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import { MedicineRecord, MedicinesEntryModalComponent, MedicinesModalResult } from './medicines-entry-modal.component';
 
 @Component({
     selector: 'app-medicines',
     standalone: true,
-    imports: [CommonModule, NgbModalModule],
+    imports: [CommonModule, NgbModalModule, ExportDropdownComponent],
     templateUrl: './medicines.component.html',
     styleUrl: './medicines.component.scss'
 })
@@ -17,6 +18,7 @@ export class MedicinesComponent implements OnInit {
 
     readonly pageSize = 8;
     currentPage = 1;
+    exportMessage = '';
 
     medicines: MedicineRecord[] = [];
 
