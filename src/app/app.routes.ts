@@ -15,6 +15,7 @@ import { BudgetComponent } from './budget/budget.component';
 import { ConstructionSkillsComponent } from './construction-skills/construction-skills.component';
 import { FriendsComponent } from './friends/friends.component';
 import { UiEmployerTaxComponent } from './ui-employer-tax/ui-employer-tax.component';
+import { UsersComponent } from './users/users.component';
 import { pendingChangesGuard } from './pending-changes.guard';
 
 export const routes: Routes = [
@@ -42,5 +43,6 @@ export const routes: Routes = [
     { path: 'medicines', component: MedicinesComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'construction-skills', component: ConstructionSkillsComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'friends', component: FriendsComponent, canDeactivate: [pendingChangesGuard] },
+    { path: 'users', component: UsersComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'ui-employer-tax', component: UiEmployerTaxComponent, canDeactivate: [pendingChangesGuard] }
 ];

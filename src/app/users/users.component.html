@@ -1,0 +1,59 @@
+<div class="container mt-3 app-grid-container">
+    <div class="sticky-header">
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+            <div>
+                <h2 class="mb-1">Users</h2>
+                <div class="small text-muted">Data from jsonplaceholder.typicode.com</div>
+            </div>
+            @if (!loading && !errorMessage) {
+            <div class="small text-muted">{{ users.length }} users</div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="container text-break">
+    @if (loading) {
+    <div class="alert alert-light border" role="status">Loading users...</div>
+    } @else if (errorMessage) {
+    <div class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+    } @else {
+    @for (user of users; track user.id) {
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
+        <div class="mb-1 col">
+            <b>Name</b>
+            <div><span class="user-name">{{ user.name }}</span></div>
+            <div class="small text-muted">&#64;{{ user.username }}</div>
+        </div>
+        <div class="mb-1 col">
+            <b>Email</b>
+            <a [href]="'mailto:' + user.email">{{ user.email }}</a>
+        </div>
+        <div class="mb-1 col">
+            <b>Phone</b>
+            {{ user.phone }}
+        </div>
+        <div class="mb-1 col">
+            <b>Website</b>
+            <a [href]="'https://' + user.website" target="_blank" rel="noreferrer">{{ user.website }}</a>
+        </div>
+        <div class="mb-1 col">
+            <b>Company</b>
+            {{ user.company.name }}
+        </div>
+        <div class="mb-1 col">
+            <b>Address</b>
+            {{ user.address.street }}, {{ user.address.suite }}, {{ user.address.city }} {{ user.address.zipcode }}
+        </div>
+        <div class="mb-1 col">
+            <b>Catchphrase</b>
+            {{ user.company.catchPhrase }}
+        </div>
+        <div class="mb-1 col">
+            <b>ID</b>
+            {{ user.id }}
+        </div>
+    </div>
+    }
+    }
+</div>
