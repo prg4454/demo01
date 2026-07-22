@@ -35,6 +35,14 @@
                 <label class="form-label">Years Known</label>
                 <input type="number" min="0" class="form-control" [(ngModel)]="editDraft.yearsKnown">
             </div>
+
+            <div class="col-12 field-block activity-block">
+                <div class="d-flex justify-content-end align-items-center mb-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="openActivitiesGrid()">
+                        Activities
+                    </button>
+                </div>
+            </div>
         </div>
         }
     </div>
@@ -42,7 +50,11 @@
     <div class="modal-footer d-flex justify-content-between">
         <div>
             @if (allowDelete) {
-            <button type="button" class="btn btn-danger" (click)="requestDelete()">Delete</button>
+            <button type="button" class="btn btn-danger" (click)="requestDelete()"
+                [disabled]="!canDeleteFriend()">Delete</button>
+            @if (!canDeleteFriend()) {
+            <div class="small text-muted mt-1">Remove all activity records before deleting this friend.</div>
+            }
             }
         </div>
         <div class="d-flex gap-2">
@@ -104,6 +116,176 @@
         <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Keep Editing</button>
             <button type="button" class="btn btn-danger" (click)="modal.close('discard')">Discard Changes</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #activitiesGridModal let-modal>
+    <div class="app-confirm-modal activities-grid-modal">
+        <div class="modal-header">
+            <h5 class="modal-title">Activities For {{ editDraft?.name || 'Friend' }}</h5>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('close')"></button>
+        </div>
+        <div class="modal-body">
+            <div class="container app-grid-container px-0">
+                <div class="sticky-header">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">Activities</h6>
+                        <button type="button" class="btn btn-sm btn-primary" (click)="openAddActivityModal()">+ Add
+                            Activity</button>
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm" (click)="previousActivityPage()"
+                            [disabled]="currentActivityPage <= 1">&lt;&lt;</button>
+                        <button type="button" class="btn btn-outline-primary btn-sm" (click)="nextActivityPage()"
+                            [disabled]="currentActivityPage >= totalActivityPages">&gt;&gt;</button>
+                        <div class="small text-muted">Page {{ currentActivityPage }} of {{ totalActivityPages }}</div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!editDraft || pagedActivities.length === 0) {
+            <div class="container text-break px-0">
+                <div class="text-muted small">No activities yet.</div>
+            </div>
+            }
+
+            @if (editDraft && pagedActivities.length > 0) {
+            <div class="container text-break px-0">
+                @for (activity of pagedActivities; track activity.id) {
+                <div
+                    class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
+                    <div class="mb-1 col">
+                        <b>Title</b>
+                        <button type="button" class="grid-link" (click)="openEditActivityModal(activity)">
+                            {{ activity.title || '(untitled)' }}
+                        </button>
+                    </div>
+                    <div class="mb-1 col">
+                        <b>When</b>
+                        {{ activity.when || '-' }}
+                    </div>
+                    <div class="mb-1 col">
+                        <b>Location</b>
+                        {{ activity.location || '-' }}
+                    </div>
+                    <div class="mb-1 col">
+                        <b>Notes</b>
+                        {{ activity.notes || '-' }}
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="modal.close('close')">Done</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #activityEditModal let-modal>
+    <div class="app-edit-modal">
+        <div class="modal-header">
+            <h5 class="modal-title">{{ activityEditOriginalId === null ? 'Add Activity' : 'Edit Activity' }} - {{
+                editDraft?.name || 'Friend' }}</h5>
+            <button type="button" class="btn-close" aria-label="Close"
+                (click)="requestCancelActivityEditor(modal)"></button>
+        </div>
+        <div class="modal-body">
+            @if (activityEditDraft) {
+            <div class="row g-3 entry-grid">
+                <div class="col-12 field-block">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-control" [(ngModel)]="activityEditDraft.title">
+                    @if (activitySaveAttempted && activityEditDraft.title.trim().length === 0) {
+                    <div class="text-danger small mt-1">Title is required.</div>
+                    }
+                </div>
+                <div class="col-12 col-md-6 field-block">
+                    <label class="form-label">When</label>
+                    <input type="text" class="form-control" placeholder="e.g. 2026-08-05 7:00 PM"
+                        [(ngModel)]="activityEditDraft.when">
+                </div>
+                <div class="col-12 col-md-6 field-block">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-control" [(ngModel)]="activityEditDraft.location">
+                </div>
+                <div class="col-12 field-block">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-control" rows="3" [(ngModel)]="activityEditDraft.notes"></textarea>
+                </div>
+            </div>
+            }
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+            <div>
+                @if (activityEditOriginalId !== null) {
+                <button type="button" class="btn btn-danger" (click)="deleteActivityEditor(modal)">Delete</button>
+                }
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-secondary"
+                    (click)="requestCancelActivityEditor(modal)">Cancel</button>
+                <button type="button" class="btn btn-primary" (click)="saveActivityEditor(modal)">Save</button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #activityUnsavedChangesModal let-modal>
+    <div class="app-confirm-modal">
+        <div class="modal-header">
+            <h5 class="modal-title">Unsaved Activity Changes</h5>
+        </div>
+        <div class="modal-body">
+            <p class="mb-2">You have unsaved changes in this activity. Leave without saving?</p>
+
+            @if (getActivityUnsavedChanges().length) {
+            <div class="table-responsive">
+                <table class="table table-changes table-bordered align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Before</th>
+                            <th>After</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (change of getActivityUnsavedChanges(); track change.label) {
+                        <tr>
+                            <td>{{ change.label }}</td>
+                            <td>{{ change.before }}</td>
+                            <td>{{ change.after }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Keep Editing</button>
+            <button type="button" class="btn btn-danger" (click)="modal.close('discard')">Discard Changes</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #activityDeleteConfirmModal let-modal>
+    <div class="app-confirm-modal">
+        <div class="modal-header">
+            <h5 class="modal-title">Confirm Delete</h5>
+        </div>
+        <div class="modal-body">
+            @if (activityEditDraft) {
+            <p class="mb-1">Delete this activity?</p>
+            <p class="mb-0"><strong>{{ activityEditDraft.title || '(untitled)' }}</strong> ({{ activityEditDraft.id }})
+            </p>
+            }
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Cancel</button>
+            <button type="button" class="btn btn-danger" (click)="modal.close('delete')">Delete</button>
         </div>
     </div>
 </ng-template>

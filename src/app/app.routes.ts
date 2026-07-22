@@ -18,7 +18,15 @@ import { pendingChangesGuard } from './pending-changes.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
-    { path: 'home', component: HomeComponent, canDeactivate: [pendingChangesGuard] },
+    {
+        path: 'home',
+        component: HomeComponent,
+        canDeactivate: [pendingChangesGuard],
+        children: [
+            { path: 'about', component: AboutComponent, canDeactivate: [pendingChangesGuard] },
+            { path: 'budget', component: BudgetComponent, canDeactivate: [pendingChangesGuard] }
+        ]
+    },
     { path: 'about', component: AboutComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'budget', component: BudgetComponent, canDeactivate: [pendingChangesGuard] },
     { path: 'services', component: ServicesComponent, canDeactivate: [pendingChangesGuard] },

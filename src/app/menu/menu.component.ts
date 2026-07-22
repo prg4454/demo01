@@ -20,7 +20,6 @@ export class MenuComponent {
 
     menuItems: MenuItem[] = [
         { label: 'Home', path: '/home' },
-        { label: 'About', path: '/about' },
         { label: 'Services', path: '/services' },
         {
             label: 'Misc',

@@ -50,6 +50,12 @@
             <b>Years Known</b>
             <div>{{ friend.yearsKnown }}</div>
         </div>
+        <div class="mb-1 col">
+            <b>Activities</b>
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="openActivitiesModal(friend)">
+                Activities
+            </button>
+        </div>
     </div>
     }
 </div>

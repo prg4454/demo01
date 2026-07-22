@@ -5,6 +5,15 @@ body {
     background-color: #ffffff;
 }
 
+/* Disable framework and UI animation effects globally. */
+*,
+*::before,
+*::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+}
+
 /* Global Grid Styles */
 .app-grid-container {
     .sticky-header {

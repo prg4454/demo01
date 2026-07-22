@@ -1,4 +1,14 @@
-<h1>Welcome to our new home.</h1>
-<a routerLink="/about">About</a>
-<br>
-<a routerLink="/budget">Budget</a>
+<div class="home-container">
+    <div class="home-content">
+        <h1>Welcome to our new home.</h1>
+
+        <nav class="internal-menu" aria-label="Home internal menu">
+            <a routerLink="about" routerLinkActive="active-link">About</a>
+            <a routerLink="budget" routerLinkActive="active-link">Budget</a>
+        </nav>
+
+        <section class="internal-content-area" aria-label="Home internal content">
+            <router-outlet></router-outlet>
+        </section>
+    </div>
+</div>

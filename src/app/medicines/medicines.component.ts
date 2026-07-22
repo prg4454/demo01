@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
+import { StorageService } from '../storage.service';
 import { MedicineRecord, MedicinesEntryModalComponent, MedicinesModalResult } from './medicines-entry-modal.component';
 
 @Component({
@@ -15,6 +16,7 @@ import { MedicineRecord, MedicinesEntryModalComponent, MedicinesModalResult } fr
 export class MedicinesComponent implements OnInit {
     private modalService = inject(NgbModal);
     private modalHistory = inject(ModalHistoryService);
+    private storageService = inject(StorageService);
 
     readonly pageSize = 8;
     currentPage = 1;
@@ -22,9 +24,30 @@ export class MedicinesComponent implements OnInit {
 
     medicines: MedicineRecord[] = [];
 
-    ngOnInit() {
-        this.medicines = this.generateMedicines(70);
+    async ngOnInit() {
+        await this.loadData();
+    }
+
+    private async loadData() {
+        const count = await this.storageService.getCount('medicines');
+        if (count === 0) {
+            const initialMedicines = this.generateMedicines(70);
+            await this.storageService.saveAll('medicines', initialMedicines);
+        }
+
+        this.medicines = (await this.storageService.getAll<MedicineRecord>('medicines')).map((medicine) => this.normalizeMedicine(medicine));
         this.medicines.sort((a, b) => b.id - a.id);
+    }
+
+    private normalizeMedicine(medicine: MedicineRecord): MedicineRecord {
+        const parsedDate = medicine.lastDispensed instanceof Date
+            ? medicine.lastDispensed
+            : new Date(medicine.lastDispensed as unknown as string);
+
+        return {
+            ...medicine,
+            lastDispensed: isNaN(parsedDate.getTime()) ? new Date() : parsedDate
+        };
     }
 
     private generateMedicines(count: number): MedicineRecord[] {
@@ -94,11 +117,12 @@ export class MedicinesComponent implements OnInit {
         modalRef.componentInstance.allowDelete = false;
 
         void modalRef.result
-            .then((result: MedicinesModalResult) => {
+            .then(async (result: MedicinesModalResult) => {
                 if (!result || result.action !== 'save') {
                     return;
                 }
 
+                await this.storageService.save('medicines', result.medicine);
                 this.medicines = [result.medicine, ...this.medicines];
                 this.currentPage = 1;
             })
@@ -120,12 +144,13 @@ export class MedicinesComponent implements OnInit {
         modalRef.componentInstance.allowDelete = true;
 
         void modalRef.result
-            .then((result: MedicinesModalResult) => {
+            .then(async (result: MedicinesModalResult) => {
                 if (!result) {
                     return;
                 }
 
                 if (result.action === 'delete') {
+                    await this.storageService.delete('medicines', result.medicine.id);
                     this.medicines = this.medicines.filter(m => m.id !== result.medicine.id);
                     if (this.currentPage > this.totalPages) {
                         this.currentPage = this.totalPages;
@@ -133,6 +158,7 @@ export class MedicinesComponent implements OnInit {
                     return;
                 }
 
+                await this.storageService.save('medicines', result.medicine);
                 this.medicines = this.medicines.map(m => m.id === result.medicine.id ? result.medicine : m);
             })
             .catch(() => undefined);
