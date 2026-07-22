@@ -1,0 +1,29 @@
+a {
+    word-break: break-word;
+}
+
+.retrieval-status {
+    padding: 0.75rem 1rem;
+    border: 1px solid #dbe7f4;
+    border-radius: 0.5rem;
+    background: #f7fbff;
+}
+
+.external-warning {
+    padding: 0.9rem 1rem;
+    border: 1px solid #f1d58a;
+    border-radius: 0.5rem;
+    background: #fff8e1;
+    color: #5c4300;
+}
+
+.source-link-panel {
+    padding: 0.75rem 1rem;
+    border: 1px solid #d8dee8;
+    border-radius: 0.5rem;
+    background: #ffffff;
+}
+
+.source-link-button {
+    margin-top: 0.5rem;
+}

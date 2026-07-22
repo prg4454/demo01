@@ -37,7 +37,9 @@ export class MenuComponent {
         },
         {
             label: 'Misc2',
-            subItems: []
+            subItems: [
+                { label: 'UI Employer Tax', path: '/ui-employer-tax' }
+            ]
         },
         {
             label: 'Pets',

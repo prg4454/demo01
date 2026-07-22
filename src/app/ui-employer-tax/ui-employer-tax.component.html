@@ -1,0 +1,70 @@
+<div class="container mt-3 app-grid-container">
+    <div class="sticky-header">
+        <div class="external-warning mb-3">
+            <div class="fw-semibold">Verify before using</div>
+            <div>
+                This page shows the latest data pulled from an external source. Verify wage bases, rates, surcharges,
+                and employer-specific assignments with the applicable state agency or official notice before relying on
+                it.
+            </div>
+        </div>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h2 class="mb-0">UI Employer Tax</h2>
+        </div>
+        @if (isLoading) {
+        <div class="retrieval-status mb-2">
+            <div class="d-flex align-items-center gap-2">
+                <div class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></div>
+                <div>
+                    <div class="fw-semibold">Retrieving state data</div>
+                    <div class="small text-muted">
+                        @if (currentProcessingState) {
+                        Processing {{ currentProcessingState }} ({{ processedStates + 1 }} of {{ totalStates || '?' }})
+                        } @else {
+                        Preparing state list...
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+        <div class="source-link-panel mb-2">
+            <div class="fw-semibold">Open source page</div>
+            <a class="btn btn-sm btn-primary source-link-button"
+                href="https://www.patriotsoftware.com/blog/payroll/what-is-my-state-unemployment-tax-rate/"
+                target="_blank" rel="noopener">
+                Patriot Software 2026 SUTA state-by-state chart
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container text-break">
+    @for (row of rows; track row.id) {
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 align-items-start app-grid-row border-bottom">
+        <div class="mb-1 col">
+            <b>State</b>
+            <div>{{ row.scope }}</div>
+        </div>
+        <div class="mb-1 col">
+            <b>Max Earnings Subject to Tax</b>
+            <div>{{ row.maxEarningsSubjectToTax }}</div>
+        </div>
+        <div class="mb-1 col">
+            <b>Employer Percentage</b>
+            <div>{{ row.employerRate }}</div>
+        </div>
+        <div class="mb-1 col">
+            <b>Max Tax / Employee</b>
+            <div>{{ row.maxTaxPerEmployee }}</div>
+        </div>
+        <div class="mb-1 col">
+            <b>Source / Notes</b>
+            <div>{{ row.notes }}</div>
+            <a [href]="row.sourceUrl" target="_blank" rel="noopener">{{ row.sourceName }}</a>
+            <div class="small text-muted">Reviewed: {{ row.lastReviewed }}</div>
+        </div>
+    </div>
+    }
+
+</div>
