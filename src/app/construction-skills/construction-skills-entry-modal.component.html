@@ -9,11 +9,11 @@
         <div class="row g-3 entry-grid">
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Skill</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.skill">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.skill" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Category</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.category">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.category" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Level</label>
@@ -26,7 +26,7 @@
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Certified By</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.certifiedBy">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.certifiedBy" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Expires On</label>

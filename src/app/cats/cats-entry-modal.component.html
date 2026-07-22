@@ -9,11 +9,11 @@
         <div class="row g-3 entry-grid">
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Name</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.name">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.name" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Breed</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.breed">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.breed" (keydown.enter)="save()">
             </div>
             <div class="col-12 field-block">
                 <label class="form-label">Reason</label>
@@ -21,7 +21,7 @@
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Vet</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.vet">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.vet" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Status</label>
@@ -34,7 +34,7 @@
             </div>
             <div class="col-12 field-block">
                 <label class="form-label">Owner</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.owner">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.owner" (keydown.enter)="save()">
             </div>
         </div>
         }

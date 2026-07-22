@@ -9,11 +9,11 @@
         <div class="row g-3 entry-grid">
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Make</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.make">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.make" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Model</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.model">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.model" (keydown.enter)="save()">
             </div>
             <div class="col-12 field-block">
                 <label class="form-label">Service</label>
@@ -21,11 +21,11 @@
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Advisor</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.advisor">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.advisor" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Check-In</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.checkIn">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.checkIn" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Status</label>
@@ -37,7 +37,7 @@
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Owner</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.owner">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.owner" (keydown.enter)="save()">
             </div>
         </div>
         }

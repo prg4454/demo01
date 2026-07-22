@@ -83,6 +83,10 @@ export class CarsComponent {
         }
     ];
 
+    constructor() {
+        this.sortCarsByVehicle();
+    }
+
     get totalPages(): number {
         return Math.max(1, Math.ceil(this.cars.length / this.pageSize));
     }
@@ -134,6 +138,7 @@ export class CarsComponent {
                 }
 
                 this.cars = [result.car, ...this.cars];
+                this.sortCarsByVehicle();
                 this.currentPage = 1;
             })
             .catch(() => undefined);
@@ -173,6 +178,7 @@ export class CarsComponent {
                 }
 
                 this.cars = this.cars.map(c => c.id === result.car.id ? result.car : c);
+                this.sortCarsByVehicle();
             })
             .catch(() => undefined);
     }
@@ -182,5 +188,9 @@ export class CarsComponent {
             return 1;
         }
         return Math.max(...this.cars.map(c => c.id)) + 1;
+    }
+
+    private sortCarsByVehicle(): void {
+        this.cars.sort((a, b) => `${a.make} ${a.model}`.localeCompare(`${b.make} ${b.model}`));
     }
 }

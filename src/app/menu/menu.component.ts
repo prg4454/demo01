@@ -28,12 +28,16 @@ export class MenuComponent {
                 { label: 'Jokes', path: '/jokes' },
                 { label: 'Address Book', path: '/address-book' },
                 { label: 'Automobiles', path: '/automobiles' },
-                { label: 'Cars', path: '/cars' },
+                { label: 'Cars in Shop', path: '/cars' },
                 { label: 'Notebooks', path: '/notebooks' },
                 { label: 'Medicines', path: '/medicines' },
                 { label: 'Construction Skills', path: '/construction-skills' },
                 { label: 'Friends', path: '/friends' }
             ]
+        },
+        {
+            label: 'Misc2',
+            subItems: []
         },
         {
             label: 'Pets',

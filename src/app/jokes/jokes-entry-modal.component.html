@@ -9,11 +9,11 @@
         <div class="row g-3 entry-grid">
             <div class="col-12 col-md-4 field-block">
                 <label class="form-label">Category</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.category">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.category" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-4 field-block">
                 <label class="form-label">Comedian</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.comedian">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.comedian" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-4 field-block">
                 <label class="form-label">Rating</label>

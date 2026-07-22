@@ -13,11 +13,11 @@
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Category</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.category">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.category" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Vibe</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.vibe">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.vibe" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-4 field-block">
                 <label class="form-label">Word Count</label>
@@ -33,7 +33,7 @@
             </div>
             <div class="col-12 field-block">
                 <label class="form-label">Origin</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.origin">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.origin" (keydown.enter)="save()">
             </div>
         </div>
         }

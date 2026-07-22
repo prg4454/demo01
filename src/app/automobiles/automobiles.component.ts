@@ -24,6 +24,7 @@ export class AutomobilesComponent {
 
     constructor() {
         this.generateSampleData();
+        this.sortAutomobilesByMake();
     }
 
     private generateSampleData(): void {
@@ -112,6 +113,7 @@ export class AutomobilesComponent {
         void modalRef.result.then((result: AutomobileModalResult) => {
             if (result.action === 'save') {
                 this.automobiles.unshift(result.record);
+                this.sortAutomobilesByMake();
             }
         }).catch(() => { });
     }
@@ -135,6 +137,7 @@ export class AutomobilesComponent {
                 const idx = this.automobiles.findIndex(a => a.id === record.id);
                 if (idx !== -1) {
                     this.automobiles[idx] = result.record;
+                    this.sortAutomobilesByMake();
                 }
             } else if (result.action === 'delete') {
                 this.automobiles = this.automobiles.filter(a => a.id !== record.id);
@@ -147,5 +150,9 @@ export class AutomobilesComponent {
 
     private getNextId(): number {
         return this.automobiles.length > 0 ? Math.max(...this.automobiles.map(a => a.id)) + 1 : 1001;
+    }
+
+    private sortAutomobilesByMake(): void {
+        this.automobiles.sort((a, b) => a.make.localeCompare(b.make));
     }
 }

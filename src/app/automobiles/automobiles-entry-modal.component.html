@@ -9,7 +9,7 @@
         <div class="row g-3 entry-grid">
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">VIN <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.vin"
+                <input type="text" class="form-control" [(ngModel)]="editDraft.vin" (keydown.enter)="save()"
                     [class.is-invalid]="saveAttempted && !editDraft.vin.trim().length">
                 @if (saveAttempted && !editDraft.vin.trim().length) {
                 <div class="invalid-feedback d-block">VIN is required.</div>
@@ -18,7 +18,7 @@
 
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Make <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.make"
+                <input type="text" class="form-control" [(ngModel)]="editDraft.make" (keydown.enter)="save()"
                     [class.is-invalid]="saveAttempted && !editDraft.make.trim().length">
                 @if (saveAttempted && !editDraft.make.trim().length) {
                 <div class="invalid-feedback d-block">Make is required.</div>
@@ -27,7 +27,7 @@
 
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Model <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.model"
+                <input type="text" class="form-control" [(ngModel)]="editDraft.model" (keydown.enter)="save()"
                     [class.is-invalid]="saveAttempted && !editDraft.model.trim().length">
                 @if (saveAttempted && !editDraft.model.trim().length) {
                 <div class="invalid-feedback d-block">Model is required.</div>
@@ -38,54 +38,57 @@
                 <label class="form-label">Year <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" [(ngModel)]="editDraft.year"
                     [class.is-invalid]="saveAttempted && (!editDraft.year || editDraft.year < 1900)">
-                @if (saveAttempted && (!editDraft.year || editDraft.year < 1900)) {
-                <div class="invalid-feedback d-block">Valid year is required.</div>
+                @if (saveAttempted && (!editDraft.year || editDraft.year < 1900)) { <div
+                    class="invalid-feedback d-block">Valid year is required.
+            </div>
+            }
+        </div>
+
+        <div class="col-12 col-md-6 field-block">
+            <label class="form-label">Type</label>
+            <select class="form-select" [(ngModel)]="editDraft.type">
+                @for (type of types; track type) {
+                <option [value]="type">{{ type }}</option>
                 }
-            </div>
+            </select>
+        </div>
 
-            <div class="col-12 col-md-6 field-block">
-                <label class="form-label">Type</label>
-                <select class="form-select" [(ngModel)]="editDraft.type">
-                    @for (type of types; track type) {
-                    <option [value]="type">{{ type }}</option>
-                    }
-                </select>
-            </div>
-
-            <div class="col-12 col-md-6 field-block">
-                <label class="form-label">Price <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" [(ngModel)]="editDraft.price"
-                    [class.is-invalid]="saveAttempted && (editDraft.price === null || editDraft.price < 0)">
-                @if (saveAttempted && (editDraft.price === null || editDraft.price < 0)) {
-                <div class="invalid-feedback d-block">Valid price is required.</div>
-                }
-            </div>
-
-            <div class="col-12 col-md-6 field-block">
-                <label class="form-label">Condition</label>
-                <select class="form-select" [(ngModel)]="editDraft.condition">
-                    @for (cond of conditions; track cond) {
-                    <option [value]="cond">{{ cond }}</option>
-                    }
-                </select>
-            </div>
-            
-            <div class="col-12 field-block">
-                <label class="form-label">Details</label>
-                <textarea rows="2" class="form-control" [(ngModel)]="editDraft.details"></textarea>
-            </div>
+        <div class="col-12 col-md-6 field-block">
+            <label class="form-label">Price <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" [(ngModel)]="editDraft.price"
+                [class.is-invalid]="saveAttempted && (editDraft.price === null || editDraft.price < 0)">
+            @if (saveAttempted && (editDraft.price === null || editDraft.price < 0)) { <div
+                class="invalid-feedback d-block">Valid price is required.
         </div>
         }
     </div>
 
-    <div class="modal-footer">
-        @if (allowDelete) {
-        <button type="button" class="btn btn-outline-danger me-auto" (click)="requestDelete()">Delete</button>
-        }
-
-        <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('cancel')">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!canSave()">{{ allowDelete ? "Save" : "Add" }}</button>
+    <div class="col-12 col-md-6 field-block">
+        <label class="form-label">Condition</label>
+        <select class="form-select" [(ngModel)]="editDraft.condition">
+            @for (cond of conditions; track cond) {
+            <option [value]="cond">{{ cond }}</option>
+            }
+        </select>
     </div>
+
+    <div class="col-12 field-block">
+        <label class="form-label">Details</label>
+        <textarea rows="2" class="form-control" [(ngModel)]="editDraft.details"></textarea>
+    </div>
+</div>
+}
+</div>
+
+<div class="modal-footer">
+    @if (allowDelete) {
+    <button type="button" class="btn btn-outline-danger me-auto" (click)="requestDelete()">Delete</button>
+    }
+
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('cancel')">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!canSave()">{{ allowDelete ? "Save" :
+        "Add" }}</button>
+</div>
 </div>
 
 <ng-template #deleteConfirmModal let-modal>

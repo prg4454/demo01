@@ -9,11 +9,11 @@
         <div class="row g-3 entry-grid">
             <div class="col-12 col-md-8 field-block">
                 <label class="form-label">Name</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.name">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.name" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-4 field-block">
                 <label class="form-label">Strength</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.strength">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.strength" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Form</label>
@@ -29,11 +29,11 @@
             </div>
             <div class="col-12 field-block">
                 <label class="form-label">Instructions</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.instructions">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.instructions" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Doctor</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.doctor">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.doctor" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Last Dispensed</label>

@@ -9,7 +9,7 @@
         <div class="row g-3 entry-grid">
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Full Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.personName"
+                <input type="text" class="form-control" [(ngModel)]="editDraft.personName" (keydown.enter)="save()"
                     [class.is-invalid]="saveAttempted && !editDraft.personName.trim().length">
                 @if (saveAttempted && !editDraft.personName.trim().length) {
                 <div class="invalid-feedback d-block">Name is required.</div>
@@ -28,7 +28,7 @@
 
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Email <span class="text-danger">*</span></label>
-                <input type="email" class="form-control" [(ngModel)]="editDraft.email"
+                <input type="email" class="form-control" [(ngModel)]="editDraft.email" (keydown.enter)="save()"
                     [class.is-invalid]="saveAttempted && !editDraft.email.trim().length">
                 @if (saveAttempted && !editDraft.email.trim().length) {
                 <div class="invalid-feedback d-block">Email is required.</div>
@@ -37,7 +37,7 @@
 
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Phone</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.phone">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.phone" (keydown.enter)="save()">
             </div>
 
             <div class="col-12 col-md-6 field-block">

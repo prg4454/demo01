@@ -9,7 +9,7 @@
         <div class="row g-3 entry-grid">
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Name</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.name">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.name" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Status</label>
@@ -21,11 +21,11 @@
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">City</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.city">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.city" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Hobby</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.hobby">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.hobby" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Birthday</label>
@@ -197,7 +197,8 @@
             <div class="row g-3 entry-grid">
                 <div class="col-12 field-block">
                     <label class="form-label">Title</label>
-                    <input type="text" class="form-control" [(ngModel)]="activityEditDraft.title">
+                    <input type="text" class="form-control" [(ngModel)]="activityEditDraft.title"
+                        (keydown.enter)="saveActivityEditor(modal)">
                     @if (activitySaveAttempted && activityEditDraft.title.trim().length === 0) {
                     <div class="text-danger small mt-1">Title is required.</div>
                     }
@@ -205,11 +206,12 @@
                 <div class="col-12 col-md-6 field-block">
                     <label class="form-label">When</label>
                     <input type="text" class="form-control" placeholder="e.g. 2026-08-05 7:00 PM"
-                        [(ngModel)]="activityEditDraft.when">
+                        (keydown.enter)="saveActivityEditor(modal)" [(ngModel)]="activityEditDraft.when">
                 </div>
                 <div class="col-12 col-md-6 field-block">
                     <label class="form-label">Location</label>
-                    <input type="text" class="form-control" [(ngModel)]="activityEditDraft.location">
+                    <input type="text" class="form-control" [(ngModel)]="activityEditDraft.location"
+                        (keydown.enter)="saveActivityEditor(modal)">
                 </div>
                 <div class="col-12 field-block">
                     <label class="form-label">Notes</label>

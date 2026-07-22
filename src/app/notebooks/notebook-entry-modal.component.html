@@ -9,11 +9,11 @@
         <div class="row g-3 entry-grid">
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Brand</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.brand">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.brand" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Type</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.type">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.type" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-4 field-block">
                 <label class="form-label">Pages</label>
@@ -21,11 +21,11 @@
             </div>
             <div class="col-12 col-md-4 field-block">
                 <label class="form-label">Size</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.size">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.size" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-4 field-block">
                 <label class="form-label">Color</label>
-                <input type="text" class="form-control" [(ngModel)]="editDraft.color">
+                <input type="text" class="form-control" [(ngModel)]="editDraft.color" (keydown.enter)="save()">
             </div>
             <div class="col-12 col-md-6 field-block">
                 <label class="form-label">Status</label>
