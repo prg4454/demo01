@@ -18,7 +18,7 @@ body {
 .app-grid-container {
     .sticky-header {
         position: sticky;
-        top: 56px;
+        top: clamp(48px, var(--app-navbar-offset, 56px), 84px);
         z-index: 10;
         background: #fff;
         padding: 8px 0;

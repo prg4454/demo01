@@ -19,37 +19,39 @@
             <div class="small text-muted">Page {{ currentPage }} of {{ totalPages }}</div>
         </div>
     </div>
-</div>
 
-<div class="container text-break">
-    @for (dog of pagedDogs; track dog.id) {
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
-        <div class="mb-1 col">
-            <b>Name</b>
-            <button type="button" class="grid-link" (click)="openEditModal(dog)">
-                {{ dog.name }}
-            </button>
+    <div class="text-break">
+        @for (dog of pagedDogs; track dog.id) {
+        <div
+            class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
+            <div class="mb-1 col">
+                <b>Name</b>
+                <button type="button" class="grid-link" (click)="openEditModal(dog)">
+                    {{ dog.name }}
+                </button>
+            </div>
+            <div class="mb-1 col">
+                <b>Breed</b>
+                {{ dog.breed }}
+            </div>
+            <div class="mb-1 col">
+                <b>Owner</b>
+                {{ dog.owner }}
+            </div>
+            <div class="mb-1 col">
+                <b>Vet</b>
+                {{ dog.vet }}
+            </div>
+            <div class="mb-1 col">
+                <b>Reason</b>
+                {{ dog.reason }}
+            </div>
+            <div class="mb-1 col">
+                <b>Status</b>
+                <span class="status-pill" [class]="'status-pill status-' + dog.status.toLowerCase()">{{ dog.status
+                    }}</span>
+            </div>
         </div>
-        <div class="mb-1 col">
-            <b>Breed</b>
-            {{ dog.breed }}
-        </div>
-        <div class="mb-1 col">
-            <b>Owner</b>
-            {{ dog.owner }}
-        </div>
-        <div class="mb-1 col">
-            <b>Vet</b>
-            {{ dog.vet }}
-        </div>
-        <div class="mb-1 col">
-            <b>Reason</b>
-            {{ dog.reason }}
-        </div>
-        <div class="mb-1 col">
-            <b>Status</b>
-            <span class="status-pill" [class]="'status-pill status-' + dog.status.toLowerCase()">{{ dog.status }}</span>
-        </div>
+        }
     </div>
-    }
 </div>

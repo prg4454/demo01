@@ -22,10 +22,23 @@
     letter-spacing: 0.5px;
     color: #fff !important;
     flex-grow: 1;
+    white-space: normal;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.25rem;
+    row-gap: 0.1rem;
+    line-height: 1.2;
+    min-width: 0;
 
     &:hover {
         opacity: 0.8;
     }
+}
+
+.selected-company-text {
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .nav-link {

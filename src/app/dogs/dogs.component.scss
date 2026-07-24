@@ -1,3 +1,12 @@
+.sticky-header {
+    position: sticky;
+    top: clamp(48px, var(--app-navbar-offset, 56px), 84px);
+    z-index: 20;
+    background: #fff;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
 .status-pill {
     display: inline-block;
     border-radius: 999px;

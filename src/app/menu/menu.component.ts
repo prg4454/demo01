@@ -1,6 +1,7 @@
-import { Component, HostListener, ElementRef } from '@angular/core';
+import { AfterViewInit, Component, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { SelectedCompany, SelectedCompanyService } from '../selected-company.service';
 
 type MenuLinkItem = { label: string; path: string };
 type MenuItem = { label: string; path?: string; subItems?: MenuLinkItem[] };
@@ -12,11 +13,16 @@ type MenuItem = { label: string; path?: string; subItems?: MenuLinkItem[] };
     templateUrl: './menu.component.html',
     styleUrl: './menu.component.scss'
 })
-export class MenuComponent {
+export class MenuComponent implements AfterViewInit {
     isMenuOpen = false;
     expandedMenuIndex: number | null = null;
 
-    constructor(private elementRef: ElementRef<HTMLElement>) { }
+    @ViewChild('appNavbar') private appNavbar?: ElementRef<HTMLElement>;
+
+    constructor(
+        private elementRef: ElementRef<HTMLElement>,
+        private selectedCompanyService: SelectedCompanyService
+    ) { }
 
     menuItems: MenuItem[] = [
         { label: 'Home', path: '/home' },
@@ -39,7 +45,8 @@ export class MenuComponent {
             label: 'Misc2',
             subItems: [
                 { label: 'UI Employer Tax', path: '/ui-employer-tax' },
-                { label: 'Users', path: '/users' }
+                { label: 'Users', path: '/users' },
+                { label: 'Company List', path: '/company-list' }
             ]
         },
         {
@@ -61,8 +68,17 @@ export class MenuComponent {
         return item?.subItems ?? [];
     }
 
+    get selectedCompany(): SelectedCompany | null {
+        return this.selectedCompanyService.getSelectedCompany();
+    }
+
+    ngAfterViewInit(): void {
+        this.updateStickyOffset();
+    }
+
     toggleMenu() {
         this.isMenuOpen = !this.isMenuOpen;
+        this.deferStickyOffsetUpdate();
     }
 
     toggleSubmenu(index: number, event: MouseEvent) {
@@ -81,6 +97,7 @@ export class MenuComponent {
     closeMenu() {
         this.isMenuOpen = false;
         this.expandedMenuIndex = null;
+        this.deferStickyOffsetUpdate();
     }
 
     @HostListener('document:click', ['$event'])
@@ -90,6 +107,36 @@ export class MenuComponent {
 
         if (!hostElement.contains(target)) {
             this.expandedMenuIndex = null;
+            this.deferStickyOffsetUpdate();
         }
+    }
+
+    @HostListener('window:resize')
+    onWindowResize(): void {
+        this.updateStickyOffset();
+    }
+
+    private deferStickyOffsetUpdate(): void {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        window.requestAnimationFrame(() => this.updateStickyOffset());
+    }
+
+    private updateStickyOffset(): void {
+        if (typeof document === 'undefined') {
+            return;
+        }
+
+        const navbar = this.appNavbar?.nativeElement;
+        if (!navbar) {
+            return;
+        }
+
+        const navbarRow = navbar.querySelector('.container-fluid') as HTMLElement | null;
+        const measuredHeight = Math.ceil((navbarRow ?? navbar).getBoundingClientRect().height);
+        const height = Math.min(84, Math.max(48, measuredHeight));
+        document.documentElement.style.setProperty('--app-navbar-offset', `${height}px`);
     }
 }
