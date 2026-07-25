@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { catchError, forkJoin, of } from 'rxjs';
-import { CityNewsModalComponent } from './city-news-modal.component';
 
 interface CityClock {
     // IANA timezone names let Intl handle daylight-saving changes automatically.
@@ -52,30 +50,31 @@ interface OpenMeteoResponse {
 @Component({
     selector: 'app-world-clocks',
     standalone: true,
-    imports: [CommonModule, NgbModalModule],
+    imports: [CommonModule],
     templateUrl: './world-clocks.component.html',
     styleUrl: './world-clocks.component.scss'
 })
 export class WorldClocksComponent implements OnInit {
     private readonly http = inject(HttpClient);
-    private readonly modalService = inject(NgbModal);
     private readonly destroyRef = inject(DestroyRef);
     private clockTimer?: ReturnType<typeof setInterval>;
     private weatherTimer?: ReturnType<typeof setInterval>;
 
     now = new Date();
     weatherLoading = true;
+    showForecasts = false;
     lastWeatherUpdate?: Date;
 
     // Coordinates are used for weather; timeZone is used for each local clock.
     readonly cities: CityClock[] = [
+        { name: 'Auckland', country: 'New Zealand', timeZone: 'Pacific/Auckland', latitude: -36.8509, longitude: 174.7645 },
+        { name: 'Lima', country: 'Peru', timeZone: 'America/Lima', latitude: -12.0464, longitude: -77.0428 },
         { name: 'London', country: 'United Kingdom', timeZone: 'Europe/London', latitude: 51.5074, longitude: -0.1278 },
-        { name: 'Tokyo', country: 'Japan', timeZone: 'Asia/Tokyo', latitude: 35.6762, longitude: 139.6503 },
-        { name: 'Paris', country: 'France', timeZone: 'Europe/Paris', latitude: 48.8566, longitude: 2.3522 },
-        { name: 'New York City', country: 'United States', timeZone: 'America/New_York', latitude: 40.7128, longitude: -74.0060 },
         { name: 'Los Angeles', country: 'United States', timeZone: 'America/Los_Angeles', latitude: 34.0522, longitude: -118.2437 },
+        { name: 'New York City', country: 'United States', timeZone: 'America/New_York', latitude: 40.7128, longitude: -74.0060 },
         { name: 'Orlando', country: 'Florida, United States', timeZone: 'America/New_York', latitude: 28.5383, longitude: -81.3792 },
-        { name: 'Auckland', country: 'New Zealand', timeZone: 'Pacific/Auckland', latitude: -36.8509, longitude: 174.7645 }
+        { name: 'Paris', country: 'France', timeZone: 'Europe/Paris', latitude: 48.8566, longitude: 2.3522 },
+        { name: 'Tokyo', country: 'Japan', timeZone: 'Asia/Tokyo', latitude: 35.6762, longitude: 139.6503 }
     ];
 
     ngOnInit(): void {
@@ -222,14 +221,4 @@ export class WorldClocksComponent implements OnInit {
         return `${conditions} today. ${rain}`;
     }
 
-    openNews(city: CityClock): void {
-        // Pass the selected location to a dedicated, read-only news modal.
-        const modalRef = this.modalService.open(CityNewsModalComponent, {
-            size: 'lg',
-            centered: true,
-            scrollable: true
-        });
-        modalRef.componentInstance.cityName = city.name;
-        modalRef.componentInstance.country = city.country;
-    }
 }

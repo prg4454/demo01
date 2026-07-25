@@ -6,10 +6,16 @@
             <h1>World time &amp; weather</h1>
             <p class="subtitle">Local time and current conditions in seven cities around the world.</p>
         </div>
-        <button class="refresh-button" type="button" (click)="loadWeather()" [disabled]="weatherLoading">
-            <span aria-hidden="true">↻</span>
-            {{ weatherLoading ? 'Updating…' : 'Refresh weather' }}
-        </button>
+        <div class="header-controls">
+            <label class="forecast-toggle">
+                <input type="checkbox" [checked]="showForecasts" (change)="showForecasts = !showForecasts">
+                Show forecasts
+            </label>
+            <button class="refresh-button" type="button" (click)="loadWeather()" [disabled]="weatherLoading">
+                <span aria-hidden="true">↻</span>
+                {{ weatherLoading ? 'Updating…' : 'Refresh weather' }}
+            </button>
+        </div>
     </header>
 
     <section class="clock-grid" aria-label="World clocks and weather">
@@ -74,7 +80,7 @@
                         <dd>{{ weather.windSpeed | number:'1.0-0' }} km/h</dd>
                     </div>
                 </dl>
-                <div class="forecast" *ngIf="city.forecast as forecast">
+                <div class="forecast" *ngIf="showForecasts && city.forecast as forecast">
                     <!-- The daily summary uses the first (today's) forecast result. -->
                     <p><strong>Today's forecast</strong> {{ forecastSummary(forecast) }}</p>
                     <p class="forecast-range">
@@ -94,11 +100,6 @@
                 </div>
             </ng-template>
 
-            <!-- Open a live, location-specific list of ten recent headlines. -->
-            <button class="news-button" type="button" (click)="openNews(city)">
-                <span aria-hidden="true">📰</span>
-                Current news
-            </button>
         </article>
     </section>
 

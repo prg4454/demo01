@@ -45,6 +45,30 @@
     font-size: 1.05rem;
 }
 
+.header-controls {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.forecast-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #26344f;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+
+    input {
+        width: 1rem;
+        height: 1rem;
+        accent-color: #3158c9;
+        cursor: pointer;
+    }
+}
+
 .refresh-button {
     flex: 0 0 auto;
     border: 1px solid #cdd5e6;
@@ -112,7 +136,7 @@
 
 .analog-clock {
     // The SVG scales while preserving the clock's square view box.
-    width: min(190px, 85%);
+    width: min(160.3125px, 71.71875%);
     overflow: visible;
 
     text {
@@ -273,27 +297,6 @@
     &.error { color: #b42318; }
 }
 
-.news-button {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;
-    margin-top: 0.85rem;
-    padding: 0.58rem 0.8rem;
-    border: 1px solid #cbd5e5;
-    border-radius: 0.75rem;
-    color: #3158c9;
-    background: #fff;
-    font-size: 0.82rem;
-    font-weight: 750;
-
-    &:hover {
-        border-color: #3158c9;
-        background: #f4f7ff;
-    }
-}
-
 .update-note {
     margin: 1rem 0 0;
     color: #7b8497;
@@ -310,5 +313,11 @@
 
     .refresh-button {
         align-self: stretch;
+    }
+
+    .header-controls {
+        width: 100%;
+        align-items: stretch;
+        flex-direction: column;
     }
 }
