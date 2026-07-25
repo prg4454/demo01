@@ -1,0 +1,108 @@
+<main class="world-clocks-page">
+    <!-- Page introduction and a manual alternative to the automatic refresh. -->
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">Around the world</p>
+            <h1>World time &amp; weather</h1>
+            <p class="subtitle">Local time and current conditions in seven cities around the world.</p>
+        </div>
+        <button class="refresh-button" type="button" (click)="loadWeather()" [disabled]="weatherLoading">
+            <span aria-hidden="true">↻</span>
+            {{ weatherLoading ? 'Updating…' : 'Refresh weather' }}
+        </button>
+    </header>
+
+    <section class="clock-grid" aria-label="World clocks and weather">
+        <article class="city-card" *ngFor="let city of cities">
+            <div class="city-heading">
+                <div>
+                    <h2>{{ city.name }}</h2>
+                    <p>{{ city.country }}</p>
+                </div>
+                <span class="date">{{ getDate(city) }}</span>
+            </div>
+
+            <div class="clock-wrap">
+                <!--
+                    The clock face is SVG. Each hand starts at 12 o'clock and is
+                    rotated around the center using the angle calculated in TypeScript.
+                -->
+                <svg class="analog-clock" viewBox="0 0 200 200" role="img"
+                    [attr.aria-label]="'Analog clock showing ' + getTime(city) + ' in ' + city.name">
+                    <circle class="clock-face" cx="100" cy="100" r="94"></circle>
+                    <g class="hour-marks">
+                        <line *ngFor="let mark of [0,1,2,3,4,5,6,7,8,9,10,11]"
+                            x1="100" y1="14" x2="100" y2="23"
+                            [attr.transform]="'rotate(' + (mark * 30) + ' 100 100)'"></line>
+                    </g>
+                    <text x="100" y="36">12</text>
+                    <text x="166" y="106">3</text>
+                    <text x="100" y="176">6</text>
+                    <text x="34" y="106">9</text>
+                    <line class="hand hour-hand" x1="100" y1="104" x2="100" y2="58"
+                        [attr.transform]="'rotate(' + getHandAngle(city, 'hour') + ' 100 100)'"></line>
+                    <line class="hand minute-hand" x1="100" y1="106" x2="100" y2="38"
+                        [attr.transform]="'rotate(' + getHandAngle(city, 'minute') + ' 100 100)'"></line>
+                    <line class="hand second-hand" x1="100" y1="110" x2="100" y2="30"
+                        [attr.transform]="'rotate(' + getHandAngle(city, 'second') + ' 100 100)'"></line>
+                    <circle class="clock-pin" cx="100" cy="100" r="5"></circle>
+                </svg>
+                <p class="digital-time">{{ getTime(city) }}</p>
+            </div>
+
+            <div class="weather" *ngIf="city.weather as weather; else weatherState">
+                <!-- Current conditions are displayed in both metric and US units. -->
+                <span class="weather-icon" aria-hidden="true">{{ weatherIcon(weather.weatherCode, weather.isDay) }}</span>
+                <div class="temperature">
+                    <strong>
+                        {{ weather.temperature | number:'1.0-0' }}°C
+                        <span class="temperature-divider">/</span>
+                        {{ toFahrenheit(weather.temperature) | number:'1.0-0' }}°F
+                    </strong>
+                    <span>{{ weatherLabel(weather.weatherCode) }}</span>
+                </div>
+                <dl>
+                    <div>
+                        <dt>Feels like</dt>
+                        <dd>
+                            {{ weather.apparentTemperature | number:'1.0-0' }}°C /
+                            {{ toFahrenheit(weather.apparentTemperature) | number:'1.0-0' }}°F
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Wind</dt>
+                        <dd>{{ weather.windSpeed | number:'1.0-0' }} km/h</dd>
+                    </div>
+                </dl>
+                <div class="forecast" *ngIf="city.forecast as forecast">
+                    <!-- The daily summary uses the first (today's) forecast result. -->
+                    <p><strong>Today's forecast</strong> {{ forecastSummary(forecast) }}</p>
+                    <p class="forecast-range">
+                        High {{ forecast.high | number:'1.0-0' }}°C /
+                        {{ toFahrenheit(forecast.high) | number:'1.0-0' }}°F
+                        <span aria-hidden="true">·</span>
+                        Low {{ forecast.low | number:'1.0-0' }}°C /
+                        {{ toFahrenheit(forecast.low) | number:'1.0-0' }}°F
+                    </p>
+                </div>
+            </div>
+
+            <ng-template #weatherState>
+                <!-- This placeholder covers both the initial load and per-city failures. -->
+                <div class="weather-status" [class.error]="city.weatherError">
+                    {{ city.weatherError ? 'Weather unavailable' : 'Loading current weather…' }}
+                </div>
+            </ng-template>
+
+            <!-- Open a live, location-specific list of ten recent headlines. -->
+            <button class="news-button" type="button" (click)="openNews(city)">
+                <span aria-hidden="true">📰</span>
+                Current news
+            </button>
+        </article>
+    </section>
+
+    <p class="update-note" *ngIf="lastWeatherUpdate">
+        Weather updated {{ lastWeatherUpdate | date:'shortTime' }} · Data from Open-Meteo
+    </p>
+</main>

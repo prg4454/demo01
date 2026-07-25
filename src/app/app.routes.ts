@@ -36,6 +36,10 @@ export const routes: Routes = [
         canDeactivate: [pendingChangesGuard]
     },
     {
+        path: 'world-clocks',
+        loadComponent: () => import('./world-clocks/world-clocks.component').then((m) => m.WorldClocksComponent)
+    },
+    {
         path: 'sayings',
         loadComponent: () => import('./sayings/sayings.component').then((m) => m.SayingsComponent),
         canDeactivate: [pendingChangesGuard]

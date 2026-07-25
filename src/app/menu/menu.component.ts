@@ -44,6 +44,7 @@ export class MenuComponent implements AfterViewInit {
         {
             label: 'Misc2',
             subItems: [
+                { label: 'World Clocks', path: '/world-clocks' },
                 { label: 'UI Employer Tax', path: '/ui-employer-tax' },
                 { label: 'Users', path: '/users' },
                 { label: 'Company List', path: '/company-list' }
