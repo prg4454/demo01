@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalHistoryService } from '../modal-history.service';
 import {
@@ -11,13 +12,15 @@ import {
 @Component({
     selector: 'app-nasal-sprays',
     standalone: true,
-    imports: [CommonModule, NgbModalModule],
+    imports: [CommonModule, FormsModule, NgbModalModule],
     templateUrl: './nasal-sprays.component.html',
     styleUrl: './nasal-sprays.component.scss'
 })
 export class NasalSpraysComponent {
     private modalService = inject(NgbModal);
     private modalHistory = inject(ModalHistoryService);
+
+    showComments = false;
 
     nasalSprays: NasalSprayRecord[] = [
         { id: 1, brandName: 'Flonase', genericName: 'Fluticasone Propionate', strength: '50 mcg/spray', category: 'Steroid', dose: '2 sprays each nostril daily', usage: 'Seasonal allergy control', comments: 'Morning use works best for this one.', manufacturer: 'GSK', lastOpened: '2026-07-08' },
