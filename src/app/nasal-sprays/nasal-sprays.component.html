@@ -1,0 +1,45 @@
+<div class="container mt-3 app-grid-container">
+    <div class="sticky-header">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Nasal Sprays</h2>
+        </div>
+        <div class="small text-muted mb-2">Edit any record by clicking its brand name.</div>
+    </div>
+</div>
+
+<div class="container text-break">
+    @for (spray of nasalSprays; track spray.id) {
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
+        <div class="mb-1 col">
+            <b>Brand</b>
+            <button type="button" class="grid-link text-start" (click)="openEditModal(spray)">
+                {{ spray.brandName }}
+            </button>
+        </div>
+        <div class="mb-1 col">
+            <b>Generic</b>
+            {{ spray.genericName }}
+        </div>
+        <div class="mb-1 col">
+            <b>Strength</b>
+            {{ spray.strength }}
+        </div>
+        <div class="mb-1 col">
+            <b>Category</b>
+            {{ spray.category }}
+        </div>
+        <div class="mb-1 col">
+            <b>Dose</b>
+            {{ spray.dose }}
+        </div>
+        <div class="mb-1 col">
+            <b>Last Opened</b>
+            {{ spray.lastOpened }}
+        </div>
+        <div class="mb-1 comments-col">
+            <b>Comments</b>
+            {{ spray.comments }}
+        </div>
+    </div>
+    }
+</div>

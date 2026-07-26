@@ -1,0 +1,20 @@
+.grid-link {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--bs-primary);
+    text-decoration: underline;
+}
+
+.comments-col {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+}
+
+@media (min-width: 768px) {
+    .comments-col {
+        width: 50%;
+        max-width: 50%;
+    }
+}

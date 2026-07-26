@@ -85,6 +85,11 @@ export const routes: Routes = [
         canDeactivate: [pendingChangesGuard]
     },
     {
+        path: 'nasal-sprays',
+        loadComponent: () => import('./nasal-sprays/nasal-sprays.component').then((m) => m.NasalSpraysComponent),
+        canDeactivate: [pendingChangesGuard]
+    },
+    {
         path: 'construction-skills',
         loadComponent: () => import('./construction-skills/construction-skills.component').then((m) => m.ConstructionSkillsComponent),
         canDeactivate: [pendingChangesGuard]
