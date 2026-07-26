@@ -90,6 +90,11 @@ export const routes: Routes = [
         canDeactivate: [pendingChangesGuard]
     },
     {
+        path: 'pens-and-pencils',
+        loadComponent: () => import('./pens-and-pencils/pens-and-pencils.component').then((m) => m.PensAndPencilsComponent),
+        canDeactivate: [pendingChangesGuard]
+    },
+    {
         path: 'construction-skills',
         loadComponent: () => import('./construction-skills/construction-skills.component').then((m) => m.ConstructionSkillsComponent),
         canDeactivate: [pendingChangesGuard]
