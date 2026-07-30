@@ -2,32 +2,10 @@ import { Routes } from '@angular/router';
 import { pendingChangesGuard } from './pending-changes.guard';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'home', pathMatch: 'full' },
+    { path: '', redirectTo: 'customers', pathMatch: 'full' },
     {
-        path: 'home',
-        loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
-        canDeactivate: [pendingChangesGuard],
-        children: [
-            {
-                path: 'about',
-                loadComponent: () => import('./about/about.component').then((m) => m.AboutComponent),
-                canDeactivate: [pendingChangesGuard]
-            },
-            {
-                path: 'budget',
-                loadComponent: () => import('./budget/budget.component').then((m) => m.BudgetComponent),
-                canDeactivate: [pendingChangesGuard]
-            }
-        ]
-    },
-    {
-        path: 'about',
-        loadComponent: () => import('./about/about.component').then((m) => m.AboutComponent),
-        canDeactivate: [pendingChangesGuard]
-    },
-    {
-        path: 'budget',
-        loadComponent: () => import('./budget/budget.component').then((m) => m.BudgetComponent),
+        path: 'customers',
+        loadComponent: () => import('./customers/customers.component').then((m) => m.CustomersComponent),
         canDeactivate: [pendingChangesGuard]
     },
     {
@@ -52,6 +30,11 @@ export const routes: Routes = [
     {
         path: 'address-book',
         loadComponent: () => import('./address-book/address-book.component').then((m) => m.AddressBookComponent),
+        canDeactivate: [pendingChangesGuard]
+    },
+    {
+        path: 'customers',
+        loadComponent: () => import('./customers/customers.component').then((m) => m.CustomersComponent),
         canDeactivate: [pendingChangesGuard]
     },
     {

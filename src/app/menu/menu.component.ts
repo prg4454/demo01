@@ -25,7 +25,7 @@ export class MenuComponent implements AfterViewInit {
     ) { }
 
     menuItems: MenuItem[] = [
-        { label: 'Home', path: '/home' },
+        { label: 'Customers', path: '/customers' },
         { label: 'Services', path: '/services' },
         {
             label: 'Misc',
@@ -58,8 +58,7 @@ export class MenuComponent implements AfterViewInit {
                 { label: 'Cats', path: '/cats' },
                 { label: 'Dogs', path: '/dogs' }
             ]
-        },
-        { label: 'Contact', path: '/contact' }
+        }
     ];
 
     get activeSubItems(): MenuLinkItem[] {

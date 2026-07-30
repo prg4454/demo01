@@ -1,4 +1,4 @@
-<div class="container mt-3 app-grid-container">
+<div class="w-100 mt-3 app-grid-container">
     <div class="sticky-header">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="mb-0">Cats At Vet</h2>
@@ -22,36 +22,35 @@
 
     <div class="text-break">
         @for (cat of pagedCats; track cat.id) {
-        <div
-            class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
-            <div class="mb-1 col">
+        <div class="app-grid-row cats-grid-row border-bottom">
+            <div class="cats-grid-cell">
                 <b>Name</b>
                 <button type="button" class="grid-link" (click)="openEditModal(cat)">
                     {{ cat.name }}
                 </button>
             </div>
-            <div class="mb-1 col">
+            <div class="cats-grid-cell">
                 <b>Breed</b>
                 {{ cat.breed }}
             </div>
-            <div class="mb-1 col">
+            <div class="cats-grid-cell">
                 <b>Owner</b>
                 {{ cat.owner }}
             </div>
-            <div class="mb-1 col">
+            <div class="cats-grid-cell cats-grid-reason">
                 <b>Reason</b>
                 {{ cat.reason }}
             </div>
-            <div class="mb-1 col">
+            <div class="cats-grid-cell">
                 <b>Check-In</b>
                 {{ cat.checkIn }}
             </div>
-            <div class="mb-1 col">
+            <div class="cats-grid-cell">
                 <b>Status</b>
                 <span class="status-pill" [class]="'status-pill status-' + cat.status.toLowerCase()">{{ cat.status
                     }}</span>
             </div>
-            <div class="mb-1 col">
+            <div class="cats-grid-cell">
                 <b>Vet</b>
                 {{ cat.vet }}
             </div>
