@@ -3,8 +3,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="mb-0">Nasal Sprays</h2>
             <div class="form-check mb-0">
-                <input class="form-check-input" type="checkbox" id="showNasalSprayComments"
-                    [(ngModel)]="showComments">
+                <input class="form-check-input" type="checkbox" id="showNasalSprayComments" [(ngModel)]="showComments">
                 <label class="form-check-label" for="showNasalSprayComments">Show comments</label>
             </div>
         </div>
@@ -12,35 +11,35 @@
     </div>
 
     @for (spray of nasalSprays; track spray.id) {
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
-        <div class="mb-1 col">
+    <div class="app-grid-row nasal-sprays-grid-row border-bottom">
+        <div class="nasal-sprays-grid-cell">
             <b>Brand</b>
             <button type="button" class="grid-link text-start" (click)="openEditModal(spray)">
                 {{ spray.brandName }}
             </button>
         </div>
-        <div class="mb-1 col">
+        <div class="nasal-sprays-grid-cell">
             <b>Generic</b>
             {{ spray.genericName }}
         </div>
-        <div class="mb-1 col">
+        <div class="nasal-sprays-grid-cell">
             <b>Strength</b>
             {{ spray.strength }}
         </div>
-        <div class="mb-1 col">
+        <div class="nasal-sprays-grid-cell">
             <b>Category</b>
             {{ spray.category }}
         </div>
-        <div class="mb-1 col">
+        <div class="nasal-sprays-grid-cell">
             <b>Dose</b>
             {{ spray.dose }}
         </div>
-        <div class="mb-1 col">
+        <div class="nasal-sprays-grid-cell">
             <b>Last Opened</b>
             {{ spray.lastOpened }}
         </div>
         @if (showComments) {
-        <div class="mb-1 comments-col">
+        <div class="nasal-sprays-grid-cell comments-col">
             <b>Comments</b>
             <div class="comments-scroll">
                 {{ spray.comments }}
