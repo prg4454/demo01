@@ -19,6 +19,7 @@ export interface DogRecord {
     checkIn: string;
     status: 'Waiting' | 'Exam' | 'Treatment' | 'Ready';
     vet: string;
+    comments: string;
 }
 
 export interface DogsModalResult {
@@ -26,7 +27,7 @@ export interface DogsModalResult {
     dog: DogRecord;
 }
 
-type TrackedFieldKey = 'name' | 'breed' | 'owner' | 'reason' | 'checkIn' | 'status' | 'vet';
+type TrackedFieldKey = 'name' | 'breed' | 'owner' | 'reason' | 'checkIn' | 'status' | 'vet' | 'comments';
 
 @Component({
     selector: 'app-dogs-entry-modal',
@@ -82,7 +83,8 @@ export class DogsEntryModalComponent implements OnInit {
             owner: this.editDraft.owner.trim(),
             reason: this.editDraft.reason.trim(),
             checkIn: this.editDraft.checkIn.trim(),
-            vet: this.editDraft.vet.trim()
+            vet: this.editDraft.vet.trim(),
+            comments: this.editDraft.comments.trim()
         };
 
         this.activeModal.close({ action: 'save', dog: updated } satisfies DogsModalResult);
@@ -143,7 +145,8 @@ export class DogsEntryModalComponent implements OnInit {
             { key: 'reason', label: 'Reason' },
             { key: 'checkIn', label: 'Check-In' },
             { key: 'status', label: 'Status' },
-            { key: 'vet', label: 'Vet' }
+            { key: 'vet', label: 'Vet' },
+            { key: 'comments', label: 'Comments' }
         ];
 
         const changes: ChangedField[] = [];

@@ -1,3 +1,10 @@
+.cars-grid-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
 .status-pill {
     display: inline-block;
     border-radius: 999px;

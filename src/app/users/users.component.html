@@ -19,37 +19,37 @@
     <div class="alert alert-danger" role="alert">{{ errorMessage }}</div>
     } @else {
     @for (user of users; track user.id) {
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
-        <div class="mb-1 col">
+    <div class="app-grid-row users-grid-row border-bottom">
+        <div class="mb-1">
             <b>Name</b>
             <div><span class="user-name">{{ user.name }}</span></div>
             <div class="small text-muted">&#64;{{ user.username }}</div>
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Email</b>
             <a [href]="'mailto:' + user.email">{{ user.email }}</a>
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Phone</b>
             {{ user.phone }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Website</b>
             <a [href]="'https://' + user.website" target="_blank" rel="noreferrer">{{ user.website }}</a>
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Company</b>
             {{ user.company.name }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Address</b>
             {{ user.address.street }}, {{ user.address.suite }}, {{ user.address.city }} {{ user.address.zipcode }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Catchphrase</b>
             {{ user.company.catchPhrase }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>ID</b>
             {{ user.id }}
         </div>

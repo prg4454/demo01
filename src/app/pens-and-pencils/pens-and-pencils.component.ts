@@ -19,10 +19,7 @@ export class PensAndPencilsComponent {
     private modalService = inject(NgbModal);
     private modalHistory = inject(ModalHistoryService);
 
-    readonly pageSize = 8;
-    currentPage = 1;
-
-    records: PensAndPencilsRecord[] = [
+    private readonly recordTemplates: PensAndPencilsRecord[] = [
         { id: 1, brand: 'Pilot G2', type: 'Pen', color: 'Black', pointOrLead: '0.7 mm', count: 12, location: 'Desk drawer', comments: 'Smooth writer for daily notes.' },
         { id: 2, brand: 'Ticonderoga', type: 'Pencil', color: 'Yellow', pointOrLead: 'HB', count: 24, location: 'School supply bin', comments: 'Classic classroom pencil.' },
         { id: 3, brand: 'Uniball Jetstream', type: 'Pen', color: 'Blue', pointOrLead: '0.5 mm', count: 6, location: 'Office cup', comments: 'Quick-drying ink for forms.' },
@@ -35,29 +32,19 @@ export class PensAndPencilsComponent {
         { id: 10, brand: 'Lamy Safari', type: 'Pen', color: 'Blue', pointOrLead: 'Fine', count: 3, location: 'Display case', comments: 'Nicer pen reserved for signatures.' }
     ];
 
+    records: PensAndPencilsRecord[] = Array.from({ length: 100 }, (_, index) => {
+        const template = this.recordTemplates[index % this.recordTemplates.length];
+        const copyNumber = Math.floor(index / this.recordTemplates.length);
+
+        return {
+            ...template,
+            id: index + 1,
+            brand: copyNumber === 0 ? template.brand : `${template.brand} ${copyNumber + 1}`
+        };
+    });
+
     editDraft: PensAndPencilsRecord | null = null;
     originalDraft: PensAndPencilsRecord | null = null;
-
-    get totalPages(): number {
-        return Math.max(1, Math.ceil(this.records.length / this.pageSize));
-    }
-
-    get pagedRecords(): PensAndPencilsRecord[] {
-        const start = (this.currentPage - 1) * this.pageSize;
-        return this.records.slice(start, start + this.pageSize);
-    }
-
-    previousPage(): void {
-        if (this.currentPage > 1) {
-            this.currentPage--;
-        }
-    }
-
-    nextPage(): void {
-        if (this.currentPage < this.totalPages) {
-            this.currentPage++;
-        }
-    }
 
     openAddModal(): void {
         const modalRef = this.modalService.open(PensAndPencilsEntryModalComponent, {
@@ -136,14 +123,10 @@ export class PensAndPencilsComponent {
             this.records = this.records.map(item => item.id === record.id ? record : item);
         } else {
             this.records = [record, ...this.records];
-            this.currentPage = 1;
         }
     }
 
     private deleteRecord(record: PensAndPencilsRecord): void {
         this.records = this.records.filter(item => item.id !== record.id);
-        if (this.currentPage > this.totalPages) {
-            this.currentPage = this.totalPages;
-        }
     }
 }

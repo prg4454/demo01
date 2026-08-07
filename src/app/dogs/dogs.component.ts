@@ -29,7 +29,8 @@ export class DogsComponent {
             reason: 'Annual checkup',
             checkIn: '8:10 AM',
             status: 'Waiting',
-            vet: 'Dr. Hernandez'
+            vet: 'Dr. Hernandez',
+            comments: 'Bring vaccination records.'
         },
         {
             id: 102,
@@ -39,7 +40,8 @@ export class DogsComponent {
             reason: 'Ear infection',
             checkIn: '8:35 AM',
             status: 'Exam',
-            vet: 'Dr. Patel'
+            vet: 'Dr. Patel',
+            comments: 'Sensitive around left ear.'
         },
         {
             id: 103,
@@ -49,7 +51,8 @@ export class DogsComponent {
             reason: 'Vaccinations',
             checkIn: '9:00 AM',
             status: 'Treatment',
-            vet: 'Dr. Kim'
+            vet: 'Dr. Kim',
+            comments: 'Due for a booster.'
         },
         {
             id: 104,
@@ -59,7 +62,8 @@ export class DogsComponent {
             reason: 'Limping front paw',
             checkIn: '9:20 AM',
             status: 'Ready',
-            vet: 'Dr. Adams'
+            vet: 'Dr. Adams',
+            comments: 'Owner notified.'
         },
         {
             id: 105,
@@ -69,7 +73,8 @@ export class DogsComponent {
             reason: 'Skin irritation',
             checkIn: '9:45 AM',
             status: 'Waiting',
-            vet: 'Dr. Hernandez'
+            vet: 'Dr. Hernandez',
+            comments: ''
         },
         {
             id: 106,
@@ -79,7 +84,8 @@ export class DogsComponent {
             reason: 'Nail trim',
             checkIn: '10:00 AM',
             status: 'Exam',
-            vet: 'Dr. Patel'
+            vet: 'Dr. Patel',
+            comments: 'Use gentle handling.'
         }
     ];
 
@@ -127,7 +133,8 @@ export class DogsComponent {
             reason: '',
             checkIn: '',
             status: 'Waiting',
-            vet: ''
+            vet: '',
+            comments: ''
         };
         modalRef.componentInstance.allowDelete = false;
 

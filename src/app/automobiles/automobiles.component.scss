@@ -1,1 +1,13 @@
 
+.automobiles-grid-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.5rem 1rem;
+}
+
+.automobiles-sticky-header {
+    position: sticky;
+    top: var(--app-navbar-offset, 56px);
+    z-index: 10;
+    background: #fff;
+}

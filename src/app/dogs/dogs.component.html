@@ -1,4 +1,4 @@
-<div class="container mt-3 app-grid-container">
+<div class="container-fluid mt-3 app-grid-container">
     <div class="sticky-header">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="mb-0">Dogs Management</h2>
@@ -23,33 +23,41 @@
     <div class="text-break">
         @for (dog of pagedDogs; track dog.id) {
         <div
-            class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
-            <div class="mb-1 col">
+            class="dogs-grid-row">
+            <div>
                 <b>Name</b>
-                <button type="button" class="grid-link" (click)="openEditModal(dog)">
+                <button type="button" class="dog-name-link" (click)="openEditModal(dog)">
                     {{ dog.name }}
                 </button>
             </div>
-            <div class="mb-1 col">
+            <div>
                 <b>Breed</b>
                 {{ dog.breed }}
             </div>
-            <div class="mb-1 col">
+            <div>
                 <b>Owner</b>
                 {{ dog.owner }}
             </div>
-            <div class="mb-1 col">
+            <div>
                 <b>Vet</b>
                 {{ dog.vet }}
             </div>
-            <div class="mb-1 col">
+            <div>
+                <b>Check-In</b>
+                {{ dog.checkIn }}
+            </div>
+            <div>
                 <b>Reason</b>
                 {{ dog.reason }}
             </div>
-            <div class="mb-1 col">
+            <div>
                 <b>Status</b>
                 <span class="status-pill" [class]="'status-pill status-' + dog.status.toLowerCase()">{{ dog.status
                     }}</span>
+            </div>
+            <div class="comments-cell">
+                <b>Comments</b>
+                {{ dog.comments || '—' }}
             </div>
         </div>
         }

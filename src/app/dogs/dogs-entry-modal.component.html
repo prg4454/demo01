@@ -36,6 +36,10 @@
                 <label class="form-label">Owner</label>
                 <input type="text" class="form-control" [(ngModel)]="editDraft.owner" (keydown.enter)="save()">
             </div>
+            <div class="col-12 field-block">
+                <label class="form-label">Comments</label>
+                <textarea class="form-control" rows="2" [(ngModel)]="editDraft.comments"></textarea>
+            </div>
         </div>
         }
     </div>

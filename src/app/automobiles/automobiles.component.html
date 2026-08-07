@@ -1,5 +1,5 @@
-<div class="container mt-3 app-grid-container">
-    <div class="sticky-header">
+<div class="container-fluid mt-3 app-grid-container">
+    <div class="sticky-header automobiles-sticky-header">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="mb-0">Automobiles Inventory</h2>
             <div class="d-flex align-items-center gap-2">
@@ -19,37 +19,37 @@
             <div class="small text-muted">Page {{ currentPage }} of {{ totalPages }}</div>
         </div>
     </div>
-</div>
 
-<div class="container text-break">
+    <div class="text-break">
     @for (car of pagedAutomobiles; track car.id) {
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
-        <div class="mb-1 col-12 col-md-4">
+    <div class="app-grid-row automobiles-grid-row border-bottom">
+        <div class="mb-1">
             <b>VIN</b>
             <button type="button" class="grid-link" (click)="openEditModal(car)">
                 {{ car.vin }}
             </button>
         </div>
-        <div class="mb-1 col-12 col-md-4">
+        <div class="mb-1">
             <b>Make</b>
             {{ car.make }}
         </div>
-        <div class="mb-1 col-12 col-md-4">
+        <div class="mb-1">
             <b>Model</b>
             {{ car.model }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Year</b>
             {{ car.year }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Color</b>
             {{ car.color }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Status</b>
             {{ car.status }}
         </div>
     </div>
     }
+    </div>
 </div>

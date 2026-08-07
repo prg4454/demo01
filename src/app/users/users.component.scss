@@ -1,4 +1,11 @@
 :host {
+    .users-grid-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        align-items: start;
+    }
+
     .user-name {
         display: inline-block;
         font-size: 1.3rem;

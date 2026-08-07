@@ -23,30 +23,30 @@
 
 <div class="container text-break">
     @for (car of pagedCars; track car.id) {
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
-        <div class="mb-1 col">
+    <div class="app-grid-row cars-grid-row border-bottom">
+        <div class="mb-1">
             <b>Vehicle</b>
             <button type="button" class="grid-link" (click)="openEditModal(car)">
                 {{ car.make }} {{ car.model }}
             </button>
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Owner</b>
             {{ car.owner }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Advisor</b>
             {{ car.advisor }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Check-In</b>
             {{ car.checkIn }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Service</b>
             {{ car.service }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Status</b>
             <span class="status-pill" [class]="'status-pill status-' + car.status.toLowerCase().replace(' ', '-')">{{
                 car.status }}</span>
