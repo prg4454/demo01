@@ -25,7 +25,7 @@ export class MenuComponent implements AfterViewInit {
     ) { }
 
     menuItems: MenuItem[] = [
-        { label: 'Customers', path: '/customers' },
+        { label: 'About', path: '/about' },
         { label: 'Services', path: '/services' },
         {
             label: 'Misc',
@@ -44,12 +44,14 @@ export class MenuComponent implements AfterViewInit {
         {
             label: 'Misc2',
             subItems: [
+                { label: 'Customers', path: '/customers' },
                 { label: 'World Clocks', path: '/world-clocks' },
                 { label: 'UI Employer Tax', path: '/ui-employer-tax' },
                 { label: 'Nasal Sprays', path: '/nasal-sprays' },
                 { label: 'Pens and Pencils', path: '/pens-and-pencils' },
                 { label: 'Users', path: '/users' },
-                { label: 'Company List', path: '/company-list' }
+                { label: 'Company List', path: '/company-list' },
+                { label: 'Songs', path: '/songs' }
             ]
         },
         {

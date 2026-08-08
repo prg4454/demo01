@@ -2,7 +2,11 @@ import { Routes } from '@angular/router';
 import { pendingChangesGuard } from './pending-changes.guard';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'customers', pathMatch: 'full' },
+    { path: '', redirectTo: 'about', pathMatch: 'full' },
+    {
+        path: 'about',
+        loadComponent: () => import('./about/about.component').then((m) => m.AboutComponent)
+    },
     {
         path: 'customers',
         loadComponent: () => import('./customers/customers.component').then((m) => m.CustomersComponent),
@@ -96,6 +100,10 @@ export const routes: Routes = [
         path: 'company-list',
         loadComponent: () => import('./company-list/company-list.component').then((m) => m.CompanyListComponent),
         canDeactivate: [pendingChangesGuard]
+    },
+    {
+        path: 'songs',
+        loadComponent: () => import('./songs/songs.component').then((m) => m.SongsComponent)
     },
     {
         path: 'ui-employer-tax',

@@ -1,0 +1,79 @@
+<div class="container-fluid mt-3 songs-page">
+    <div class="page-heading">
+        <h2 class="mb-1">Songs</h2>
+        <p class="text-muted mb-3">Browse albums and song details.</p>
+    </div>
+
+    <div class="songs-sheet">
+    <div class="song-tabs" role="tablist" aria-label="Song views">
+        <button type="button" class="song-tab" [class.active]="activeTab === 'table'"
+            [attr.aria-selected]="activeTab === 'table'" role="tab" (click)="selectTab('table')">
+            Table View
+        </button>
+        <button type="button" class="song-tab" [class.active]="activeTab === 'grid'"
+            [attr.aria-selected]="activeTab === 'grid'" role="tab" (click)="selectTab('grid')">
+            Responsive Grid
+        </button>
+    </div>
+
+    @if (activeTab === 'table') {
+    <section class="song-panel table-panel" role="tabpanel">
+        <div class="table-note" role="note">
+            <strong>Table scrolling:</strong> This page uses an HTML table with both vertical and horizontal scrolling.
+        </div>
+        <div class="songs-table-container" tabindex="0" aria-label="Songs table. Scroll horizontally and vertically to browse.">
+        <table class="songs-table">
+            <thead>
+                <tr>
+                    <th scope="col">Song Title</th>
+                    <th scope="col">Artist</th>
+                    <th scope="col">Year</th>
+                    <th scope="col">Genre</th>
+                    <th scope="col">Comments</th>
+                    <th scope="col">Review</th>
+                    <th scope="col">Awards</th>
+                    <th scope="col">Number of Songs</th>
+                    <th scope="col">Length</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (song of songs; track song.title) {
+                <tr>
+                    <th scope="row">{{ song.title }}</th>
+                    <td>{{ song.artist }}</td>
+                    <td>{{ song.year }}</td>
+                    <td>{{ song.genre }}</td>
+                    <td>{{ song.comments }}</td>
+                    <td>{{ song.review }}</td>
+                    <td>{{ song.awards }}</td>
+                    <td>{{ song.numberOfSongs }}</td>
+                    <td>{{ song.length }}</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        </div>
+    </section>
+    }
+
+    @if (activeTab === 'grid') {
+    <section class="song-panel grid-panel" role="tabpanel">
+        <div class="songs-grid">
+            @for (song of songs; track song.title) {
+            <div class="song-grid-row">
+                <div><strong>Song Title</strong><span>{{ song.title }}</span></div>
+                <div><strong>Artist</strong><span>{{ song.artist }}</span></div>
+                <div><strong>Year</strong><span>{{ song.year }}</span></div>
+                <div><strong>Genre</strong><span>{{ song.genre }}</span></div>
+                <div><strong>Awards</strong><span>{{ song.awards }}</span></div>
+                <div><strong>Number of Songs</strong><span>{{ song.numberOfSongs }}</span></div>
+                <div><strong>Length</strong><span>{{ song.length }}</span></div>
+                <div><strong>Comments</strong><span>{{ song.comments }}</span></div>
+                <div><strong>Review</strong><span>{{ song.review }}</span></div>
+            </div>
+            }
+        </div>
+    </section>
+    }
+    </div>
+</div>
