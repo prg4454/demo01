@@ -1,0 +1,1 @@
+import{U as n}from"./chunk-QAEGWJZG.js";var o=class e{selectedCompany=null;setSelectedCompany(t){this.selectedCompany=t}getSelectedCompany(){return this.selectedCompany}clearSelectedCompany(){this.selectedCompany=null}static \u0275fac=function(a){return new(a||e)};static \u0275prov=n({token:e,factory:e.\u0275fac,providedIn:"root"})};export{o as a};
