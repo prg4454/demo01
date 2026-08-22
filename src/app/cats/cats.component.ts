@@ -148,6 +148,10 @@ export class CatsComponent implements OnInit {
                     return;
                 }
 
+                if (result.action !== 'save') {
+                    return;
+                }
+
                 await this.storageService.save('cats', result.cat);
                 this.cats.update(current => current.map(c => c.id === result.cat.id ? result.cat : c));
             })

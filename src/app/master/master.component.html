@@ -1,0 +1,162 @@
+<div class="container mt-4">
+    <div class="alert alert-warning py-2 mb-3 small fw-semibold text-center">
+        This is in progress....
+    </div>
+    <div [class.d-none]="activeTab === 'companies'">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Master Functions</h2>
+
+            <!-- Dropdown Navigation -->
+            <div ngbDropdown class="d-inline-block">
+                <button type="button" class="btn btn-primary" id="dropdownNavigate" ngbDropdownToggle>
+                    Navigate to Component
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownNavigate">
+                    @for (route of navigationRoutes; track route.path) {
+                    @if ((route.path === 'companies') ||
+                    (route.path === 'employees' && selectedCompany) ||
+                    (route.path === 'checks' && selectedCompany && (selectedEmployee || activeTab === 'checks')) ||
+                    (route.path === 'hours' && selectedCompany && (selectedEmployee || activeTab === 'hours'))) {
+                    <button ngbDropdownItem [disabled]="(route.path === 'companies' && activeTab === 'companies') || 
+                                                 (route.path === 'employees' && activeTab === 'employees') || 
+                                                 (route.path === 'checks' && activeTab === 'checks') || 
+                                                 (route.path === 'hours' && activeTab === 'hours')"
+                        (click)="navigateTo(route.path)">
+                        {{ route.label }}
+                    </button>
+                    }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Context Indicator / Breadcrumbs -->
+        <app-breadcrumbs [selectedCompany]="selectedCompany" [selectedEmployee]="selectedEmployee"
+            [selectedCheck]="selectedCheck">
+        </app-breadcrumbs>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <button type="button" class="nav-link" [class.active]="activeTab === 'companies'"
+                    (click)="selectTab('companies')">
+                    Companies
+                </button>
+            </li>
+            <li class="nav-item" *ngIf="selectedCompany">
+                <button type="button" class="nav-link" [class.active]="activeTab === 'employees'"
+                    (click)="selectTab('employees')">
+                    Employees
+                </button>
+            </li>
+            <li class="nav-item" *ngIf="selectedCompany && (selectedEmployee || activeTab === 'checks')">
+                <button type="button" class="nav-link" [class.active]="activeTab === 'checks'"
+                    (click)="selectTab('checks')">
+                    Checks
+                </button>
+            </li>
+            <li class="nav-item" *ngIf="selectedCompany && (selectedEmployee || activeTab === 'hours')">
+                <button type="button" class="nav-link" [class.active]="activeTab === 'hours'"
+                    (click)="selectTab('hours')">
+                    Hours
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Tab Contents -->
+    <div [ngSwitch]="activeTab">
+        <!-- Companies Tab Content -->
+        <div *ngSwitchCase="'companies'">
+            <app-companies [companies]="companies" (companyClicked)="onCompanyClick($event, confirmModal)">
+            </app-companies>
+        </div>
+
+        <!-- Employees Tab Content -->
+        <div *ngSwitchCase="'employees'">
+            <app-employees [companyName]="selectedCompany?.name || ''" [employees]="selectedCompanyEmployees"
+                (employeeClicked)="onEmployeeClicked($event, empActionModal, infoModal)">
+            </app-employees>
+        </div>
+
+        <!-- Checks Tab Content -->
+        <div *ngSwitchCase="'checks'">
+            <app-checks [employeeName]="selectedEmployee?.name || ''" [checks]="selectedEmployeeChecks"
+                (checkClicked)="onCheckClicked($event)">
+            </app-checks>
+        </div>
+
+        <!-- Hours Tab Content -->
+        <div *ngSwitchCase="'hours'">
+            @if (selectedCheck) {
+            <div class="alert alert-info d-flex justify-content-between align-items-center mb-3 p-2 small">
+                <span>
+                    <strong>ℹ️ Filtered:</strong> Showing only hours logged for Paycheck
+                    <strong>#{{ selectedCheck.checkNumber }}</strong> (Issued: {{ selectedCheck.date }})
+                </span>
+                <button type="button" class="btn btn-outline-info btn-sm py-0 px-2" (click)="clearCheckFilter()">
+                    Show All Hours
+                </button>
+            </div>
+            }
+            <app-hours [employeeName]="selectedEmployee?.name || ''" [hoursLogs]="selectedEmployeeHours"></app-hours>
+        </div>
+    </div>
+</div>
+
+<!-- Selection Confirmation Modal -->
+<ng-template #confirmModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Select Company View Option</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('cancel')"></button>
+    </div>
+    <div class="modal-body">
+        <p>Choose an action for <strong>{{ selectedCompany?.name }}</strong>:</p>
+    </div>
+    <div class="modal-footer d-flex justify-content-between">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('cancel')">Cancel</button>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-primary" (click)="modal.close('view-employees')">View
+                Employees</button>
+            <button type="button" class="btn btn-success" (click)="modal.close('view-checks')">Show All Checks</button>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Employee Action Modal -->
+<ng-template #empActionModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Employee Actions</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('cancel')"></button>
+    </div>
+    <div class="modal-body">
+        <p>Choose an action for employee <strong>{{ selectedEmployee?.name }}</strong>:</p>
+    </div>
+    <div class="modal-footer d-flex justify-content-between">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('cancel')">Cancel</button>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-primary" (click)="modal.close('info')">Show Info</button>
+            <button type="button" class="btn btn-info text-white" (click)="modal.close('checks')">Go to Checks</button>
+            <button type="button" class="btn btn-success" (click)="modal.close('hours')">Go to Hours</button>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Employee Details Modal -->
+<ng-template #infoModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Employee Details</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>Employee ID:</strong> {{ selectedEmployee?.id }}</li>
+            <li class="list-group-item"><strong>Full Name:</strong> {{ selectedEmployee?.name }}</li>
+            <li class="list-group-item"><strong>Role:</strong> {{ selectedEmployee?.role }}</li>
+            <li class="list-group-item"><strong>Email Address:</strong> {{ selectedEmployee?.email }}</li>
+        </ul>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+    </div>
+</ng-template>

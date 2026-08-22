@@ -27,6 +27,7 @@ export class MenuComponent implements AfterViewInit {
     menuItems: MenuItem[] = [
         { label: 'About', path: '/about' },
         { label: 'Services', path: '/services' },
+        { label: 'Master Functions', path: '/master' },
         {
             label: 'Misc',
             subItems: [

@@ -109,5 +109,9 @@ export const routes: Routes = [
         path: 'ui-employer-tax',
         loadComponent: () => import('./ui-employer-tax/ui-employer-tax.component').then((m) => m.UiEmployerTaxComponent),
         canDeactivate: [pendingChangesGuard]
+    },
+    {
+        path: 'master',
+        loadComponent: () => import('./master/master.component').then((m) => m.MasterComponent)
     }
 ];
