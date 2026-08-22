@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
@@ -19,10 +19,10 @@ export class CatsComponent implements OnInit {
     private storageService = inject(StorageService);
 
     readonly pageSize = 8;
-    currentPage = 1;
+    currentPage = signal(1);
     exportMessage = '';
 
-    cats: CatRecord[] = [];
+    cats = signal<CatRecord[]>([]);
 
     async ngOnInit() {
         await this.loadData();
@@ -34,9 +34,10 @@ export class CatsComponent implements OnInit {
             const initialCats = this.generateCats(50);
             await this.storageService.saveAll('cats', initialCats);
         }
-        this.cats = await this.storageService.getAll<CatRecord>('cats');
+        const allCats = await this.storageService.getAll<CatRecord>('cats');
         // Sort by ID descending so new adds show up first if we want
-        this.cats.sort((a, b) => b.id - a.id);
+        allCats.sort((a, b) => b.id - a.id);
+        this.cats.set(allCats);
     }
 
     private generateCats(count: number): CatRecord[] {
@@ -59,28 +60,26 @@ export class CatsComponent implements OnInit {
         }));
     }
 
-    get totalCats(): number {
-        return this.cats.length;
-    }
+    totalCats = computed(() => this.cats().length);
 
-    get totalPages(): number {
-        return Math.max(1, Math.ceil(this.cats.length / this.pageSize));
-    }
+    totalPages = computed(() => {
+        return Math.max(1, Math.ceil(this.cats().length / this.pageSize));
+    });
 
-    get pagedCats(): CatRecord[] {
-        const start = (this.currentPage - 1) * this.pageSize;
-        return this.cats.slice(start, start + this.pageSize);
-    }
+    pagedCats = computed(() => {
+        const start = (this.currentPage() - 1) * this.pageSize;
+        return this.cats().slice(start, start + this.pageSize);
+    });
 
     previousPage(): void {
-        if (this.currentPage > 1) {
-            this.currentPage--;
+        if (this.currentPage() > 1) {
+            this.currentPage.update(p => p - 1);
         }
     }
 
     nextPage(): void {
-        if (this.currentPage < this.totalPages) {
-            this.currentPage++;
+        if (this.currentPage() < this.totalPages()) {
+            this.currentPage.update(p => p + 1);
         }
     }
 
@@ -114,8 +113,8 @@ export class CatsComponent implements OnInit {
                 }
 
                 await this.storageService.save('cats', result.cat);
-                this.cats = [result.cat, ...this.cats];
-                this.currentPage = 1;
+                this.cats.update(current => [result.cat, ...current]);
+                this.currentPage.set(1);
             })
             .catch(() => undefined);
     }
@@ -142,23 +141,24 @@ export class CatsComponent implements OnInit {
 
                 if (result.action === 'delete') {
                     await this.storageService.delete('cats', result.cat.id);
-                    this.cats = this.cats.filter(c => c.id !== result.cat.id);
-                    if (this.currentPage > this.totalPages) {
-                        this.currentPage = this.totalPages;
+                    this.cats.update(current => current.filter(c => c.id !== result.cat.id));
+                    if (this.currentPage() > this.totalPages()) {
+                        this.currentPage.set(this.totalPages());
                     }
                     return;
                 }
 
                 await this.storageService.save('cats', result.cat);
-                this.cats = this.cats.map(c => c.id === result.cat.id ? result.cat : c);
+                this.cats.update(current => current.map(c => c.id === result.cat.id ? result.cat : c));
             })
             .catch(() => undefined);
     }
 
     private getNextId(): number {
-        if (!this.cats.length) {
+        const currentCats = this.cats();
+        if (!currentCats.length) {
             return 1;
         }
-        return Math.max(...this.cats.map(c => c.id)) + 1;
+        return currentCats[0].id + 1;
     }
 }

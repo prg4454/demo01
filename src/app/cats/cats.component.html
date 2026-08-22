@@ -3,7 +3,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="mb-0">Cats At Vet</h2>
             <div class="d-flex align-items-center gap-2">
-                <app-export-dropdown [rows]="cats" fileBaseName="export-cats"
+                <app-export-dropdown [rows]="cats()" fileBaseName="export-cats"
                     (statusMessage)="exportMessage = $event"></app-export-dropdown>
                 <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Cat</button>
             </div>
@@ -13,15 +13,15 @@
         }
         <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
             <button type="button" class="btn btn-outline-primary btn-sm" (click)="previousPage()"
-                [disabled]="currentPage <= 1">&lt;&lt;</button>
+                [disabled]="currentPage() <= 1">&lt;&lt;</button>
             <button type="button" class="btn btn-outline-primary btn-sm" (click)="nextPage()"
-                [disabled]="currentPage >= totalPages">&gt;&gt;</button>
-            <div class="small text-muted">Page {{ currentPage }} of {{ totalPages }}</div>
+                [disabled]="currentPage() >= totalPages()">&gt;&gt;</button>
+            <div class="small text-muted">Page {{ currentPage() }} of {{ totalPages() }}</div>
         </div>
     </div>
 
     <div class="text-break">
-        @for (cat of pagedCats; track cat.id) {
+        @for (cat of pagedCats(); track cat.id) {
         <div class="app-grid-row cats-grid-row border-bottom">
             <div class="cats-grid-cell">
                 <b>Name</b>
