@@ -1,0 +1,132 @@
+<!-- Main Edit Form Native HTML5 Dialog -->
+<dialog #editDialog id="editDialog" class="border-0 shadow-lg rounded-3 p-0"
+    style="max-width: 550px; width: 95%; background: white;" (close)="onDialogClose()">
+    <div class="app-edit-modal p-3">
+        <div class="modal-header pb-2 border-bottom mb-3 d-flex justify-content-between align-items-center">
+            <h5 class="modal-title">{{ allowDelete ? "Edit Cat (Native Dialog)" : "Add Cat (Native Dialog)" }}</h5>
+            <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+        </div>
+
+        <form #catForm="ngForm" (ngSubmit)="save()" novalidate>
+            <div class="modal-body">
+                @if (editDraft) {
+                <div class="row gx-3 gy-2 entry-grid">
+                    <div class="col-12 col-md-6 field-block">
+                        <label class="form-label fw-semibold">Name</label>
+                        <input type="text" class="form-control" [(ngModel)]="editDraft.name" name="name">
+                    </div>
+                    <div class="col-12 col-md-6 field-block">
+                        <label class="form-label fw-semibold">Breed</label>
+                        <input type="text" class="form-control" [(ngModel)]="editDraft.breed" name="breed">
+                    </div>
+                    <div class="col-12 field-block">
+                        <label class="form-label fw-semibold">Reason</label>
+                        <textarea class="form-control" rows="2" [(ngModel)]="editDraft.reason" name="reason"></textarea>
+                    </div>
+                    <div class="col-12 col-md-6 field-block">
+                        <label class="form-label fw-semibold">Vet</label>
+                        <input type="text" class="form-control" [(ngModel)]="editDraft.vet" name="vet">
+                    </div>
+                    <div class="col-12 col-md-6 field-block">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select class="form-select" [(ngModel)]="editDraft.status" name="status">
+                            @for (statusOption of statuses; track statusOption) {
+                            <option [value]="statusOption">{{ statusOption }}</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-12 field-block">
+                        <label class="form-label fw-semibold">Owner</label>
+                        <input type="text" class="form-control" [(ngModel)]="editDraft.owner" name="owner">
+                    </div>
+                    <div class="col-12 field-block">
+                        <label class="form-label fw-semibold">Check-In Time</label>
+                        <input type="text" class="form-control" [(ngModel)]="editDraft.checkIn" name="checkIn">
+                    </div>
+                    <div class="col-12 field-block">
+                        <label class="form-label fw-semibold">Next Appointment</label>
+                        <input type="date" class="form-control" [(ngModel)]="editDraft.nextAppointment"
+                            name="nextAppointment">
+                    </div>
+                </div>
+                }
+            </div>
+
+            <div class="modal-footer d-flex justify-content-between mt-3 pt-2 border-top">
+                <div>
+                    @if (allowDelete) {
+                    <button type="button" class="btn btn-danger" (click)="delete()">Delete</button>
+                    }
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" [disabled]="!canSave()">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<!-- Native HTML5 Dialog for Unsaved Changes Warning -->
+<dialog #unsavedDialog class="border-0 shadow-lg rounded-3 p-0"
+    style="max-width: 500px; width: 90%; background: white;">
+    <div class="p-3">
+        <div class="modal-header pb-2 border-bottom mb-3 text-danger">
+            <h5 class="modal-title">Unsaved Changes</h5>
+        </div>
+        <div class="modal-body mb-3">
+            <p class="mb-3 text-muted small">You have unsaved changes in this form. Do you want to leave and discard
+                them?</p>
+            @if (getUnsavedChanges().length > 0) {
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-sm mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Field</th>
+                            <th>Before</th>
+                            <th>After</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (change of getUnsavedChanges(); track change.label) {
+                        <tr>
+                            <td><strong>{{ change.label }}</strong></td>
+                            <td class="text-danger">{{ change.before || '(Empty)' }}</td>
+                            <td class="text-success">{{ change.after || '(Empty)' }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+        <div class="modal-footer d-flex justify-content-end gap-2 border-top pt-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeUnsavedDialog(false)">Keep
+                Editing</button>
+            <button type="button" class="btn btn-danger btn-sm" (click)="closeUnsavedDialog(true)">Discard
+                Changes</button>
+        </div>
+    </div>
+</dialog>
+
+<!-- Native HTML5 Dialog for Delete Confirmation -->
+<dialog #deleteConfirmDialog class="border-0 shadow-lg rounded-3 p-0"
+    style="max-width: 450px; width: 90%; background: white;">
+    <div class="p-3">
+        <div class="modal-header pb-2 border-bottom mb-3 text-danger">
+            <h5 class="modal-title">Confirm Deletion</h5>
+        </div>
+        <div class="modal-body mb-3 text-center">
+            <p class="mb-2 text-muted">Are you sure you want to permanently delete this cat record?</p>
+            @if (editDraft) {
+            <p class="fw-bold mb-0 text-dark">{{ editDraft.name }}</p>
+            <small class="text-muted">Breed: {{ editDraft.breed }} | Owner: {{ editDraft.owner }}</small>
+            }
+        </div>
+        <div class="modal-footer d-flex justify-content-end gap-2 border-top pt-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm"
+                (click)="closeDeleteDialog(false)">Cancel</button>
+            <button type="button" class="btn btn-danger btn-sm" (click)="closeDeleteDialog(true)">Delete</button>
+        </div>
+    </div>
+</dialog>

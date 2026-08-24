@@ -6,9 +6,23 @@ import { ModalHistoryService } from './modal-history.service';
  * Guard that prevents navigation if there are unsaved changes in any open modal.
  * This covers internal Angular router navigation (e.g., clicking on menu links).
  */
-export const pendingChangesGuard: CanDeactivateFn<unknown> = () => {
+export const pendingChangesGuard: CanDeactivateFn<any> = (component: any) => {
     const modalHistory = inject(ModalHistoryService);
 
+    // 1. Check if the active component implements custom deactivation logic (e.g., custom HTML dialog confirmation)
+    if (component && typeof component.canDeactivate === 'function') {
+        return component.canDeactivate();
+    }
+
+    // 2. Check if the active component reports unsaved changes (e.g., from CDK Dialogs)
+    if (component && typeof component.hasUnsavedChanges === 'function' && component.hasUnsavedChanges()) {
+        const confirmResult = confirm('You have unsaved changes. Are you sure you want to leave this page?');
+        if (!confirmResult) {
+            return false;
+        }
+    }
+
+    // 2. Check NgbModal stack
     if (modalHistory.hasAnyUnsavedChanges()) {
         // If the browser back button was pressed, the ModalHistoryService
         // is already handling the dismissal and will show its own custom 
@@ -22,10 +36,6 @@ export const pendingChangesGuard: CanDeactivateFn<unknown> = () => {
         if (!confirmResult) {
             return false;
         }
-
-        // If the user chooses to leave anyway, we should clear the modal stack
-        // and its history entries, or just let the page reload/navigation happen.
-        // For router navigation, the modals will be destroyed as their parent components are destroyed.
     }
 
     return true;

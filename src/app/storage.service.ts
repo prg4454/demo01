@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class StorageService {
     private readonly dbName = 'AppDB';
-    private readonly dbVersion = 3;
+    private readonly dbVersion = 5;
 
     async getDb(): Promise<IDBDatabase> {
         return new Promise((resolve, reject) => {
@@ -15,6 +15,12 @@ export class StorageService {
                 const db = event.target.result;
                 if (!db.objectStoreNames.contains('cats')) {
                     db.createObjectStore('cats', { keyPath: 'id' });
+                }
+                if (!db.objectStoreNames.contains('cats2')) {
+                    db.createObjectStore('cats2', { keyPath: 'id' });
+                }
+                if (!db.objectStoreNames.contains('cats3')) {
+                    db.createObjectStore('cats3', { keyPath: 'id' });
                 }
                 if (!db.objectStoreNames.contains('medicines')) {
                     db.createObjectStore('medicines', { keyPath: 'id' });
@@ -92,6 +98,18 @@ export class StorageService {
 
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
+        });
+    }
+
+    async clear(storeName: string): Promise<void> {
+        const db = await this.getDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(storeName, 'readwrite');
+            const store = transaction.objectStore(storeName);
+            store.clear();
+
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
         });
     }
 }

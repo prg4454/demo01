@@ -12,27 +12,19 @@
     border-bottom: 1px solid #dee2e6;
 }
 
-.cats-grid-row {
+// 1. Grid columns definition using standard grid repeat & auto-fit
+.cats2-grid-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 0.5rem 1rem;
     align-items: start;
-    padding: 0.75rem 0.5rem;
+    padding: 0.75rem 0;
     width: 100%;
-    border-bottom: 1px solid #000 !important; // 1px black horizontal divider line
-
-    &:nth-child(even) {
-        background-color: #f0f9f0; // Subtle greenbar zebra-striping
-    }
 }
 
-.cats-grid-cell {
+.cats2-grid-cell {
     min-width: 0;
     margin-bottom: 0.25rem;
-}
-
-.cats-grid-reason {
-    grid-column: span 1;
 }
 
 .status-pill {

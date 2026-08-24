@@ -19,6 +19,7 @@ export interface CatRecord {
     checkIn: string;
     status: 'Waiting' | 'Exam' | 'Treatment' | 'Ready';
     vet: string;
+    nextAppointment: string;
 }
 
 export interface CatsModalResult {
@@ -26,7 +27,7 @@ export interface CatsModalResult {
     cat: CatRecord;
 }
 
-type TrackedFieldKey = 'name' | 'breed' | 'owner' | 'reason' | 'checkIn' | 'status' | 'vet';
+type TrackedFieldKey = 'name' | 'breed' | 'owner' | 'reason' | 'checkIn' | 'status' | 'vet' | 'nextAppointment';
 
 @Component({
     selector: 'app-cats-entry-modal',
@@ -52,8 +53,12 @@ export class CatsEntryModalComponent implements OnInit {
     readonly statuses: CatRecord['status'][] = ['Waiting', 'Exam', 'Treatment', 'Ready'];
 
     ngOnInit(): void {
-        this.editDraft = structuredClone(this.cat);
-        this.originalDraft = structuredClone(this.cat);
+        const cat = this.cat;
+        this.editDraft = {
+            ...structuredClone(cat),
+            nextAppointment: cat.nextAppointment || ''
+        };
+        this.originalDraft = structuredClone(this.editDraft);
     }
 
     canSave(): boolean {
@@ -61,12 +66,13 @@ export class CatsEntryModalComponent implements OnInit {
             return false;
         }
 
-        return this.editDraft.name.trim().length > 0
-            && this.editDraft.breed.trim().length > 0
-            && this.editDraft.owner.trim().length > 0
-            && this.editDraft.reason.trim().length > 0
-            && this.editDraft.checkIn.trim().length > 0
-            && this.editDraft.vet.trim().length > 0;
+        return (this.editDraft.name?.trim() ?? '').length > 0
+            && (this.editDraft.breed?.trim() ?? '').length > 0
+            && (this.editDraft.owner?.trim() ?? '').length > 0
+            && (this.editDraft.reason?.trim() ?? '').length > 0
+            && (this.editDraft.checkIn?.trim() ?? '').length > 0
+            && (this.editDraft.vet?.trim() ?? '').length > 0
+            && (this.editDraft.nextAppointment?.trim() ?? '').length > 0;
     }
 
     save(): void {
@@ -77,12 +83,13 @@ export class CatsEntryModalComponent implements OnInit {
 
         const updated: CatRecord = {
             ...this.editDraft,
-            name: this.editDraft.name.trim(),
-            breed: this.editDraft.breed.trim(),
-            owner: this.editDraft.owner.trim(),
-            reason: this.editDraft.reason.trim(),
-            checkIn: this.editDraft.checkIn.trim(),
-            vet: this.editDraft.vet.trim()
+            name: (this.editDraft.name ?? '').trim(),
+            breed: (this.editDraft.breed ?? '').trim(),
+            owner: (this.editDraft.owner ?? '').trim(),
+            reason: (this.editDraft.reason ?? '').trim(),
+            checkIn: (this.editDraft.checkIn ?? '').trim(),
+            vet: (this.editDraft.vet ?? '').trim(),
+            nextAppointment: (this.editDraft.nextAppointment ?? '').trim()
         };
 
         this.activeModal.close({ action: 'save', cat: updated } satisfies CatsModalResult);
@@ -143,7 +150,8 @@ export class CatsEntryModalComponent implements OnInit {
             { key: 'reason', label: 'Reason' },
             { key: 'checkIn', label: 'Check-In' },
             { key: 'status', label: 'Status' },
-            { key: 'vet', label: 'Vet' }
+            { key: 'vet', label: 'Vet' },
+            { key: 'nextAppointment', label: 'Next Appointment' }
         ];
 
         const changes: ChangedField[] = [];

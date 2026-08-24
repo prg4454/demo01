@@ -1,0 +1,46 @@
+:host {
+    display: block;
+}
+
+// Target all native dialogs inside this component
+dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    outline: none;
+    background: white;
+    overflow: hidden; // Prevent dialog container from overflowing its borders
+
+    &::backdrop {
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(3px);
+    }
+}
+
+// Main edit dialog specific layouts to handle internal scrolling & fixed buttons
+#editDialog {
+    max-height: 85vh;
+    overflow: hidden; // Ensure it conforms to max-height boundaries without scrolling the wrapper
+
+    // The inner container handles the flex layout so the browser's native dialog positioning is not disrupted
+    .app-edit-modal {
+        display: flex;
+        flex-direction: column;
+        max-height: 85vh;
+        overflow: hidden;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        flex: 1;
+    }
+
+    .modal-body {
+        overflow-y: auto;
+        flex: 1;
+        padding-right: 0.5rem; // Room for scrollbar
+    }
+}

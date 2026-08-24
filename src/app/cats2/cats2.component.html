@@ -1,16 +1,9 @@
 <div class="w-100 mt-3 app-grid-container">
     <div class="sticky-header">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="mb-0">Cats At Vet</h2>
-            <div class="d-flex align-items-center gap-2">
-                <app-export-dropdown [rows]="cats()" fileBaseName="export-cats"
-                    (statusMessage)="exportMessage = $event"></app-export-dropdown>
-                <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Cat</button>
-            </div>
+            <h2 class="mb-0">Cats 2 (CDK Dialog Demo)</h2>
+            <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Cat</button>
         </div>
-        @if (exportMessage) {
-        <div class="small text-muted mb-2">{{ exportMessage }}</div>
-        }
         <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
             <button type="button" class="btn btn-outline-primary btn-sm" (click)="previousPage()"
                 [disabled]="currentPage() <= 1">&lt;&lt;</button>
@@ -20,41 +13,44 @@
         </div>
     </div>
 
+    <!-- Responsive CSS Grid Layout showing cats -->
     <div class="text-break">
         @for (cat of pagedCats(); track cat.id) {
-        <div class="app-grid-row cats-grid-row">
-            <div class="cats-grid-cell">
+        <div class="app-grid-row cats2-grid-row border-bottom">
+            <div class="cats2-grid-cell">
                 <b>Name</b>
+                <!-- Clicking the cat name triggers the CDK Dialog edit popup -->
                 <button type="button" class="grid-link" (click)="openEditModal(cat)">
                     {{ cat.name }}
                 </button>
             </div>
-            <div class="cats-grid-cell">
+            <div class="cats2-grid-cell">
                 <b>Breed</b>
                 {{ cat.breed }}
             </div>
-            <div class="cats-grid-cell">
+            <div class="cats2-grid-cell">
                 <b>Owner</b>
                 {{ cat.owner }}
             </div>
-            <div class="cats-grid-cell cats-grid-reason">
+            <div class="cats2-grid-cell">
                 <b>Reason</b>
                 {{ cat.reason }}
             </div>
-            <div class="cats-grid-cell">
+            <div class="cats2-grid-cell">
                 <b>Check-In</b>
                 {{ cat.checkIn }}
             </div>
-            <div class="cats-grid-cell">
+            <div class="cats2-grid-cell">
                 <b>Status</b>
-                <span class="status-pill" [class]="'status-pill status-' + cat.status.toLowerCase()">{{ cat.status
-                    }}</span>
+                <span class="status-pill status-waiting" [class]="'status-pill status-' + cat.status.toLowerCase()">
+                    {{ cat.status }}
+                </span>
             </div>
-            <div class="cats-grid-cell">
+            <div class="cats2-grid-cell">
                 <b>Vet</b>
                 {{ cat.vet }}
             </div>
-            <div class="cats-grid-cell">
+            <div class="cats2-grid-cell">
                 <b>Next Appt</b>
                 {{ cat.nextAppointment || 'N/A' }}
             </div>

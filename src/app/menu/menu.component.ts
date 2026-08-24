@@ -59,6 +59,8 @@ export class MenuComponent implements AfterViewInit {
             label: 'Pets',
             subItems: [
                 { label: 'Cats', path: '/cats' },
+                { label: 'Cats 2', path: '/cats2' },
+                { label: 'Cats 3', path: '/cats3' },
                 { label: 'Dogs', path: '/dogs' }
             ]
         }

@@ -29,9 +29,10 @@ export class CatsComponent implements OnInit {
     }
 
     private async loadData() {
-        const count = await this.storageService.getCount('cats');
-        if (count === 0) {
+        let count = await this.storageService.getCount('cats');
+        if (count < 50) {
             const initialCats = this.generateCats(50);
+            await this.storageService.clear('cats');
             await this.storageService.saveAll('cats', initialCats);
         }
         const allCats = await this.storageService.getAll<CatRecord>('cats');
@@ -56,7 +57,8 @@ export class CatsComponent implements OnInit {
             reason: reasons[Math.floor(Math.random() * reasons.length)],
             checkIn: `${8 + Math.floor(Math.random() * 4)}:${Math.floor(Math.random() * 6)}0 AM`,
             status: statuses[Math.floor(Math.random() * statuses.length)],
-            vet: vets[Math.floor(Math.random() * vets.length)]
+            vet: vets[Math.floor(Math.random() * vets.length)],
+            nextAppointment: `2026-09-${10 + Math.floor(Math.random() * 20)}`
         }));
     }
 
@@ -102,7 +104,8 @@ export class CatsComponent implements OnInit {
             reason: '',
             checkIn: '',
             status: 'Waiting',
-            vet: ''
+            vet: '',
+            nextAppointment: ''
         };
         modalRef.componentInstance.allowDelete = false;
 

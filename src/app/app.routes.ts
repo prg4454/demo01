@@ -62,6 +62,16 @@ export const routes: Routes = [
         canDeactivate: [pendingChangesGuard]
     },
     {
+        path: 'cats2',
+        loadComponent: () => import('./cats2/cats2.component').then((m) => m.Cats2Component),
+        canDeactivate: [pendingChangesGuard]
+    },
+    {
+        path: 'cats3',
+        loadComponent: () => import('./cats3/cats3.component').then((m) => m.Cats3Component),
+        canDeactivate: [pendingChangesGuard]
+    },
+    {
         path: 'dogs',
         loadComponent: () => import('./dogs/dogs.component').then((m) => m.DogsComponent),
         canDeactivate: [pendingChangesGuard]

@@ -1,1 +1,25 @@
+:host {
+    display: block;
+    max-height: 85vh;
+    overflow: hidden;
+}
 
+.app-edit-modal {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+}
+
+.modal-body {
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 0.5rem; // Room for scrollbar
+}
