@@ -1,0 +1,16 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.login-wrapper {
+    min-height: calc(100vh - var(--app-navbar-offset, 56px) - 2rem);
+    background-color: #f8f9fa;
+    padding: 2rem 1rem;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}

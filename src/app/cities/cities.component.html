@@ -1,0 +1,156 @@
+<div class="container-fluid py-4 px-3 px-md-4" style="max-width: 1000px;">
+  <!-- Page Header & Filter Controls -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+    <div class="d-flex align-items-center gap-3">
+      <h2 class="mb-0 d-flex align-items-center gap-2">
+        <span>🌍</span> World Cities
+        <span class="badge bg-secondary fs-6 align-middle">{{ filteredCities.length }} / {{ cities.length }}</span>
+      </h2>
+      <button class="btn btn-sm btn-success" (click)="openInfo(infoModal)">About this page</button>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-outline-secondary btn-sm" (click)="toggleUnit()">
+        Unit: <strong>°{{ unit }}</strong>
+      </button>
+    </div>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <div class="row g-2 align-items-center mb-3 p-2 bg-light rounded border">
+    <div class="col-12 col-sm-6 col-md-5">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text bg-white border-end-0">🔍</span>
+        <input
+          type="text"
+          class="form-control border-start-0"
+          placeholder="Filter cities by name or country..."
+          [(ngModel)]="searchQuery"
+        />
+        <button
+          *ngIf="searchQuery"
+          class="btn btn-outline-secondary border-start-0"
+          type="button"
+          (click)="searchQuery = ''"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <div class="col-6 col-sm-3 col-md-3">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text bg-white">🌐</span>
+        <select class="form-select" [(ngModel)]="selectedContinent">
+          <option *ngFor="let continent of continents" [value]="continent">
+            {{ continent }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-6 col-sm-3 col-md-4 d-flex justify-content-end">
+      <div class="btn-group btn-group-sm w-100" role="group">
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="sortBy === 'name'"
+          [class.btn-outline-secondary]="sortBy !== 'name'"
+          (click)="toggleSort('name')"
+        >
+          City {{ sortBy === 'name' ? (sortAsc ? '▲' : '▼') : '' }}
+        </button>
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="sortBy === 'country'"
+          [class.btn-outline-secondary]="sortBy !== 'country'"
+          (click)="toggleSort('country')"
+        >
+          Country {{ sortBy === 'country' ? (sortAsc ? '▲' : '▼') : '' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="filteredCities.length === 0" class="text-center py-5 bg-light rounded border my-3">
+    <h5>No cities found</h5>
+    <p class="text-muted small mb-2">No results matching "{{ searchQuery }}".</p>
+    <button class="btn btn-sm btn-primary" (click)="searchQuery = ''; selectedContinent = 'All'">
+      Clear Filters
+    </button>
+  </div>
+
+  <!-- Pure Responsive CSS Grid Table for Cities (City Name, Country, Current Temp) -->
+  <div *ngIf="filteredCities.length > 0" class="cities-grid-table border rounded overflow-hidden shadow-sm">
+    <!-- CSS Grid Header -->
+    <div class="cities-grid-header bg-dark text-white fw-bold py-2 px-3 small">
+      <div class="grid-col-city">City</div>
+      <div class="grid-col-country">Country</div>
+      <div class="grid-col-temp text-end">Current Temp</div>
+    </div>
+
+    <!-- CSS Grid Rows -->
+    <div
+      *ngFor="let city of filteredCities; trackBy: trackByCityId; let i = index"
+      class="cities-grid-row py-2 px-3 border-top align-items-center"
+      [class.bg-white]="i % 2 === 0"
+      [class.bg-light]="i % 2 !== 0"
+      (click)="openCityModal(city)"
+      tabindex="0"
+      role="button"
+      [attr.aria-label]="'View statistics and weather for ' + city.name + ', ' + city.country"
+      (keydown.enter)="openCityModal(city)"
+      (keydown.space)="openCityModal(city); $event.preventDefault()"
+    >
+      <div class="grid-col-city">
+        <button type="button" class="btn btn-link p-0 text-decoration-none fw-bold text-primary city-link">
+          {{ city.name }}
+        </button>
+      </div>
+
+      <div class="grid-col-country text-secondary">
+        {{ city.country }}
+      </div>
+
+      <div class="grid-col-temp text-end font-monospace">
+        <ng-container *ngIf="getCityWeather(city.id) as w; else loadingTemp">
+          <span class="temp-val-f text-primary fw-bold">{{ w.temperatureF }}°F</span>
+          <span class="temp-divider text-muted mx-1">/</span>
+          <span class="temp-val-c text-secondary fw-semibold">{{ w.temperatureC }}°C</span>
+        </ng-container>
+        <ng-template #loadingTemp>
+          <span class="text-muted small">--</span>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- About This Page Info Modal -->
+<ng-template #infoModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title text-primary">About This Page</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body overflow-y-auto text-break" style="max-height: 65vh;">
+    <h6 class="fw-bold">Cities Dataset & Grid Overview</h6>
+    <p class="small text-muted mb-3">
+      This page presents a dataset of <strong>{{ cities.length }} major world cities</strong> across all populated continents, rendered in a pure <strong>responsive CSS Grid</strong> data layout with real-time temperature values in both <strong>°F</strong> and <strong>°C</strong>.
+    </p>
+
+    <h6 class="fw-bold">Features & Implementation Methods</h6>
+    <ul class="small text-muted mb-3">
+      <li><strong>Responsive CSS Grid:</strong> Structured as a clean CSS Grid table displaying <strong>City Name</strong>, <strong>Country</strong>, and <strong>Current Temperature</strong> (°F &amp; °C).</li>
+      <li><strong>Separate Modal Component:</strong> The city details modal is implemented as its own standalone component (<code>CityInfoModalComponent</code>) with scrollable content.</li>
+      <li><strong>Live Local City Clock:</strong> Calculates and ticks the real-time local time and date for the chosen city using its native IANA timezone identifier.</li>
+      <li><strong>Dual Temperature Displays:</strong> Both the list grid and modal display temperatures in <strong>Fahrenheit (°F)</strong> and <strong>Celsius (°C)</strong>.</li>
+      <li><strong>Live Weather API:</strong> Fetches real-time temperature, condition codes, humidity, wind speed, and precipitation via the <a href="https://open-meteo.com/" target="_blank">Open-Meteo free API</a> using geographic coordinates (latitude / longitude).</li>
+      <li><strong>Browser Back Button History:</strong> Uses <code>ModalHistoryService</code> (<code>window.history.pushState</code> &amp; <code>popstate</code>). When the modal is open, pressing the browser <strong>← Back</strong> button, clicking outside the modal backdrop, or pressing <kbd>Esc</kbd> closes only the modal without leaving the page.</li>
+      <li><strong>Search &amp; Filter:</strong> Fast client-side search across city name and country, with sorting.</li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary btn-sm" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>

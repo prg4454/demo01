@@ -28,6 +28,7 @@ export class MenuComponent implements AfterViewInit {
         { label: 'About', path: '/about' },
         { label: 'Services', path: '/services' },
         { label: 'Master Functions', path: '/master' },
+        { label: 'Login', path: '/login' },
         {
             label: 'Misc',
             subItems: [
@@ -52,7 +53,9 @@ export class MenuComponent implements AfterViewInit {
                 { label: 'Pens and Pencils', path: '/pens-and-pencils' },
                 { label: 'Users', path: '/users' },
                 { label: 'Company List', path: '/company-list' },
-                { label: 'Songs', path: '/songs' }
+                { label: 'Songs', path: '/songs' },
+                { label: 'Posts', path: '/posts' },
+                { label: 'Cities', path: '/cities' }
             ]
         },
         {

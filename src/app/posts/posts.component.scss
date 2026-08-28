@@ -1,0 +1,15 @@
+:host {
+    display: block;
+
+    .posts-grid-row {
+        display: grid;
+        grid-template-columns: 50px 75px repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        align-items: start;
+    }
+}
+
+dialog::backdrop {
+    background: transparent;
+    pointer-events: none;
+}

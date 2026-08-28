@@ -1,0 +1,215 @@
+<div *ngIf="city" class="city-modal-wrapper">
+  <!-- Modal Header with Live City Time -->
+  <div class="modal-header-hero text-white p-3 p-md-4" [style.background]="city.accentColor">
+    <div class="d-flex justify-content-between align-items-start w-100">
+      <div class="d-flex align-items-center gap-3">
+        <span class="modal-flag">{{ city.flag }}</span>
+        <div>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <h3 class="modal-title mb-0 fw-bold">{{ city.name }}</h3>
+            <span class="badge bg-light text-dark rounded-pill">{{ city.continent }}</span>
+          </div>
+          <p class="modal-subtitle mb-1 text-white-50 fs-6">{{ city.country }}</p>
+          <!-- Prominent Live City Clock in Header -->
+          <div
+            class="city-live-clock-badge d-inline-flex align-items-center gap-2 px-2 py-1 rounded bg-black bg-opacity-25 text-white small">
+            <span class="clock-icon">🕒</span>
+            <strong class="font-monospace">{{ getCityLocalTime() }}</strong>
+            <span class="text-white-50">• {{ getCityLocalDate() }}</span>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn-close btn-close-white" aria-label="Close modal"
+        (click)="activeModal.dismiss('close')"></button>
+    </div>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body p-3 p-md-4">
+    <div class="row g-4">
+      <!-- Left Column: City Statistics & Overview -->
+      <div class="col-12 col-lg-7">
+        <!-- Description -->
+        <div class="mb-4">
+          <h6 class="fw-bold text-uppercase text-secondary small tracking-wider mb-2">About the City</h6>
+          <p class="text-secondary leading-relaxed mb-0">{{ city.description }}</p>
+        </div>
+
+        <!-- Comprehensive Stats Grid -->
+        <h6 class="fw-bold text-uppercase text-secondary small tracking-wider mb-2">City Profile & Demographics</h6>
+        <div class="stats-table rounded-3 border bg-light p-3 mb-4">
+          <div class="row g-3">
+            <!-- Current Time Stat Box -->
+            <div class="col-12 col-sm-6">
+              <div class="stat-item p-2 rounded bg-white border">
+                <div class="stat-label text-primary fw-bold">🕒 Current Local Time</div>
+                <div class="stat-data fs-5 fw-bold text-primary font-monospace">
+                  {{ getCityLocalTime() }}
+                </div>
+                <div class="text-muted small">{{ getCityLocalDate() }} ({{ city.timezone }})</div>
+              </div>
+            </div>
+
+            <!-- Timezone Details -->
+            <div class="col-12 col-sm-6">
+              <div class="stat-item p-2 rounded bg-white border">
+                <div class="stat-label">🌐 IANA Timezone</div>
+                <div class="stat-data fw-bold font-monospace small text-truncate" [title]="city.ianaTimeZone">
+                  {{ city.ianaTimeZone }}
+                </div>
+                <div class="text-muted small text-truncate">{{ city.timezone }}</div>
+              </div>
+            </div>
+
+            <div class="col-6 col-sm-4">
+              <div class="stat-item">
+                <div class="stat-label">👥 Population</div>
+                <div class="stat-data fw-bold">{{ city.population | number }}</div>
+              </div>
+            </div>
+            <div class="col-6 col-sm-4">
+              <div class="stat-item">
+                <div class="stat-label">📐 Area</div>
+                <div class="stat-data fw-bold">{{ city.areaKm2 | number }} km²</div>
+              </div>
+            </div>
+            <div class="col-6 col-sm-4">
+              <div class="stat-item">
+                <div class="stat-label">⛰️ Elevation</div>
+                <div class="stat-data fw-bold">{{ city.elevationMeters }} m above sea</div>
+              </div>
+            </div>
+            <div class="col-6 col-sm-4">
+              <div class="stat-item">
+                <div class="stat-label">🌐 Coordinates</div>
+                <div class="stat-data fw-semibold small">
+                  {{ city.latitude > 0 ? city.latitude + '°N' : -city.latitude + '°S' }},
+                  {{ city.longitude > 0 ? city.longitude + '°E' : -city.longitude + '°W' }}
+                </div>
+              </div>
+            </div>
+            <div class="col-6 col-sm-4">
+              <div class="stat-item">
+                <div class="stat-label">💵 Currency</div>
+                <div class="stat-data fw-semibold small text-truncate" [title]="city.currency">
+                  {{ city.currency }}
+                </div>
+              </div>
+            </div>
+            <div class="col-6 col-sm-4">
+              <div class="stat-item">
+                <div class="stat-label">📍 Density</div>
+                <div class="stat-data fw-semibold small">
+                  ~{{ (city.population / city.areaKm2) | number:'1.0-0' }} / km²
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="stat-item">
+                <div class="stat-label">🗣️ Official Language(s)</div>
+                <div class="stat-data fw-semibold small">{{ city.language }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Landmarks -->
+        <div>
+          <h6 class="fw-bold text-uppercase text-secondary small tracking-wider mb-2">Must-See Landmarks</h6>
+          <div class="d-flex flex-wrap gap-2">
+            <span *ngFor="let landmark of city.landmarks"
+              class="badge bg-secondary-subtle text-secondary-emphasis border p-2">
+              🏛️ {{ landmark }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Current Live Weather Card -->
+      <div class="col-12 col-lg-5">
+        <div class="weather-panel h-100 d-flex flex-column justify-content-between p-3 rounded-3 border">
+          <div>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="d-flex align-items-center gap-2">
+                <h6 class="fw-bold mb-0 text-uppercase small text-primary">🌤️ Live Weather</h6>
+                <span class="live-dot" title="Live update"></span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-outline-primary py-0 px-2" (click)="fetchWeather()"
+                  [disabled]="weatherLoading" title="Refresh current weather">
+                  🔄 Refresh
+                </button>
+              </div>
+            </div>
+
+            <!-- Weather Loading State -->
+            <div *ngIf="weatherLoading" class="text-center py-4">
+              <div class="spinner-border text-primary spinner-border-sm mb-2" role="status"></div>
+              <div class="small text-muted">Fetching real-time weather from Open-Meteo...</div>
+            </div>
+
+            <!-- Weather Display -->
+            <div *ngIf="!weatherLoading && weather" class="weather-details">
+              <!-- Main Temperature & Condition (Showing both °F and °C) -->
+              <div class="text-center py-3 mb-3 bg-gradient-weather rounded-3">
+                <div class="weather-icon-large mb-1">{{ weather.conditionIcon }}</div>
+
+                <!-- Prominent Dual Temperature Display (°F and °C) -->
+                <div class="temperature-display fw-bold">
+                  <span class="temp-f text-primary">{{ weather.temperatureF }}°F</span>
+                  <span class="temp-divider text-muted mx-2">/</span>
+                  <span class="temp-c text-secondary">{{ weather.temperatureC }}°C</span>
+                </div>
+
+                <div class="weather-condition fw-semibold text-capitalize">{{ weather.conditionText }}</div>
+
+                <div class="feels-like text-muted small mt-1">
+                  Feels like <strong>{{ weather.apparentTemperatureF }}°F</strong> ({{ weather.apparentTemperatureC
+                  }}°C)
+                </div>
+              </div>
+
+              <!-- Weather Stats Sub-grid -->
+              <div class="row g-2 text-center small mb-3">
+                <div class="col-4">
+                  <div class="weather-stat-box p-2 rounded bg-light border">
+                    <div class="text-muted">💧 Humidity</div>
+                    <div class="fw-bold mt-1">{{ weather.humidity }}%</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="weather-stat-box p-2 rounded bg-light border">
+                    <div class="text-muted">💨 Wind</div>
+                    <div class="fw-bold mt-1">{{ weather.windSpeedKmh }} km/h</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="weather-stat-box p-2 rounded bg-light border">
+                    <div class="text-muted">🌧️ Precip</div>
+                    <div class="fw-bold mt-1">{{ weather.precipitationMm }} mm</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weather Source Attribution & Timestamp -->
+          <div class="border-top pt-2 mt-2 text-muted small text-center" style="font-size: 0.75rem;">
+            <span *ngIf="weather">Updated {{ weather.fetchedAt | date:'shortTime' }} • </span>
+            Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo API</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-footer bg-light d-flex justify-content-between">
+    <span class="small text-muted">
+      Press <kbd>Esc</kbd> or browser <kbd>← Back</kbd> to close modal.
+    </span>
+    <button type="button" class="btn btn-secondary btn-sm px-4" (click)="activeModal.close('close')">
+      Close
+    </button>
+  </div>
+</div>

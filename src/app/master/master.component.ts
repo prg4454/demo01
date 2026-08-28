@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { NgbDropdownModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -202,12 +202,22 @@ export class MasterComponent {
         this.isCompanyListVisible = (tab === 'companies');
     }
 
+    @HostListener('window:popstate')
+    onPopState() {
+        this.modalService.dismissAll();
+    }
+
     onCompanyClick(company: MockCompany, confirmModal: any): void {
         this.selectedCompany = company;
         this.selectedEmployee = null;
         this.selectedCheck = null;
+
+        const state = { ...history.state, masterModalOpen: true };
+        history.pushState(state, '', window.location.href);
+
         this.modalService.open(confirmModal, { centered: true }).result.then(
             (result) => {
+                if (history.state?.masterModalOpen) { history.back(); }
                 if (result === 'view-employees') {
                     this.selectedCompanyEmployees = this.companyEmployeesMap[company.id] || [];
                     this.selectTab('employees');
@@ -226,15 +236,22 @@ export class MasterComponent {
                     this.selectTab('checks');
                 }
             },
-            () => { }
+            () => {
+                if (history.state?.masterModalOpen) { history.back(); }
+            }
         );
     }
 
     onEmployeeClicked(employee: Employee, actionModal: any, infoModal: any): void {
         this.selectedEmployee = employee;
         this.selectedCheck = null;
+
+        const state = { ...history.state, masterModalOpen: true };
+        history.pushState(state, '', window.location.href);
+
         this.modalService.open(actionModal, { centered: true }).result.then(
             (action) => {
+                if (history.state?.masterModalOpen) { history.back(); }
                 if (action === 'checks') {
                     this.selectedEmployeeChecks = this.getOrCreateEmployeeChecks(employee);
                     this.selectTab('checks');
@@ -242,10 +259,18 @@ export class MasterComponent {
                     this.selectedEmployeeHours = this.getOrCreateEmployeeHours(employee);
                     this.selectTab('hours');
                 } else if (action === 'info') {
-                    this.modalService.open(infoModal, { centered: true });
+                    const infoState = { ...history.state, masterModalOpen: true };
+                    history.pushState(infoState, '', window.location.href);
+
+                    this.modalService.open(infoModal, { centered: true }).result.then(
+                        () => { if (history.state?.masterModalOpen) { history.back(); } },
+                        () => { if (history.state?.masterModalOpen) { history.back(); } }
+                    );
                 }
             },
-            () => { }
+            () => {
+                if (history.state?.masterModalOpen) { history.back(); }
+            }
         );
     }
 

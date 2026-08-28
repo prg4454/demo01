@@ -54,6 +54,10 @@ export class Cats2EditComponent implements OnInit {
     @ViewChild('deleteConfirmDialog') deleteConfirmDialogEl!: ElementRef<HTMLDialogElement>;
     private deleteResolver: ((confirm: boolean) => void) | null = null;
 
+    private historyPushed = false;
+    private closingFromPopState = false;
+    private ignoreNextPopState = false;
+
     editDraft!: CatRecord;
     originalDraft!: CatRecord;
     readonly statuses: CatRecord['status'][] = ['Waiting', 'Exam', 'Treatment', 'Ready'];
@@ -66,6 +70,64 @@ export class Cats2EditComponent implements OnInit {
             nextAppointment: cat.nextAppointment || ''
         };
         this.originalDraft = structuredClone(this.editDraft);
+
+        // Push history state so browser back button works like cancel button
+        if (typeof window !== 'undefined') {
+            window.history.pushState({ cats2Dialog: true }, '');
+            this.historyPushed = true;
+            this.closingFromPopState = false;
+        }
+    }
+
+    private closeDialog(result?: Cats2EditResult): void {
+        if (this.historyPushed) {
+            this.historyPushed = false;
+            if (this.closingFromPopState) {
+                this.closingFromPopState = false;
+            } else if (typeof window !== 'undefined') {
+                this.ignoreNextPopState = true;
+                window.history.back();
+            }
+        }
+        this.dialogRef.close(result);
+    }
+
+    @HostListener('window:popstate', ['$event'])
+    onPopState(event: PopStateEvent): void {
+        if (this.ignoreNextPopState) {
+            this.ignoreNextPopState = false;
+            return;
+        }
+
+        // Browser back button pressed while dialog is open -> act like cancel button
+        this.closingFromPopState = true;
+        this.cancel();
+    }
+
+    onUnsavedCancel(event: Event): void {
+        event.preventDefault();
+        this.closeUnsavedDialog(false);
+    }
+
+    onDeleteConfirmCancel(event: Event): void {
+        event.preventDefault();
+        this.closeDeleteDialog(false);
+    }
+
+    @HostListener('window:keydown.escape', ['$event'])
+    onEscape(event: Event): void {
+        if (this.unsavedDialogEl?.nativeElement?.open) {
+            event.preventDefault();
+            this.closeUnsavedDialog(false);
+            return;
+        }
+        if (this.deleteConfirmDialogEl?.nativeElement?.open) {
+            event.preventDefault();
+            this.closeDeleteDialog(false);
+            return;
+        }
+        event.preventDefault();
+        this.cancel();
     }
 
     // 3. Listen to beforeunload event (browser refresh or tab closure) to alert user.
@@ -159,10 +221,7 @@ export class Cats2EditComponent implements OnInit {
         return (this.editDraft.name?.trim() ?? '').length > 0
             && (this.editDraft.breed?.trim() ?? '').length > 0
             && (this.editDraft.owner?.trim() ?? '').length > 0
-            && (this.editDraft.reason?.trim() ?? '').length > 0
-            && (this.editDraft.checkIn?.trim() ?? '').length > 0
-            && (this.editDraft.vet?.trim() ?? '').length > 0
-            && (this.editDraft.nextAppointment?.trim() ?? '').length > 0;
+            && (this.editDraft.reason?.trim() ?? '').length > 0;
     }
 
     save(): void {
@@ -170,7 +229,7 @@ export class Cats2EditComponent implements OnInit {
             return;
         }
         // Close the dialog and pass the saved cat draft back.
-        this.dialogRef.close({
+        this.closeDialog({
             action: 'save',
             cat: {
                 ...this.editDraft,
@@ -190,7 +249,7 @@ export class Cats2EditComponent implements OnInit {
         this.confirmDeleteWithHtmlDialog().then((isConfirmed) => {
             if (isConfirmed) {
                 // Close the dialog and pass 'delete' action back.
-                this.dialogRef.close({
+                this.closeDialog({
                     action: 'delete',
                     cat: this.editDraft
                 });
@@ -203,12 +262,22 @@ export class Cats2EditComponent implements OnInit {
         if (this.hasUnsavedChanges()) {
             this.confirmDiscardWithHtmlDialog().then(discard => {
                 if (discard) {
-                    this.dialogRef.close();
+                    this.closeDialog();
+                } else {
+                    // If user pressed browser back and then chose "Keep Editing", restore the history entry
+                    if (this.closingFromPopState) {
+                        this.closingFromPopState = false;
+                        if (typeof window !== 'undefined') {
+                            window.history.pushState({ cats2Dialog: true }, '');
+                            this.historyPushed = true;
+                        }
+                    }
                 }
             });
             return;
         }
         // Close the dialog without passing any result (undefined).
-        this.dialogRef.close();
+        this.closeDialog();
     }
 }
+

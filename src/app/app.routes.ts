@@ -102,6 +102,10 @@ export const routes: Routes = [
         canDeactivate: [pendingChangesGuard]
     },
     {
+        path: 'login',
+        loadComponent: () => import('./login/login.component').then((m) => m.LoginComponent)
+    },
+    {
         path: 'users',
         loadComponent: () => import('./users/users.component').then((m) => m.UsersComponent),
         canDeactivate: [pendingChangesGuard]
@@ -122,6 +126,21 @@ export const routes: Routes = [
     },
     {
         path: 'master',
-        loadComponent: () => import('./master/master.component').then((m) => m.MasterComponent)
+        loadComponent: () => import('./master/master.component').then((m) => m.MasterComponent),
+        canDeactivate: [pendingChangesGuard]
+    },
+    {
+        path: 'posts',
+        loadComponent: () => import('./posts/posts.component').then((m) => m.PostsComponent),
+        canDeactivate: [pendingChangesGuard]
+    },
+    {
+        path: 'cities',
+        loadComponent: () => import('./cities/cities.component').then((m) => m.CitiesComponent)
+    },
+    {
+        path: 'cites',
+        redirectTo: 'cities',
+        pathMatch: 'full'
     }
 ];

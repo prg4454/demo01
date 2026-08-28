@@ -1,0 +1,67 @@
+/* ==========================================================================
+   CSS Grid Responsive Data Layout (City, Country & Current Temp)
+   ========================================================================== */
+.cities-grid-table {
+  background: #ffffff;
+}
+
+.cities-grid-header,
+.cities-grid-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.2fr) minmax(130px, 1fr) minmax(140px, 1fr);
+  gap: 1rem;
+  align-items: center;
+}
+
+.cities-grid-row {
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f1f5f9 !important;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #0d6efd;
+    outline-offset: -2px;
+  }
+}
+
+.city-link {
+  font-size: 1rem;
+  text-align: left;
+}
+
+.grid-col-temp {
+  font-size: 0.95rem;
+  white-space: nowrap;
+
+  .temp-val-f {
+    font-weight: 700;
+  }
+
+  .temp-divider {
+    font-weight: 300;
+    opacity: 0.6;
+  }
+
+  .temp-val-c {
+    font-size: 0.88rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .cities-grid-header,
+  .cities-grid-row {
+    grid-template-columns: 1fr 1fr 110px;
+    gap: 0.5rem;
+  }
+
+  .grid-col-temp {
+    font-size: 0.85rem;
+
+    .temp-val-c {
+      font-size: 0.78rem;
+    }
+  }
+}

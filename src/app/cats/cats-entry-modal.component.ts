@@ -71,8 +71,7 @@ export class CatsEntryModalComponent implements OnInit {
             && (this.editDraft.owner?.trim() ?? '').length > 0
             && (this.editDraft.reason?.trim() ?? '').length > 0
             && (this.editDraft.checkIn?.trim() ?? '').length > 0
-            && (this.editDraft.vet?.trim() ?? '').length > 0
-            && (this.editDraft.nextAppointment?.trim() ?? '').length > 0;
+            && (this.editDraft.vet?.trim() ?? '').length > 0;
     }
 
     save(): void {
@@ -178,7 +177,7 @@ export class CatsEntryModalComponent implements OnInit {
         const dialogRef = this.modalService.open(this.deleteConfirmModal, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             scrollable: true
         });
         this.modalHistory.registerModal(dialogRef);
@@ -196,7 +195,7 @@ export class CatsEntryModalComponent implements OnInit {
         const dialogRef = this.modalService.open(this.unsavedChangesModal, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             scrollable: true
         });
         this.modalHistory.registerModal(dialogRef);

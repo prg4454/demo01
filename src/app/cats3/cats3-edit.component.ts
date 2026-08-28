@@ -42,6 +42,10 @@ export class Cats3EditComponent implements OnInit {
     private unsavedResolver: ((discard: boolean) => void) | null = null;
     private deleteResolver: ((confirm: boolean) => void) | null = null;
 
+    private historyPushed = false;
+    private closingFromPopState = false;
+    private ignoreNextPopState = false;
+
     cat!: CatRecord;
     editDraft!: CatRecord;
     originalDraft!: CatRecord;
@@ -65,17 +69,37 @@ export class Cats3EditComponent implements OnInit {
         // Force Angular to evaluate bindings and populate input controls in the template
         this.cdr.detectChanges();
 
+        // Push history state so browser back button works like cancel button
+        if (typeof window !== 'undefined') {
+            window.history.pushState({ cats3Dialog: true }, '');
+            this.historyPushed = true;
+            this.closingFromPopState = false;
+        }
+
         // Show the native HTML dialog modal
         const dialog = this.editDialogEl.nativeElement;
         dialog.showModal();
     }
 
-    // 3. Close the main dialog programmatically (used during destruction or deactivation)
-    close(): void {
-        const dialog = this.editDialogEl.nativeElement;
+    private closeMainDialog(): void {
+        if (this.historyPushed) {
+            this.historyPushed = false;
+            if (this.closingFromPopState) {
+                this.closingFromPopState = false;
+            } else if (typeof window !== 'undefined') {
+                this.ignoreNextPopState = true;
+                window.history.back();
+            }
+        }
+        const dialog = this.editDialogEl?.nativeElement;
         if (dialog && dialog.open) {
             dialog.close();
         }
+    }
+
+    // 3. Close the main dialog programmatically (used during destruction or deactivation)
+    close(): void {
+        this.closeMainDialog();
 
         // Restore body/backdrop scroll
         document.body.style.overflow = '';
@@ -84,9 +108,67 @@ export class Cats3EditComponent implements OnInit {
         this.closeDeleteDialog(false);
     }
 
+    onDialogCancel(event: Event): void {
+        // Prevent default native ESC close and route through cancel() validation
+        event.preventDefault();
+        this.cancel();
+    }
+
+    onUnsavedCancel(event: Event): void {
+        event.preventDefault();
+        this.closeUnsavedDialog(false);
+    }
+
+    onDeleteConfirmCancel(event: Event): void {
+        event.preventDefault();
+        this.closeDeleteDialog(false);
+    }
+
+    @HostListener('window:keydown.escape', ['$event'])
+    onEscape(event: KeyboardEvent): void {
+        if (this.unsavedDialogEl?.nativeElement?.open) {
+            event.preventDefault();
+            this.closeUnsavedDialog(false);
+            return;
+        }
+        if (this.deleteConfirmDialogEl?.nativeElement?.open) {
+            event.preventDefault();
+            this.closeDeleteDialog(false);
+            return;
+        }
+        if (this.isOpen()) {
+            event.preventDefault();
+            this.cancel();
+        }
+    }
+
     onDialogClose(): void {
         // Safe check to restore scrolling in case dialog closed natively (e.g. Esc button)
         document.body.style.overflow = '';
+        if (this.historyPushed && !this.closingFromPopState) {
+            this.historyPushed = false;
+            if (typeof window !== 'undefined') {
+                this.ignoreNextPopState = true;
+                window.history.back();
+            }
+        }
+        this.closingFromPopState = false;
+    }
+
+    @HostListener('window:popstate', ['$event'])
+    onPopState(event: PopStateEvent): void {
+        if (this.ignoreNextPopState) {
+            this.ignoreNextPopState = false;
+            return;
+        }
+
+        if (!this.isOpen()) {
+            return;
+        }
+
+        // Browser back button pressed while dialog is open -> act like cancel button
+        this.closingFromPopState = true;
+        this.cancel();
     }
 
     isOpen(): boolean {
@@ -189,8 +271,7 @@ export class Cats3EditComponent implements OnInit {
             && (this.editDraft.owner?.trim() ?? '').length > 0
             && (this.editDraft.reason?.trim() ?? '').length > 0
             && (this.editDraft.checkIn?.trim() ?? '').length > 0
-            && (this.editDraft.vet?.trim() ?? '').length > 0
-            && (this.editDraft.nextAppointment?.trim() ?? '').length > 0;
+            && (this.editDraft.vet?.trim() ?? '').length > 0;
     }
 
     save(): void {
@@ -207,8 +288,8 @@ export class Cats3EditComponent implements OnInit {
             vet: (this.editDraft.vet ?? '').trim(),
             nextAppointment: (this.editDraft.nextAppointment ?? '').trim()
         };
-        // Close native dialog
-        this.editDialogEl.nativeElement.close();
+        // Close native dialog & clean up history
+        this.closeMainDialog();
         // Emit saved event back to parent
         this.saved.emit(updated);
     }
@@ -216,8 +297,8 @@ export class Cats3EditComponent implements OnInit {
     delete(): void {
         this.confirmDeleteWithHtmlDialog().then((isConfirmed) => {
             if (isConfirmed) {
-                // Close native dialogs
-                this.editDialogEl.nativeElement.close();
+                // Close native dialogs & clean up history
+                this.closeMainDialog();
                 // Emit deleted event back to parent
                 this.deleted.emit(this.editDraft);
             }
@@ -229,12 +310,21 @@ export class Cats3EditComponent implements OnInit {
         if (this.hasUnsavedChanges()) {
             this.confirmDiscardWithHtmlDialog().then(discard => {
                 if (discard) {
-                    this.editDialogEl.nativeElement.close();
+                    this.closeMainDialog();
+                } else {
+                    // If user pressed browser back and then chose "Keep Editing", restore the history entry
+                    if (this.closingFromPopState) {
+                        this.closingFromPopState = false;
+                        if (typeof window !== 'undefined') {
+                            window.history.pushState({ cats3Dialog: true }, '');
+                            this.historyPushed = true;
+                        }
+                    }
                 }
             });
             return;
         }
-        this.editDialogEl.nativeElement.close();
+        this.closeMainDialog();
     }
 }
 

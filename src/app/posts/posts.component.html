@@ -1,0 +1,74 @@
+<div class="container py-4">
+    <div class="d-flex align-items-center mb-4 gap-3">
+        <h2 class="mb-0">Posts</h2>
+        <button class="btn btn-sm btn-success" (click)="openInfo(infoModal)">About this page</button>
+    </div>
+
+    @if (loading) {
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    } @else {
+    @for (post of posts; track post.id) {
+    <div class="posts-grid-row border-bottom border-dark py-3">
+        <div class="mb-1">
+            <b>ID</b>
+            <div>{{ post.id }}</div>
+        </div>
+        <div class="mb-1">
+            <b>User ID</b>
+            <div>{{ post.userId }}</div>
+        </div>
+        <div class="mb-1" style="grid-column: 3 / -1;">
+            <b>Title</b>
+            <div class="fw-bold">{{ post.title }}</div>
+        </div>
+        <div class="mb-1" style="grid-column: 1 / -1;">
+            <b>Body</b>
+            <div class="small">{{ post.body }}</div>
+        </div>
+    </div>
+    }
+    }
+</div>
+
+<!-- Info Modal using ng-bootstrap -->
+<ng-template #infoModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title text-info">About This Page</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body overflow-y-auto text-break" style="max-height: 60vh;">
+        <h6 class="fw-bold">Data Source</h6>
+        <p class="small text-muted mb-3">
+            The data displayed here is fetched dynamically from <strong><a href="https://jsonplaceholder.typicode.com/"
+                    target="_blank" style="word-break: break-all;">jsonplaceholder.typicode.com</a></strong>, a free
+            fake REST
+            API.
+        </p>
+
+        <h6 class="fw-bold">Programming Methods</h6>
+        <ul class="small text-muted mb-0">
+            <li><strong>State Management:</strong> Uses standard Angular class properties (<code>posts</code> array and
+                <code>loading</code> boolean) to manage the component's state.</li>
+            <li><strong>HTTP Client:</strong> Utilized Angular's <code>HttpClient</code> to perform the asynchronous
+                GET request within the <code>ngOnInit</code> lifecycle hook.</li>
+            <li><strong>CSS Grid:</strong> Implemented a responsive custom CSS Grid for the layout instead of
+                traditional UI cards. The row configuration uses
+                <code
+                    style="word-break: break-word; white-space: pre-wrap;">grid-template-columns: 50px 50px repeat(auto-fit, minmax(150px, 1fr));</code>.
+            </li>
+            <li><strong>Column Spanning:</strong> The <em>Title</em> cell is forced to span the remainder of the row
+                using <code style="word-break: break-word;">grid-column: 3 / -1;</code>, while the <em>Body</em> cell
+                drops down to span the full
+                width using <code style="word-break: break-word;">grid-column: 1 / -1;</code>.</li>
+            <li><strong>ng-bootstrap Modal:</strong> This modal is built using <code>NgbModal</code> from the
+                ng-bootstrap library.</li>
+        </ul>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="modal.close()">Close</button>
+    </div>
+</ng-template>

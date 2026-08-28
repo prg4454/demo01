@@ -9,15 +9,15 @@
             @if (editDraft) {
             <div class="row gx-3 gy-2 entry-grid">
                 <div class="col-12 col-md-6 field-block">
-                    <label class="form-label fw-semibold">Name</label>
+                    <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" [(ngModel)]="editDraft.name" name="name">
                 </div>
                 <div class="col-12 col-md-6 field-block">
-                    <label class="form-label fw-semibold">Breed</label>
+                    <label class="form-label fw-semibold">Breed <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" [(ngModel)]="editDraft.breed" name="breed">
                 </div>
                 <div class="col-12 field-block">
-                    <label class="form-label fw-semibold">Reason</label>
+                    <label class="form-label fw-semibold">Reason <span class="text-danger">*</span></label>
                     <textarea class="form-control" rows="2" [(ngModel)]="editDraft.reason" name="reason"></textarea>
                 </div>
                 <div class="col-12 col-md-6 field-block">
@@ -33,7 +33,7 @@
                     </select>
                 </div>
                 <div class="col-12 field-block">
-                    <label class="form-label fw-semibold">Owner</label>
+                    <label class="form-label fw-semibold">Owner <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" [(ngModel)]="editDraft.owner" name="owner">
                 </div>
                 <div class="col-12 field-block">
@@ -64,8 +64,8 @@
 </div>
 
 <!-- Native HTML5 Dialog for Unsaved Changes Warning -->
-<dialog #unsavedDialog class="border-0 shadow-lg rounded-3 p-0"
-    style="max-width: 500px; width: 90%; background: white;">
+<dialog #unsavedDialog class="border-0 shadow-lg rounded-3 p-0" style="max-width: 500px; width: 90%; background: white;"
+    (cancel)="onUnsavedCancel($event)">
     <div class="p-3">
         <div class="modal-header pb-2 border-bottom mb-3 text-danger">
             <h5 class="modal-title">Unsaved Changes</h5>
@@ -107,7 +107,7 @@
 
 <!-- Native HTML5 Dialog for Delete Confirmation -->
 <dialog #deleteConfirmDialog class="border-0 shadow-lg rounded-3 p-0"
-    style="max-width: 450px; width: 90%; background: white;">
+    style="max-width: 450px; width: 90%; background: white;" (cancel)="onDeleteConfirmCancel($event)">
     <div class="p-3">
         <div class="modal-header pb-2 border-bottom mb-3 text-danger">
             <h5 class="modal-title">Confirm Deletion</h5>

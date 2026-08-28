@@ -1,6 +1,7 @@
 <!-- Main Edit Form Native HTML5 Dialog -->
 <dialog #editDialog id="editDialog" class="border-0 shadow-lg rounded-3 p-0"
-    style="max-width: 550px; width: 95%; background: white;" (close)="onDialogClose()">
+    style="max-width: 550px; width: 95%; background: white;" (close)="onDialogClose()"
+    (cancel)="onDialogCancel($event)">
     <div class="app-edit-modal p-3">
         <div class="modal-header pb-2 border-bottom mb-3 d-flex justify-content-between align-items-center">
             <h5 class="modal-title">{{ allowDelete ? "Edit Cat (Native Dialog)" : "Add Cat (Native Dialog)" }}</h5>
@@ -68,8 +69,8 @@
 </dialog>
 
 <!-- Native HTML5 Dialog for Unsaved Changes Warning -->
-<dialog #unsavedDialog class="border-0 shadow-lg rounded-3 p-0"
-    style="max-width: 500px; width: 90%; background: white;">
+<dialog #unsavedDialog class="border-0 shadow-lg rounded-3 p-0" style="max-width: 500px; width: 90%; background: white;"
+    (cancel)="onUnsavedCancel($event)">
     <div class="p-3">
         <div class="modal-header pb-2 border-bottom mb-3 text-danger">
             <h5 class="modal-title">Unsaved Changes</h5>
@@ -111,7 +112,7 @@
 
 <!-- Native HTML5 Dialog for Delete Confirmation -->
 <dialog #deleteConfirmDialog class="border-0 shadow-lg rounded-3 p-0"
-    style="max-width: 450px; width: 90%; background: white;">
+    style="max-width: 450px; width: 90%; background: white;" (cancel)="onDeleteConfirmCancel($event)">
     <div class="p-3">
         <div class="modal-header pb-2 border-bottom mb-3 text-danger">
             <h5 class="modal-title">Confirm Deletion</h5>

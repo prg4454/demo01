@@ -89,10 +89,10 @@ export class CatsComponent implements OnInit {
         const modalRef = this.modalService.open(CatsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             size: 'lg',
             scrollable: true,
-            beforeDismiss: () => modalRef.componentInstance.handleBeforeDismiss()
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
         this.modalHistory.registerModal(modalRef);
 
@@ -126,10 +126,10 @@ export class CatsComponent implements OnInit {
         const modalRef = this.modalService.open(CatsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
-            keyboard: false,
+            keyboard: true,
             size: 'lg',
             scrollable: true,
-            beforeDismiss: () => modalRef.componentInstance.handleBeforeDismiss()
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
         this.modalHistory.registerModal(modalRef);
 
