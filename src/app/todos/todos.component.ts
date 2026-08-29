@@ -6,7 +6,6 @@ import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.comp
 import { ModalHistoryService } from '../modal-history.service';
 import { StorageService } from '../storage.service';
 import { TodoCategory, TodoPriority, TodoRecord, TodoStatus, TodosModalResult } from './todo.model';
-import { TodosEntryModalComponent } from './todos-entry-modal.component';
 
 export type { TodoCategory, TodoPriority, TodoRecord, TodoStatus, TodosModalResult };
 
@@ -295,7 +294,6 @@ export class TodosComponent implements OnInit {
     }
   }
 
-  openAddModal(): void {
   async openAddModal(): Promise<void> {
     const { TodosEntryModalComponent } = await import('./todos-entry-modal.component');
     const nextId = this.todos.length > 0 ? Math.max(...this.todos.map(t => t.id)) + 1 : 201;
@@ -338,7 +336,6 @@ export class TodosComponent implements OnInit {
       .catch(() => { });
   }
 
-  openEditModal(todo: TodoRecord): void {
   async openEditModal(todo: TodoRecord): Promise<void> {
     const { TodosEntryModalComponent } = await import('./todos-entry-modal.component');
     const modalRef = this.modalService.open(TodosEntryModalComponent, {
