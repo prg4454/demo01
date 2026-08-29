@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
-import { AutomobileRecord, AutomobileEntryModalComponent, AutomobileModalResult } from './automobile-entry-modal.component';
+import type { AutomobileRecord, AutomobileModalResult } from './automobile-entry-modal.component';
+
+export type { AutomobileRecord, AutomobileModalResult };
 
 @Component({
     selector: 'app-automobiles',
@@ -87,7 +89,8 @@ export class AutomobilesComponent {
         }
     }
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { AutomobileEntryModalComponent } = await import('./automobile-entry-modal.component');
         const modalRef = this.modalService.open(AutomobileEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -118,7 +121,8 @@ export class AutomobilesComponent {
         }).catch(() => { });
     }
 
-    openEditModal(record: AutomobileRecord): void {
+    async openEditModal(record: AutomobileRecord): Promise<void> {
+        const { AutomobileEntryModalComponent } = await import('./automobile-entry-modal.component');
         const modalRef = this.modalService.open(AutomobileEntryModalComponent, {
             centered: true,
             backdrop: 'static',

@@ -3,11 +3,12 @@ import { Component, inject } from '@angular/core';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
-import {
+import type {
     CustomerRecord,
-    CustomerEntryModalComponent,
     CustomerModalResult
 } from './customers-entry-modal.component';
+
+export type { CustomerRecord, CustomerModalResult };
 
 @Component({
     selector: 'app-customers',
@@ -85,7 +86,8 @@ export class CustomersComponent {
         }
     }
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { CustomerEntryModalComponent } = await import('./customers-entry-modal.component');
         const modalRef = this.modalService.open(CustomerEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -121,7 +123,8 @@ export class CustomersComponent {
             .catch(() => undefined);
     }
 
-    openEditModal(record: CustomerRecord): void {
+    async openEditModal(record: CustomerRecord): Promise<void> {
+        const { CustomerEntryModalComponent } = await import('./customers-entry-modal.component');
         const modalRef = this.modalService.open(CustomerEntryModalComponent, {
             centered: true,
             backdrop: 'static',

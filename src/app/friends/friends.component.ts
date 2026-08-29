@@ -4,7 +4,9 @@ import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import { StorageService } from '../storage.service';
-import { FriendActivity, FriendRecord, FriendsEntryModalComponent, FriendsModalResult } from './friends-entry-modal.component';
+import type { FriendActivity, FriendRecord, FriendsModalResult } from './friends-entry-modal.component';
+
+export type { FriendActivity, FriendRecord, FriendsModalResult };
 
 @Component({
     selector: 'app-friends',
@@ -120,7 +122,8 @@ export class FriendsComponent implements OnInit {
         }
     }
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { FriendsEntryModalComponent } = await import('./friends-entry-modal.component');
         const modalRef = this.modalService.open(FriendsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -156,7 +159,8 @@ export class FriendsComponent implements OnInit {
             .catch(() => undefined);
     }
 
-    openEditModal(friend: FriendRecord): void {
+    async openEditModal(friend: FriendRecord): Promise<void> {
+        const { FriendsEntryModalComponent } = await import('./friends-entry-modal.component');
         const modalRef = this.modalService.open(FriendsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -191,7 +195,8 @@ export class FriendsComponent implements OnInit {
             .catch(() => undefined);
     }
 
-    openActivitiesModal(friend: FriendRecord): void {
+    async openActivitiesModal(friend: FriendRecord): Promise<void> {
+        const { FriendsEntryModalComponent } = await import('./friends-entry-modal.component');
         const modalRef = this.modalService.open(FriendsEntryModalComponent, {
             centered: true,
             backdrop: 'static',

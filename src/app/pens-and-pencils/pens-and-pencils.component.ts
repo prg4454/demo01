@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalHistoryService } from '../modal-history.service';
-import {
-    PensAndPencilsEntryModalComponent,
+import type {
     PensAndPencilsModalResult,
     PensAndPencilsRecord
 } from './pens-and-pencils-entry-modal.component';
+
+export type { PensAndPencilsModalResult, PensAndPencilsRecord };
 
 @Component({
     selector: 'app-pens-and-pencils',
@@ -46,7 +47,8 @@ export class PensAndPencilsComponent {
     editDraft: PensAndPencilsRecord | null = null;
     originalDraft: PensAndPencilsRecord | null = null;
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { PensAndPencilsEntryModalComponent } = await import('./pens-and-pencils-entry-modal.component');
         const modalRef = this.modalService.open(PensAndPencilsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -80,7 +82,8 @@ export class PensAndPencilsComponent {
             .catch(() => undefined);
     }
 
-    openEditModal(record: PensAndPencilsRecord): void {
+    async openEditModal(record: PensAndPencilsRecord): Promise<void> {
+        const { PensAndPencilsEntryModalComponent } = await import('./pens-and-pencils-entry-modal.component');
         const modalRef = this.modalService.open(PensAndPencilsEntryModalComponent, {
             centered: true,
             backdrop: 'static',

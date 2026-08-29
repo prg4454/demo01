@@ -3,11 +3,12 @@ import { Component, inject } from '@angular/core';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
-import {
+import type {
     AddressBookRecord,
-    AddressBookEntryModalComponent,
     AddressBookModalResult
 } from './address-book-entry-modal.component';
+
+export type { AddressBookRecord, AddressBookModalResult };
 
 @Component({
     selector: 'app-address-book',
@@ -92,7 +93,8 @@ export class AddressBookComponent {
         }
     }
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { AddressBookEntryModalComponent } = await import('./address-book-entry-modal.component');
         const modalRef = this.modalService.open(AddressBookEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -127,7 +129,8 @@ export class AddressBookComponent {
             .catch(() => undefined);
     }
 
-    openEditModal(record: AddressBookRecord): void {
+    async openEditModal(record: AddressBookRecord): Promise<void> {
+        const { AddressBookEntryModalComponent } = await import('./address-book-entry-modal.component');
         const modalRef = this.modalService.open(AddressBookEntryModalComponent, {
             centered: true,
             backdrop: 'static',

@@ -4,7 +4,9 @@ import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import { StorageService } from '../storage.service';
-import { MedicineRecord, MedicinesEntryModalComponent, MedicinesModalResult } from './medicines-entry-modal.component';
+import type { MedicineRecord, MedicinesModalResult } from './medicines-entry-modal.component';
+
+export type { MedicineRecord, MedicinesModalResult };
 
 @Component({
     selector: 'app-medicines',
@@ -93,7 +95,8 @@ export class MedicinesComponent implements OnInit {
         }
     }
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { MedicinesEntryModalComponent } = await import('./medicines-entry-modal.component');
         const modalRef = this.modalService.open(MedicinesEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -129,7 +132,8 @@ export class MedicinesComponent implements OnInit {
             .catch(() => undefined);
     }
 
-    openEditModal(medicine: MedicineRecord): void {
+    async openEditModal(medicine: MedicineRecord): Promise<void> {
+        const { MedicinesEntryModalComponent } = await import('./medicines-entry-modal.component');
         const modalRef = this.modalService.open(MedicinesEntryModalComponent, {
             centered: true,
             backdrop: 'static',

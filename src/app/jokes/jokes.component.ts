@@ -3,7 +3,9 @@ import { Component, inject } from '@angular/core';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
-import { JokesEntryModalComponent, JokeRecord, JokesModalResult } from './jokes-entry-modal.component';
+import type { JokeRecord, JokesModalResult } from './jokes-entry-modal.component';
+
+export type { JokeRecord, JokesModalResult };
 
 @Component({
     selector: 'app-jokes',
@@ -103,7 +105,8 @@ export class JokesComponent {
         }
     }
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { JokesEntryModalComponent } = await import('./jokes-entry-modal.component');
         const modalRef = this.modalService.open(JokesEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -139,7 +142,8 @@ export class JokesComponent {
             .catch(() => undefined);
     }
 
-    openEditModal(joke: JokeRecord): void {
+    async openEditModal(joke: JokeRecord): Promise<void> {
+        const { JokesEntryModalComponent } = await import('./jokes-entry-modal.component');
         const modalRef = this.modalService.open(JokesEntryModalComponent, {
             centered: true,
             backdrop: 'static',

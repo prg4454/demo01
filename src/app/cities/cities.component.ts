@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalHistoryService } from '../modal-history.service';
 import { CityData, WeatherData } from './city.model';
-import { CityInfoModalComponent } from './city-info-modal.component';
 import { CityWeatherService } from './city-weather.service';
 
 export type { CityData, WeatherData };
@@ -708,7 +707,8 @@ export class CitiesComponent implements OnInit {
     }
   }
 
-  openCityModal(city: CityData): void {
+  async openCityModal(city: CityData): Promise<void> {
+    const { CityInfoModalComponent } = await import('./city-info-modal.component');
     const modalRef = this.modalService.open(CityInfoModalComponent, {
       size: 'lg',
       centered: true,

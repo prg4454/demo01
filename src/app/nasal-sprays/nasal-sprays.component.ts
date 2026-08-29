@@ -3,11 +3,12 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalHistoryService } from '../modal-history.service';
-import {
+import type {
     NasalSprayRecord,
-    NasalSpraysEntryModalComponent,
     NasalSpraysModalResult
 } from './nasal-sprays-entry-modal.component';
+
+export type { NasalSprayRecord, NasalSpraysModalResult };
 
 @Component({
     selector: 'app-nasal-sprays',
@@ -35,7 +36,8 @@ export class NasalSpraysComponent {
         { id: 10, brandName: 'Xlear', genericName: 'Xylitol Saline', strength: '0.75%', category: 'Saline', dose: '2 to 4 sprays as needed', usage: 'Hydrate and clear nasal passages', comments: 'Popular for dry air and travel days.', manufacturer: 'Xlear Inc.', lastOpened: '2026-07-20' }
     ];
 
-    openEditModal(spray: NasalSprayRecord): void {
+    async openEditModal(spray: NasalSprayRecord): Promise<void> {
+        const { NasalSpraysEntryModalComponent } = await import('./nasal-sprays-entry-modal.component');
         const modalRef = this.modalService.open(NasalSpraysEntryModalComponent, {
             centered: true,
             backdrop: 'static',

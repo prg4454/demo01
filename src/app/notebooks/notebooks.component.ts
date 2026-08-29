@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
-import { NotebookRecord, NotebookEntryModalComponent, NotebookModalResult } from './notebook-entry-modal.component';
+import type { NotebookRecord, NotebookModalResult } from './notebook-entry-modal.component';
+
+export type { NotebookRecord, NotebookModalResult };
 
 @Component({
     selector: 'app-notebooks',
@@ -72,7 +74,8 @@ export class NotebooksComponent {
         }
     }
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { NotebookEntryModalComponent } = await import('./notebook-entry-modal.component');
         const modalRef = this.modalService.open(NotebookEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -102,7 +105,8 @@ export class NotebooksComponent {
         }).catch(() => { });
     }
 
-    openEditModal(record: NotebookRecord): void {
+    async openEditModal(record: NotebookRecord): Promise<void> {
+        const { NotebookEntryModalComponent } = await import('./notebook-entry-modal.component');
         const modalRef = this.modalService.open(NotebookEntryModalComponent, {
             centered: true,
             backdrop: 'static',

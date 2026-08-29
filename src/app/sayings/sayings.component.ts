@@ -3,7 +3,9 @@ import { Component, inject } from '@angular/core';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
-import { SayingsEntryModalComponent, SayingsModalResult, SillySaying } from './sayings-entry-modal.component';
+import type { SayingsModalResult, SillySaying } from './sayings-entry-modal.component';
+
+export type { SayingsModalResult, SillySaying };
 
 @Component({
     selector: 'app-sayings',
@@ -57,7 +59,7 @@ export class SayingsComponent {
         }
     }
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
         const newSaying: SillySaying = {
             id: this.getNextId(),
             text: '',
@@ -69,6 +71,7 @@ export class SayingsComponent {
             lastHeard: ''
         };
 
+        const { SayingsEntryModalComponent } = await import('./sayings-entry-modal.component');
         const modalRef = this.modalService.open(SayingsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -94,9 +97,10 @@ export class SayingsComponent {
             .catch(() => undefined);
     }
 
-    openEditModal(saying: SillySaying): void {
+    async openEditModal(saying: SillySaying): Promise<void> {
         this.selectedSayingId = saying.id;
 
+        const { SayingsEntryModalComponent } = await import('./sayings-entry-modal.component');
         const modalRef = this.modalService.open(SayingsEntryModalComponent, {
             centered: true,
             backdrop: 'static',

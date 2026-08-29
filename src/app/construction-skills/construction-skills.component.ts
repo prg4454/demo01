@@ -4,11 +4,12 @@ import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import { StorageService } from '../storage.service';
-import {
+import type {
     ConstructionSkillRecord,
-    ConstructionSkillsEntryModalComponent,
     ConstructionSkillsModalResult
 } from './construction-skills-entry-modal.component';
+
+export type { ConstructionSkillRecord, ConstructionSkillsModalResult };
 
 @Component({
     selector: 'app-construction-skills',
@@ -101,7 +102,8 @@ export class ConstructionSkillsComponent implements OnInit {
         }
     }
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { ConstructionSkillsEntryModalComponent } = await import('./construction-skills-entry-modal.component');
         const modalRef = this.modalService.open(ConstructionSkillsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -136,7 +138,8 @@ export class ConstructionSkillsComponent implements OnInit {
             .catch(() => undefined);
     }
 
-    openEditModal(skillRecord: ConstructionSkillRecord): void {
+    async openEditModal(skillRecord: ConstructionSkillRecord): Promise<void> {
+        const { ConstructionSkillsEntryModalComponent } = await import('./construction-skills-entry-modal.component');
         const modalRef = this.modalService.open(ConstructionSkillsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
