@@ -1,0 +1,181 @@
+<div class="app-edit-modal">
+  <div class="modal-header py-2 px-3">
+    <h5 class="modal-title fw-bold">{{ allowDelete ? "Edit To-Do" : "Add To-Do" }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="requestCancel()"></button>
+  </div>
+
+  <div class="modal-body py-2 px-3">
+    @if (editDraft) {
+    <div class="row g-2 entry-grid">
+      <!-- Title -->
+      <div class="col-12 field-block">
+        <label class="form-label fw-semibold">Task Title <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="e.g. Complete quarterly budget review"
+          [(ngModel)]="editDraft.title"
+          (keydown.enter)="save()"
+          required
+        />
+        @if (saveAttempted && !editDraft.title.trim()) {
+          <div class="text-danger small">Title is required.</div>
+        }
+      </div>
+
+      <!-- Category -->
+      <div class="col-12 col-md-6 field-block">
+        <label class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+        <select class="form-select" [(ngModel)]="editDraft.category">
+          @for (cat of categories; track cat) {
+            <option [value]="cat">{{ cat }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Priority -->
+      <div class="col-12 col-md-6 field-block">
+        <label class="form-label fw-semibold">Priority <span class="text-danger">*</span></label>
+        <select class="form-select" [(ngModel)]="editDraft.priority">
+          @for (p of priorities; track p) {
+            <option [value]="p">{{ p }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Status -->
+      <div class="col-12 col-md-6 field-block">
+        <label class="form-label fw-semibold">Status <span class="text-danger">*</span></label>
+        <select class="form-select" [(ngModel)]="editDraft.status">
+          @for (s of statuses; track s) {
+            <option [value]="s">{{ s }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Due Date -->
+      <div class="col-12 col-md-6 field-block">
+        <label class="form-label fw-semibold">Due Date <span class="text-danger">*</span></label>
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="editDraft.dueDate"
+          (keydown.enter)="save()"
+          required
+        />
+        @if (saveAttempted && !editDraft.dueDate.trim()) {
+          <div class="text-danger small">Due date is required.</div>
+        }
+      </div>
+
+      <!-- Assigned To -->
+      <div class="col-12 field-block">
+        <label class="form-label fw-semibold">Assigned To <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          list="assigneeOptions"
+          placeholder="e.g. Sarah Chen, Alex Rivera, Self..."
+          [(ngModel)]="editDraft.assignedTo"
+          (keydown.enter)="save()"
+          required
+        />
+        <datalist id="assigneeOptions">
+          <option value="Self"></option>
+          <option value="Sarah Chen"></option>
+          <option value="Alex Rivera"></option>
+          <option value="Elena Rostova"></option>
+          <option value="Marcus Vance"></option>
+          <option value="David Miller"></option>
+          <option value="Security Team"></option>
+          <option value="DevOps Lead"></option>
+        </datalist>
+        @if (saveAttempted && !editDraft.assignedTo.trim()) {
+          <div class="text-danger small">Assignee is required.</div>
+        }
+      </div>
+
+      <!-- Comments / Notes -->
+      <div class="col-12 field-block">
+        <label class="form-label fw-semibold">Comments & Notes</label>
+        <textarea
+          class="form-control"
+          rows="2"
+          placeholder="Add any additional context, links, or notes..."
+          [(ngModel)]="editDraft.comments"
+        ></textarea>
+      </div>
+    </div>
+    }
+  </div>
+
+  <div class="modal-footer py-2 px-3 d-flex justify-content-between">
+    <div>
+      @if (allowDelete) {
+        <button type="button" class="btn btn-danger" (click)="requestDelete()">Delete</button>
+      }
+    </div>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-secondary" (click)="requestCancel()">Cancel</button>
+      <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<ng-template #deleteConfirmModal let-modal>
+  <div class="app-confirm-modal">
+    <div class="modal-header py-2 px-3">
+      <h5 class="modal-title text-danger">Confirm Delete</h5>
+    </div>
+    <div class="modal-body py-2 px-3">
+      @if (editDraft) {
+        <p class="mb-1">Are you sure you want to delete this to-do item?</p>
+        <p class="mb-0"><strong>{{ editDraft.title }}</strong> (ID: {{ editDraft.id }})</p>
+      }
+    </div>
+    <div class="modal-footer py-2 px-3">
+      <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Cancel</button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('delete')">Delete</button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Unsaved Changes Modal -->
+<ng-template #unsavedChangesModal let-modal>
+  <div class="app-confirm-modal">
+    <div class="modal-header py-2 px-3">
+      <h5 class="modal-title">Unsaved Changes</h5>
+    </div>
+    <div class="modal-body py-2 px-3">
+      <p class="mb-2">You have unsaved changes. Leave without saving?</p>
+
+      @if (getUnsavedChanges().length) {
+        <div class="table-responsive">
+          <table class="table table-changes table-bordered align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Before</th>
+                <th>After</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (change of getUnsavedChanges(); track change.label) {
+                <tr>
+                  <td>{{ change.label }}</td>
+                  <td>{{ change.before || '—' }}</td>
+                  <td>{{ change.after || '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+    <div class="modal-footer py-2 px-3">
+      <button type="button" class="btn btn-outline-secondary" (click)="modal.close('keep')">Keep Editing</button>
+      <button type="button" class="btn btn-danger" (click)="modal.close('discard')">Discard Changes</button>
+    </div>
+  </div>
+</ng-template>

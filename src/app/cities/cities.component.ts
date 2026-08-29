@@ -9,6 +9,14 @@ import { CityWeatherService } from './city-weather.service';
 
 export type { CityData, WeatherData };
 
+export interface CityTemperatureDisplay {
+  primary: string;
+  secondary: string;
+  tempF: number;
+  tempC: number;
+  icon: string;
+}
+
 @Component({
   selector: 'app-cities',
   standalone: true,
@@ -535,7 +543,7 @@ export class CitiesComponent implements OnInit {
       elevationMeters: 28,
       timezone: 'CET/CEST (UTC+1/UTC+2)',
       ianaTimeZone: 'Europe/Stockholm',
-      currency: 'Swedish Krona (SEK, kr)',
+      currency: 'Swedish Króna (SEK, kr)',
       language: 'Swedish',
       latitude: 59.3293,
       longitude: 18.0686,
@@ -622,12 +630,35 @@ export class CitiesComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    // Fetch real-time weather from Open-Meteo for all cities
+    // Fetch live weather from Open-Meteo for all cities
     this.weatherService.fetchBatchWeather(this.cities);
   }
 
   getCityWeather(cityId: number): WeatherData | undefined {
     return this.weatherService.weatherMap().get(cityId);
+  }
+
+  getCityTempDisplay(cityId: number): CityTemperatureDisplay | null {
+    const w = this.getCityWeather(cityId);
+    if (!w) return null;
+
+    if (this.unit === 'F') {
+      return {
+        primary: `${w.temperatureF}°F`,
+        secondary: `${w.temperatureC}°C`,
+        tempF: w.temperatureF,
+        tempC: w.temperatureC,
+        icon: w.conditionIcon
+      };
+    } else {
+      return {
+        primary: `${w.temperatureC}°C`,
+        secondary: `${w.temperatureF}°F`,
+        tempF: w.temperatureF,
+        tempC: w.temperatureC,
+        icon: w.conditionIcon
+      };
+    }
   }
 
   get filteredCities(): CityData[] {

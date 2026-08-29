@@ -55,7 +55,8 @@ export class MenuComponent implements AfterViewInit {
                 { label: 'Company List', path: '/company-list' },
                 { label: 'Songs', path: '/songs' },
                 { label: 'Posts', path: '/posts' },
-                { label: 'Cities', path: '/cities' }
+                { label: 'Cities', path: '/cities' },
+                { label: 'To-Dos', path: '/todos' }
             ]
         },
         {

@@ -1,0 +1,222 @@
+<div class="container-fluid mt-3 app-grid-container" style="max-width: 1200px;">
+  <!-- Sticky Header with Title, Actions & Controls -->
+  <div class="sticky-header mb-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+      <div class="d-flex align-items-center gap-3">
+        <h2 class="mb-0 d-flex align-items-center gap-2">
+          <span>✅</span> To-Dos Management
+          <span class="badge bg-secondary fs-6 align-middle">{{ filteredTodos.length }} / {{ todos.length }}</span>
+        </h2>
+        <button type="button" class="btn btn-sm btn-success" (click)="openInfo(infoModal)">About this page</button>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <app-export-dropdown [rows]="todos" fileBaseName="export-todos"
+          (statusMessage)="exportMessage = $event"></app-export-dropdown>
+        <button type="button" class="btn btn-primary btn-sm px-3" (click)="openAddModal()">
+          + Add To-Do
+        </button>
+      </div>
+    </div>
+
+    @if (exportMessage) {
+    <div class="alert alert-info py-1 px-2 small mb-2">{{ exportMessage }}</div>
+    }
+
+    <!-- Search & Filter Controls -->
+    <div class="row g-2 align-items-center p-2 bg-light rounded border mb-2">
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white">🔍</span>
+          <input type="text" class="form-control" placeholder="Search tasks, assignees, notes..."
+            [(ngModel)]="searchQuery" />
+          @if (searchQuery) {
+          <button class="btn btn-outline-secondary" type="button" (click)="searchQuery = ''">✕</button>
+          }
+        </div>
+      </div>
+
+      <div class="col-6 col-sm-3 col-md-2">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white">📁</span>
+          <select class="form-select" [(ngModel)]="selectedCategory">
+            <option value="All">All Categories</option>
+            @for (cat of categories; track cat) {
+            <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="col-6 col-sm-3 col-md-2">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white">⚡</span>
+          <select class="form-select" [(ngModel)]="selectedStatus">
+            <option value="All">All Statuses</option>
+            @for (s of statuses; track s) {
+            <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="col-6 col-sm-6 col-md-2">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white">👤</span>
+          <select class="form-select" [(ngModel)]="selectedAssignee">
+            <option value="All">All Assignees</option>
+            @for (person of assignees; track person) {
+            <option [value]="person">{{ person }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="col-6 col-sm-6 col-md-3 d-flex justify-content-end">
+        <div class="btn-group btn-group-sm w-100" role="group">
+          <button type="button" class="btn" [class.btn-primary]="sortBy === 'dueDate'"
+            [class.btn-outline-secondary]="sortBy !== 'dueDate'" (click)="toggleSort('dueDate')">
+            Due {{ sortBy === 'dueDate' ? (sortAsc ? '▲' : '▼') : '' }}
+          </button>
+          <button type="button" class="btn" [class.btn-primary]="sortBy === 'priority'"
+            [class.btn-outline-secondary]="sortBy !== 'priority'" (click)="toggleSort('priority')">
+            Pri {{ sortBy === 'priority' ? (sortAsc ? '▲' : '▼') : '' }}
+          </button>
+          <button type="button" class="btn" [class.btn-primary]="sortBy === 'assignedTo'"
+            [class.btn-outline-secondary]="sortBy !== 'assignedTo'" (click)="toggleSort('assignedTo')">
+            User {{ sortBy === 'assignedTo' ? (sortAsc ? '▲' : '▼') : '' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="previousPage()"
+          [disabled]="currentPage <= 1">
+          &lt;&lt;
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="nextPage()"
+          [disabled]="currentPage >= totalPages">
+          &gt;&gt;
+        </button>
+        <span class="small text-muted">Page {{ currentPage }} of {{ totalPages }}</span>
+      </div>
+
+      <div class="small text-muted">
+        Showing {{ pagedTodos.length }} of {{ filteredTodos.length }} items
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  @if (filteredTodos.length === 0) {
+  <div class="text-center py-5 bg-light rounded border my-3">
+    <h5>No to-do items found</h5>
+    <p class="text-muted small mb-2">No tasks matching the current search or filters.</p>
+    <button class="btn btn-sm btn-primary" (click)="searchQuery = ''; selectedCategory = 'All'; selectedStatus = 'All'">
+      Clear Filters
+    </button>
+  </div>
+  }
+
+  <!-- CSS Grid Rows for To-Dos -->
+  <div class="text-break">
+    @for (todo of pagedTodos; track todo.id) {
+    <div class="todos-grid-row">
+      <!-- Title & Checkbox -->
+      <div class="todo-title-cell">
+        <b>Task Title</b>
+        <div class="d-flex align-items-center gap-2">
+          <input type="checkbox" class="form-check-input mt-0" [checked]="todo.status === 'Completed'"
+            (change)="toggleComplete(todo)"
+            [title]="todo.status === 'Completed' ? 'Mark Incomplete' : 'Mark Completed'" />
+          <button type="button" class="todo-title-link text-truncate" [class.completed]="todo.status === 'Completed'"
+            (click)="openEditModal(todo)" [title]="'Edit task: ' + todo.title">
+            {{ todo.title }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div>
+        <b>Category</b>
+        <span class="badge bg-light text-dark border">{{ todo.category }}</span>
+      </div>
+
+      <!-- Priority -->
+      <div>
+        <b>Priority</b>
+        <span class="priority-pill" [class]="'priority-pill priority-' + todo.priority.toLowerCase()">
+          {{ todo.priority }}
+        </span>
+      </div>
+
+      <!-- Status -->
+      <div>
+        <b>Status</b>
+        <span class="status-pill" [class]="'status-pill status-' + todo.status.toLowerCase().replace(' ', '-')">
+          {{ todo.status }}
+        </span>
+      </div>
+
+      <!-- Due Date -->
+      <div>
+        <b>Due Date</b>
+        <span class="small font-monospace">{{ todo.dueDate }}</span>
+      </div>
+
+      <!-- Assigned To -->
+      <div>
+        <b>Assigned To</b>
+        <span class="small text-secondary">{{ todo.assignedTo }}</span>
+      </div>
+
+      <!-- Comments / Notes -->
+      <div class="comments-cell">
+        <b>Notes</b>
+        <span class="small text-muted text-truncate d-block" [title]="todo.comments">
+          {{ todo.comments || '—' }}
+        </span>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+
+<!-- About This Page Info Modal -->
+<ng-template #infoModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title text-primary">About To-Dos Management</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body overflow-y-auto" style="max-height: 65vh;">
+    <h6 class="fw-bold">Overview</h6>
+    <p class="small text-muted mb-3">
+      The <strong>To-Dos Management</strong> component provides a structured, responsive task tracking system built with
+      Angular 19, pure CSS Grid layout, and modal-based editing workflows.
+    </p>
+
+    <h6 class="fw-bold">Features &amp; Implementation</h6>
+    <ul class="small text-muted mb-3">
+      <li><strong>Responsive CSS Grid Layout:</strong> Structured using fluid CSS Grid rows
+        (<code>todos-grid-row</code>) matching the layout standard of Dogs, Customers, and Medicines.</li>
+      <li><strong>Separate Add &amp; Edit Modal:</strong> Powered by <code>TodosEntryModalComponent</code> with field
+        validation, keyboard shortcuts (<kbd>Enter</kbd> to save), and delete confirmation dialogs.</li>
+      <li><strong>Unsaved Changes Protection:</strong> Detects modifications between original and draft records, showing
+        a field-by-field diff before discarding.</li>
+      <li><strong>Browser History Integration:</strong> Uses <code>ModalHistoryService</code> to allow dismissing modals
+        via browser <strong>← Back</strong> button or <kbd>Esc</kbd>.</li>
+      <li><strong>Quick Status Toggle:</strong> Checkboxes allow instantly toggling tasks between <em>Completed</em> and
+        <em>Pending</em> directly from the grid.</li>
+      <li><strong>Filtering &amp; Sorting:</strong> Fast client-side multi-field search (title, category, assignee,
+        notes), category filter, status filter, and pagination (8 items per page).</li>
+      <li><strong>Export Support:</strong> Integrates with <code>ExportDropdownComponent</code> for exporting task data
+        into CSV, JSON, or text formats.</li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary btn-sm" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>

@@ -142,5 +142,19 @@ export const routes: Routes = [
         path: 'cites',
         redirectTo: 'cities',
         pathMatch: 'full'
+    },
+    {
+        path: 'todos',
+        loadComponent: () => import('./todos/todos.component').then((m) => m.TodosComponent)
+    },
+    {
+        path: 'to-dos',
+        redirectTo: 'todos',
+        pathMatch: 'full'
+    },
+    {
+        path: 'todo',
+        redirectTo: 'todos',
+        pathMatch: 'full'
     }
 ];

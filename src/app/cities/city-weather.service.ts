@@ -15,24 +15,36 @@ export class CityWeatherService {
   }
 
   /**
-   * Fetch weather for all cities in a single batch request and cache in reactive signal.
+   * Fetch weather for all cities in a single batch request and map by coordinate proximity.
    */
   fetchBatchWeather(cities: CityData[]): void {
     if (!cities || cities.length === 0) return;
 
     const lats = cities.map(c => c.latitude).join(',');
     const lngs = cities.map(c => c.longitude).join(',');
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lngs}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lngs}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m`;
 
     this.http.get<any>(url).subscribe({
       next: (res) => {
         const nextMap = new Map<number, WeatherData>(this.weatherMap());
         if (Array.isArray(res)) {
-          res.forEach((item, index) => {
-            const city = cities[index];
-            if (city && item?.current) {
+          res.forEach((item) => {
+            if (!item?.current) return;
+            // Match to closest city by coordinate distance to prevent any array indexing or sort order mismatch
+            let bestCity: CityData | null = null;
+            let minDiff = Infinity;
+            cities.forEach(c => {
+              const diff = Math.hypot(c.latitude - item.latitude, c.longitude - item.longitude);
+              if (diff < minDiff) {
+                minDiff = diff;
+                bestCity = c;
+              }
+            });
+
+            const matchedCity = bestCity as CityData | null;
+            if (matchedCity && minDiff < 2.0) {
               const weather = this.parseCurrentWeather(item.current);
-              nextMap.set(city.id, weather);
+              nextMap.set(matchedCity.id, weather);
             }
           });
         } else if (res?.current) {
@@ -42,7 +54,8 @@ export class CityWeatherService {
         this.weatherMap.set(nextMap);
       },
       error: (err) => {
-        console.error('Batch weather fetch failed from Open-Meteo:', err);
+        console.warn('Batch weather fetch failed, fetching individual cities:', err);
+        cities.forEach(city => this.fetchCityWeather(city));
       }
     });
   }
@@ -51,7 +64,7 @@ export class CityWeatherService {
    * Fetch or refresh weather for a single city and update reactive signal.
    */
   fetchCityWeather(city: CityData, onComplete?: (weather: WeatherData) => void): void {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.latitude}&longitude=${city.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m`;
 
     this.http.get<any>(url).subscribe({
       next: (data) => {
@@ -66,7 +79,7 @@ export class CityWeatherService {
         }
       },
       error: (err) => {
-        console.error('City weather fetch failed:', err);
+        console.error(`Weather fetch failed for ${city.name}:`, err);
       }
     });
   }

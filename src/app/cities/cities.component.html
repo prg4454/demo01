@@ -114,14 +114,13 @@
       </div>
 
       <div class="grid-col-temp text-end font-monospace">
-        <ng-container *ngIf="getCityWeather(city.id) as w; else loadingTemp">
-          <span class="temp-val-f text-primary fw-bold">{{ w.temperatureF }}°F</span>
+        @if (getCityTempDisplay(city.id); as t) {
+          <span class="temp-val-primary text-primary fw-bold">{{ t.primary }}</span>
           <span class="temp-divider text-muted mx-1">/</span>
-          <span class="temp-val-c text-secondary fw-semibold">{{ w.temperatureC }}°C</span>
-        </ng-container>
-        <ng-template #loadingTemp>
-          <span class="text-muted small">--</span>
-        </ng-template>
+          <span class="temp-val-secondary text-secondary fw-semibold">{{ t.secondary }}</span>
+        } @else {
+          <span class="spinner-border spinner-border-sm text-secondary" role="status" style="width: 0.85rem; height: 0.85rem;"></span>
+        }
       </div>
     </div>
   </div>
