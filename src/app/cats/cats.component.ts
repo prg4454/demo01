@@ -4,7 +4,9 @@ import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
 import { StorageService } from '../storage.service';
-import { CatRecord, CatsEntryModalComponent, CatsModalResult } from './cats-entry-modal.component';
+import type { CatRecord, CatsModalResult } from './cats-entry-modal.component';
+
+export type { CatRecord, CatsModalResult };
 
 @Component({
     selector: 'app-cats',
@@ -30,28 +32,26 @@ export class CatsComponent implements OnInit {
 
     private async loadData() {
         let count = await this.storageService.getCount('cats');
-        if (count < 50) {
-            const initialCats = this.generateCats(50);
-            await this.storageService.clear('cats');
+        if (count === 0) {
+            const initialCats = this.generateCats(20);
             await this.storageService.saveAll('cats', initialCats);
         }
         const allCats = await this.storageService.getAll<CatRecord>('cats');
-        // Sort by ID descending so new adds show up first if we want
         allCats.sort((a, b) => b.id - a.id);
         this.cats.set(allCats);
     }
 
     private generateCats(count: number): CatRecord[] {
-        const breeds = ['Siamese', 'Persian', 'Maine Coon', 'Bengal', 'Sphynx', 'Abyssinian', 'Ragdoll', 'Tabby', 'Calico', 'Savannah'];
-        const owners = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
-        const reasons = ['Annual checkup', 'Vaccinations', 'Flea treatment', 'Dental cleaning', 'Ear infection', 'Limping', 'Scratching', 'Coughing'];
-        const vets = ['Dr. Hernandez', 'Dr. Patel', 'Dr. Kim', 'Dr. Adams', 'Dr. Brown'];
+        const breeds = ['Siamese', 'Persian', 'Maine Coon', 'Bengal', 'Sphynx', 'Abyssinian', 'Ragdoll'];
+        const owners = ['Miller', 'Johnson', 'Nguyen', 'Garcia', 'Taylor', 'Lee', 'Smith', 'Davis'];
+        const reasons = ['Annual checkup', 'Ear infection', 'Vaccinations', 'Limping front paw', 'Skin irritation', 'Nail trim'];
+        const vets = ['Dr. Hernandez', 'Dr. Patel', 'Dr. Kim', 'Dr. Adams'];
+        const names = ['Luna', 'Milo', 'Oliver', 'Leo', 'Loki', 'Bella', 'Charlie', 'Willow', 'Lucy', 'Simba'];
         const statuses: CatRecord['status'][] = ['Waiting', 'Exam', 'Treatment', 'Ready'];
-        const catNames = ['Misty', 'Whiskers', 'Luna', 'Shadow', 'Oliver', 'Bella', 'Charlie', 'Lucy', 'Leo', 'Molly', 'Simba', 'Sophie', 'Jack', 'Chloe', 'Tiger', 'Nala', 'Smokey', 'Lily', 'Oreo', 'Coco'];
 
         return Array.from({ length: count }, (_, i) => ({
-            id: 1000 + i,
-            name: catNames[Math.floor(Math.random() * catNames.length)] + ' ' + (i + 1),
+            id: 101 + i,
+            name: names[Math.floor(Math.random() * names.length)] + ' ' + (i + 1),
             breed: breeds[Math.floor(Math.random() * breeds.length)],
             owner: owners[Math.floor(Math.random() * owners.length)],
             reason: reasons[Math.floor(Math.random() * reasons.length)],
@@ -85,7 +85,8 @@ export class CatsComponent implements OnInit {
         }
     }
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { CatsEntryModalComponent } = await import('./cats-entry-modal.component');
         const modalRef = this.modalService.open(CatsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -122,7 +123,8 @@ export class CatsComponent implements OnInit {
             .catch(() => undefined);
     }
 
-    openEditModal(cat: CatRecord): void {
+    async openEditModal(cat: CatRecord): Promise<void> {
+        const { CatsEntryModalComponent } = await import('./cats-entry-modal.component');
         const modalRef = this.modalService.open(CatsEntryModalComponent, {
             centered: true,
             backdrop: 'static',

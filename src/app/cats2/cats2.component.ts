@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { StorageService } from '../storage.service';
 // Import CDK Dialog services
 import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog';
-import { Cats2EditComponent, CatRecord, Cats2EditResult, Cats2EditData } from './cats2-edit.component';
+import type { Cats2EditComponent, CatRecord, Cats2EditResult, Cats2EditData } from './cats2-edit.component';
+
+export type { CatRecord, Cats2EditResult, Cats2EditData };
 
 @Component({
     selector: 'app-cats2',
@@ -58,26 +60,25 @@ export class Cats2Component implements OnInit, OnDestroy {
             await this.storageService.saveAll('cats2', initialCats);
         }
         const allCats = await this.storageService.getAll<CatRecord>('cats2');
-        // Sort by ID descending so newly added cats show up first.
         allCats.sort((a, b) => b.id - a.id);
         this.cats.set(allCats);
     }
 
     private generateCats(count: number): CatRecord[] {
         const breeds = ['Siamese', 'Persian', 'Maine Coon', 'Bengal', 'Sphynx', 'Abyssinian', 'Ragdoll'];
-        const owners = ['Alice Smith', 'Bob Johnson', 'Charlie Brown', 'Diana Davis', 'Evan Garcia', 'Fiona Miller'];
-        const reasons = ['Annual checkup', 'Vaccinations', 'Flea treatment', 'Dental cleaning', 'Ear infection'];
+        const owners = ['Miller', 'Johnson', 'Nguyen', 'Garcia', 'Taylor', 'Lee', 'Smith', 'Davis'];
+        const reasons = ['Annual checkup', 'Ear infection', 'Vaccinations', 'Limping front paw', 'Skin irritation', 'Nail trim'];
         const vets = ['Dr. Hernandez', 'Dr. Patel', 'Dr. Kim', 'Dr. Adams'];
-        const catNames = ['Misty', 'Whiskers', 'Luna', 'Shadow', 'Oliver', 'Bella', 'Charlie', 'Lucy', 'Leo', 'Molly'];
+        const names = ['Luna', 'Milo', 'Oliver', 'Leo', 'Loki', 'Bella', 'Charlie', 'Willow', 'Lucy', 'Simba'];
         const statuses: CatRecord['status'][] = ['Waiting', 'Exam', 'Treatment', 'Ready'];
 
         return Array.from({ length: count }, (_, i) => ({
-            id: 2000 + i,
-            name: catNames[Math.floor(Math.random() * catNames.length)] + ' ' + (i + 1),
+            id: 2001 + i,
+            name: names[Math.floor(Math.random() * names.length)] + ' ' + (i + 1),
             breed: breeds[Math.floor(Math.random() * breeds.length)],
             owner: owners[Math.floor(Math.random() * owners.length)],
             reason: reasons[Math.floor(Math.random() * reasons.length)],
-            checkIn: `${9 + Math.floor(Math.random() * 3)}:${Math.floor(Math.random() * 6)}0 AM`,
+            checkIn: `${8 + Math.floor(Math.random() * 4)}:${Math.floor(Math.random() * 6)}0 AM`,
             status: statuses[Math.floor(Math.random() * statuses.length)],
             vet: vets[Math.floor(Math.random() * vets.length)],
             nextAppointment: `2026-09-${10 + Math.floor(Math.random() * 20)}`
@@ -108,7 +109,8 @@ export class Cats2Component implements OnInit, OnDestroy {
     }
 
     // 3. Open the edit dialog when a cat name is clicked.
-    openEditModal(cat: CatRecord): void {
+    async openEditModal(cat: CatRecord): Promise<void> {
+        const { Cats2EditComponent } = await import('./cats2-edit.component');
         // Open the dialog overlay, configure width, disable backdrop dismissal, and pass DIALOG_DATA.
         const dialogRef = this.dialog.open<Cats2EditResult, Cats2EditData, Cats2EditComponent>(Cats2EditComponent, {
             width: '550px',
@@ -154,7 +156,8 @@ export class Cats2Component implements OnInit, OnDestroy {
     }
 
     // 4. Open the add dialog to create a new cat record.
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { Cats2EditComponent } = await import('./cats2-edit.component');
         const newCat: CatRecord = {
             id: this.getNextId(),
             name: '',

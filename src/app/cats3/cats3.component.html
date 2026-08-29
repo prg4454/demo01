@@ -60,5 +60,7 @@
     </div>
 </div>
 
-<!-- Embed the native HTML dialog-based editor component -->
+<!-- Embed the native HTML dialog-based editor component using @defer for lazy loading on demand -->
+@defer (when isEditLoaded()) {
 <app-cats3-edit #editComp (saved)="onSave($event)" (deleted)="onDelete($event)"></app-cats3-edit>
+}

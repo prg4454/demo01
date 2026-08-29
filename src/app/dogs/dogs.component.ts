@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExportDropdownComponent } from '../export-dropdown/export-dropdown.component';
 import { ModalHistoryService } from '../modal-history.service';
-import { DogRecord, DogsEntryModalComponent, DogsModalResult } from './dogs-entry-modal.component';
+import type { DogRecord, DogsModalResult } from './dogs-entry-modal.component';
+
+export type { DogRecord, DogsModalResult };
 
 @Component({
     selector: 'app-dogs',
@@ -114,7 +116,8 @@ export class DogsComponent {
         }
     }
 
-    openAddModal(): void {
+    async openAddModal(): Promise<void> {
+        const { DogsEntryModalComponent } = await import('./dogs-entry-modal.component');
         const modalRef = this.modalService.open(DogsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -150,7 +153,8 @@ export class DogsComponent {
             .catch(() => undefined);
     }
 
-    openEditModal(dog: DogRecord): void {
+    async openEditModal(dog: DogRecord): Promise<void> {
+        const { DogsEntryModalComponent } = await import('./dogs-entry-modal.component');
         const modalRef = this.modalService.open(DogsEntryModalComponent, {
             centered: true,
             backdrop: 'static',
@@ -194,5 +198,4 @@ export class DogsComponent {
         }
         return Math.max(...this.dogs.map(d => d.id)) + 1;
     }
-
 }

@@ -14,10 +14,11 @@ export class Cats3Component implements OnInit, OnDestroy {
     private storageService = inject(StorageService);
 
     // Reference to the child editor component to control dialog overlay elements
-    @ViewChild('editComp') editComp!: Cats3EditComponent;
+    @ViewChild('editComp') editComp?: Cats3EditComponent;
 
     readonly pageSize = 8;
     currentPage = signal(1);
+    isEditLoaded = signal(false);
 
     cats = signal<CatRecord[]>([]);
 
@@ -109,12 +110,18 @@ export class Cats3Component implements OnInit, OnDestroy {
             vet: '',
             nextAppointment: ''
         };
-        this.editComp.open(newCat, false);
+        this.isEditLoaded.set(true);
+        setTimeout(() => {
+            this.editComp?.open(newCat, false);
+        });
     }
 
     // Open edit dialog modal
     openEditModal(cat: CatRecord): void {
-        this.editComp.open(cat, true);
+        this.isEditLoaded.set(true);
+        setTimeout(() => {
+            this.editComp?.open(cat, true);
+        });
     }
 
     // Called when the editor component emits a 'saved' event
