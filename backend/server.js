@@ -3,7 +3,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { sequelize, Item, Cat } from './models/index.js';
+import { QueryTypes } from 'sequelize';
+import { sequelize, Item } from './models/index.js';
 
 // Load environment variables
 dotenv.config();
@@ -44,10 +45,12 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Get all cats from SQLite through Sequelize.
+// Get all cats with a raw SQL query.
 app.get('/api/cats', async (req, res, next) => {
   try {
-    const cats = await Cat.findAll({ order: [['id', 'DESC']] });
+    const cats = await sequelize.query('SELECT * FROM cats ORDER BY id DESC', {
+      type: QueryTypes.SELECT,
+    });
     res.json(cats);
   } catch (error) {
     next(error);
