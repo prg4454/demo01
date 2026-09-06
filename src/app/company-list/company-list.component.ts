@@ -45,18 +45,30 @@ interface Company {
             </div>
 
             <div class="confirm-backdrop" *ngIf="showSelectionLockedMessage" (click)="closeSelectionLockedMessage()"></div>
+            <div class="confirm-backdrop" *ngIf="pendingRestartCompany" (click)="cancelRestartSelection()"></div>
             <div
                 class="confirm-modal"
                 *ngIf="showSelectionLockedMessage"
+                *ngIf="pendingRestartCompany"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="locked-title">
                 <h3 id="locked-title" class="confirm-title">Selection Locked</h3>
+                aria-labelledby="restart-title">
+                <h3 id="restart-title" class="confirm-title">App Restart Warning</h3>
                 <p class="confirm-text">
                     You already selected a company. You cannot select another company until you close the app and start it again.
+                    A company is already selected. Selecting
+                    <strong>{{ pendingRestartCompany.companyName }}</strong>
+                    (ID: {{ pendingRestartCompany.companyId }}) will cause the app to restart.
+                </p>
+                <p class="confirm-text mb-3">
+                    Do you want to do that?
                 </p>
                 <div class="confirm-actions">
                     <button type="button" class="btn btn-primary btn-sm" (click)="closeSelectionLockedMessage()">OK</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="cancelRestartSelection()">No</button>
+                    <button type="button" class="btn btn-primary btn-sm" (click)="confirmRestartSelection()">Yes</button>
                 </div>
             </div>
         </section>
@@ -160,6 +172,7 @@ export class CompanyListComponent implements OnInit, AfterViewInit {
     companies: Company[] = [];
     pendingCompany: Company | null = null;
     showSelectionLockedMessage = false;
+    pendingRestartCompany: Company | null = null;
 
     ngOnInit(): void {
         // Backend fetch temporarily disabled while using local sample data.
@@ -182,6 +195,7 @@ export class CompanyListComponent implements OnInit, AfterViewInit {
         if (this.selectedCompanyService.getSelectedCompany()) {
             this.pendingCompany = null;
             this.showSelectionLockedMessage = true;
+            this.pendingRestartCompany = company;
             return;
         }
 
@@ -198,6 +212,7 @@ export class CompanyListComponent implements OnInit, AfterViewInit {
         }
 
         if (this.selectedCompanyService.getSelectedCompany()) {
+            this.pendingRestartCompany = this.pendingCompany;
             this.pendingCompany = null;
             this.showSelectionLockedMessage = true;
             return;
@@ -215,6 +230,33 @@ export class CompanyListComponent implements OnInit, AfterViewInit {
 
     closeSelectionLockedMessage(): void {
         this.showSelectionLockedMessage = false;
+    cancelRestartSelection(): void {
+        this.pendingRestartCompany = null;
+    }
+
+    confirmRestartSelection(): void {
+        if (!this.pendingRestartCompany) {
+            return;
+        }
+
+        const selected = this.pendingRestartCompany;
+
+        this.selectedCompanyService.setSelectedCompany({
+            companyId: selected.companyId,
+            companyName: selected.companyName
+        });
+
+        this.pendingRestartCompany = null;
+        this.restartAndGoHome();
+    }
+
+    private restartAndGoHome(): void {
+        if (typeof window !== 'undefined') {
+            const base = window.location.href.split('#')[0];
+            const homeUrl = base.endsWith('/') ? `${base}#/` : `${base}/#/`;
+            window.location.href = homeUrl;
+            window.location.reload();
+        }
     }
 
     private buildSampleCompanies(count: number): Company[] {
