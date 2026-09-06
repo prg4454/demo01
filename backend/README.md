@@ -7,7 +7,7 @@ Express & Node.js backend server with Sequelize ORM for `demo01`.
 - **Express.js** REST API with CORS and JSON support.
 - **Sequelize ORM** integrated with models and associations.
 - **SQLite** default database for zero-config local development (stored in
-  `database.sqlite`).
+  `db` in the current working directory).
 - Easily configurable via `.env` to connect to **PostgreSQL** or **MySQL**.
 - Full CRUD endpoints for the sample `Item` model.
 
@@ -32,8 +32,10 @@ Express & Node.js backend server with Sequelize ORM for `demo01`.
    PORT=5000
    NODE_ENV=development
    DB_DIALECT=sqlite
-   DB_STORAGE=./database.sqlite
+   DB_STORAGE=./db
    ```
+   Relative `DB_STORAGE` paths resolve from the current working directory.
+   Starting the server from `backend` uses `backend/db`.
    To use PostgreSQL or MySQL instead, update `DB_DIALECT`, `DB_HOST`,
    `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD`.
 
