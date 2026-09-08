@@ -77,6 +77,11 @@ export const routes: Routes = [
         canDeactivate: [pendingChangesGuard]
     },
     {
+        path: 'turtles',
+        loadComponent: () => import('./turtles/turtles.component').then((m) => m.TurtlesComponent),
+        canDeactivate: [pendingChangesGuard]
+    },
+    {
         path: 'medicines',
         loadComponent: () => import('./medicines/medicines.component').then((m) => m.MedicinesComponent),
         canDeactivate: [pendingChangesGuard]

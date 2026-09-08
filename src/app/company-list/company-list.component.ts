@@ -45,19 +45,30 @@ interface Company {
             </div>
 
             <div class="confirm-backdrop" *ngIf="showSelectionLockedMessage" (click)="closeSelectionLockedMessage()"></div>
-            <div class="confirm-backdrop" *ngIf="pendingRestartCompany" (click)="cancelRestartSelection()"></div>
             <div
                 class="confirm-modal"
                 *ngIf="showSelectionLockedMessage"
-                *ngIf="pendingRestartCompany"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="locked-title">
                 <h3 id="locked-title" class="confirm-title">Selection Locked</h3>
-                aria-labelledby="restart-title">
-                <h3 id="restart-title" class="confirm-title">App Restart Warning</h3>
                 <p class="confirm-text">
                     You already selected a company. You cannot select another company until you close the app and start it again.
+                </p>
+                <div class="confirm-actions">
+                    <button type="button" class="btn btn-primary btn-sm" (click)="closeSelectionLockedMessage()">OK</button>
+                </div>
+            </div>
+
+            <div class="confirm-backdrop" *ngIf="pendingRestartCompany" (click)="cancelRestartSelection()"></div>
+            <div
+                class="confirm-modal"
+                *ngIf="pendingRestartCompany"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="restart-title">
+                <h3 id="restart-title" class="confirm-title">App Restart Warning</h3>
+                <p class="confirm-text" *ngIf="pendingRestartCompany">
                     A company is already selected. Selecting
                     <strong>{{ pendingRestartCompany.companyName }}</strong>
                     (ID: {{ pendingRestartCompany.companyId }}) will cause the app to restart.
@@ -66,7 +77,6 @@ interface Company {
                     Do you want to do that?
                 </p>
                 <div class="confirm-actions">
-                    <button type="button" class="btn btn-primary btn-sm" (click)="closeSelectionLockedMessage()">OK</button>
                     <button type="button" class="btn btn-outline-secondary btn-sm" (click)="cancelRestartSelection()">No</button>
                     <button type="button" class="btn btn-primary btn-sm" (click)="confirmRestartSelection()">Yes</button>
                 </div>
@@ -194,7 +204,6 @@ export class CompanyListComponent implements OnInit, AfterViewInit {
     selectCompany(company: Company): void {
         if (this.selectedCompanyService.getSelectedCompany()) {
             this.pendingCompany = null;
-            this.showSelectionLockedMessage = true;
             this.pendingRestartCompany = company;
             return;
         }
@@ -214,7 +223,6 @@ export class CompanyListComponent implements OnInit, AfterViewInit {
         if (this.selectedCompanyService.getSelectedCompany()) {
             this.pendingRestartCompany = this.pendingCompany;
             this.pendingCompany = null;
-            this.showSelectionLockedMessage = true;
             return;
         }
 
@@ -230,6 +238,8 @@ export class CompanyListComponent implements OnInit, AfterViewInit {
 
     closeSelectionLockedMessage(): void {
         this.showSelectionLockedMessage = false;
+    }
+
     cancelRestartSelection(): void {
         this.pendingRestartCompany = null;
     }
