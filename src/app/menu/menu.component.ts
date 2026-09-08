@@ -50,6 +50,7 @@ export class MenuComponent implements AfterViewInit {
                 { label: 'World Clocks', path: '/world-clocks' },
                 { label: 'UI Employer Tax', path: '/ui-employer-tax' },
                 { label: 'Nasal Sprays', path: '/nasal-sprays' },
+                { label: 'Nasal Sprays 2', path: '/nasal-sprays2' },
                 { label: 'Pens and Pencils', path: '/pens-and-pencils' },
                 { label: 'Users', path: '/users' },
                 { label: 'Company List', path: '/company-list' },

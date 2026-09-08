@@ -92,6 +92,11 @@ export const routes: Routes = [
         canDeactivate: [pendingChangesGuard]
     },
     {
+        path: 'nasal-sprays2',
+        loadComponent: () => import('./nasal-sprays2/nasal-sprays2.component').then((m) => m.NasalSprays2Component),
+        canDeactivate: [pendingChangesGuard]
+    },
+    {
         path: 'pens-and-pencils',
         loadComponent: () => import('./pens-and-pencils/pens-and-pencils.component').then((m) => m.PensAndPencilsComponent),
         canDeactivate: [pendingChangesGuard]

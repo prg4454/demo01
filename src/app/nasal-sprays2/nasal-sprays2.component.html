@@ -1,0 +1,56 @@
+<div class="container mt-3 app-grid-container">
+    <div class="sticky-header">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Nasal Sprays 2 (CDK Dialog Demo)</h2>
+            <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Nasal Spray</button>
+        </div>
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="previousPage()"
+                [disabled]="currentPage() <= 1">&lt;&lt;</button>
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="nextPage()"
+                [disabled]="currentPage() >= totalPages()">&gt;&gt;</button>
+            <div class="small text-muted">Page {{ currentPage() }} of {{ totalPages() }}</div>
+        </div>
+    </div>
+
+    <!-- Responsive CSS Grid Layout showing nasal sprays -->
+    <div class="text-break">
+        @for (spray of pagedSprays(); track spray.id) {
+        <div class="app-grid-row nasal-sprays2-grid-row border-bottom">
+            <div class="nasal-sprays2-grid-cell">
+                <b>Brand</b>
+                <!-- Clicking the brand name triggers the CDK Dialog edit popup -->
+                <button type="button" class="grid-link" (click)="openEditModal(spray)">
+                    {{ spray.brandName }}
+                </button>
+            </div>
+            <div class="nasal-sprays2-grid-cell">
+                <b>Generic</b>
+                {{ spray.genericName }}
+            </div>
+            <div class="nasal-sprays2-grid-cell">
+                <b>Strength</b>
+                {{ spray.strength }}
+            </div>
+            <div class="nasal-sprays2-grid-cell">
+                <b>Category</b>
+                <span class="category-pill" [class]="'category-pill category-' + spray.category.toLowerCase()">
+                    {{ spray.category }}
+                </span>
+            </div>
+            <div class="nasal-sprays2-grid-cell">
+                <b>Dose</b>
+                {{ spray.dose }}
+            </div>
+            <div class="nasal-sprays2-grid-cell">
+                <b>Manufacturer</b>
+                {{ spray.manufacturer }}
+            </div>
+            <div class="nasal-sprays2-grid-cell">
+                <b>Last Opened</b>
+                {{ spray.lastOpened || 'N/A' }}
+            </div>
+        </div>
+        }
+    </div>
+</div>

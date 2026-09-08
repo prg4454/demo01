@@ -1,0 +1,56 @@
+.app-grid-container {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sticky-header {
+    position: sticky;
+    top: clamp(48px, var(--app-navbar-offset, 56px), 84px);
+    z-index: 20;
+    background: #fff;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+// 1. Grid columns definition using standard grid repeat & auto-fit
+.nasal-sprays2-grid-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.5rem 1rem;
+    align-items: start;
+    padding: 0.75rem 0;
+    width: 100%;
+}
+
+.nasal-sprays2-grid-cell {
+    min-width: 0;
+    margin-bottom: 0.25rem;
+}
+
+.category-pill {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 0.05rem 0.55rem;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.category-steroid {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+.category-saline {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.category-antihistamine {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
+.category-decongestant {
+    background-color: #f8d7da;
+    color: #842029;
+}
