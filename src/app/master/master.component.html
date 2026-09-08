@@ -2,6 +2,13 @@
     <div class="alert alert-warning py-2 mb-3 small fw-semibold text-center">
         This is in progress....
     </div>
+    @if (notificationMessage) {
+    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center justify-content-between py-2 mb-3"
+        role="alert">
+        <div><strong>Notice:</strong> {{ notificationMessage }}</div>
+        <button type="button" class="btn-close py-2" aria-label="Close" (click)="notificationMessage = null"></button>
+    </div>
+    }
     <div [class.d-none]="activeTab === 'companies'">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Master Functions</h2>
@@ -68,7 +75,7 @@
     <div [ngSwitch]="activeTab">
         <!-- Companies Tab Content -->
         <div *ngSwitchCase="'companies'">
-            <app-companies [companies]="companies" (companyClicked)="onCompanyClick($event, confirmModal)">
+            <app-companies [companies]="companies" (companyClicked)="onCompanyClick($event)">
             </app-companies>
         </div>
 
@@ -104,22 +111,196 @@
     </div>
 </div>
 
-<!-- Selection Confirmation Modal -->
-<ng-template #confirmModal let-modal>
-    <div class="modal-header">
-        <h5 class="modal-title">Select Company View Option</h5>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('cancel')"></button>
+<!-- Company Profile Details Modal -->
+<ng-template #companyProfileModal let-modal>
+    <div class="modal-header bg-light">
+        <div class="d-flex align-items-center gap-2">
+            <h5 class="modal-title fw-bold mb-0">Corporate Profile</h5>
+            <span class="badge bg-primary">{{ selectedCompany?.id }}</span>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
     </div>
     <div class="modal-body">
-        <p>Choose an action for <strong>{{ selectedCompany?.name }}</strong>:</p>
+        <div class="row g-3">
+            <div class="col-sm-6">
+                <div class="p-3 bg-light rounded border">
+                    <div class="text-muted small">Company Name</div>
+                    <div class="fw-bold fs-6">{{ selectedCompany?.name }}</div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="p-3 bg-light rounded border">
+                    <div class="text-muted small">Industry Sector</div>
+                    <div class="fw-bold fs-6">{{ selectedCompany?.industry }}</div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="p-3 bg-light rounded border">
+                    <div class="text-muted small">Headquarters Location</div>
+                    <div class="fw-bold fs-6">{{ selectedCompany?.hq }}</div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="p-3 bg-light rounded border">
+                    <div class="text-muted small">Total Headcount</div>
+                    <div class="fw-bold fs-6">{{ selectedCompany?.employees }} personnel</div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="p-3 bg-light rounded border">
+                    <div class="text-muted small">Federal Tax ID (EIN)</div>
+                    <div class="fw-bold fs-6 font-monospace">XX-XXXX{{ selectedCompany?.id }}</div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="p-3 bg-light rounded border">
+                    <div class="text-muted small">Status</div>
+                    <div><span class="badge bg-success">Active & Compliant</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+    </div>
+</ng-template>
+
+<!-- Company Payroll Summary Modal -->
+<ng-template #payrollSummaryModal let-modal>
+    <div class="modal-header bg-light">
+        <h5 class="modal-title fw-bold mb-0">📊 Payroll Summary — {{ selectedCompany?.name }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body scrollable-modal-body">
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-primary-subtle border border-primary-subtle rounded text-center">
+                    <div class="text-muted small">Total Spend</div>
+                    <div class="fw-bold text-primary fs-5 mt-1">{{ companyPayrollStats.totalSpend | currency }}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-success-subtle border border-success-subtle rounded text-center">
+                    <div class="text-muted small">Avg Check</div>
+                    <div class="fw-bold text-success fs-5 mt-1">{{ companyPayrollStats.avgCheck | currency }}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-info-subtle border border-info-subtle rounded text-center">
+                    <div class="text-muted small">Checks Issued</div>
+                    <div class="fw-bold text-info-emphasis fs-5 mt-1">{{ companyPayrollStats.totalChecks }}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-warning-subtle border border-warning-subtle rounded text-center">
+                    <div class="text-muted small">Active Payees</div>
+                    <div class="fw-bold text-dark fs-5 mt-1">{{ companyPayrollStats.employeeCount }}</div>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="fw-semibold mb-2">Staff Payroll Breakdown</h6>
+        <div class="table-responsive border rounded">
+            <table class="table table-sm table-striped mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Employee</th>
+                        <th>Role</th>
+                        <th>Checks Count</th>
+                        <th class="pe-3 text-end">Total Disbursed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (item of companyPayrollStats.breakdown; track item.employeeId) {
+                    <tr>
+                        <td class="ps-3 fw-medium">{{ item.name }}</td>
+                        <td class="text-muted">{{ item.role }}</td>
+                        <td>{{ item.checksCount }}</td>
+                        <td class="pe-3 text-end fw-bold text-success">{{ item.totalPaid | currency }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="modal-footer d-flex justify-content-between">
-        <button type="button" class="btn btn-outline-secondary" (click)="modal.close('cancel')">Cancel</button>
-        <div class="d-flex gap-2">
-            <button type="button" class="btn btn-primary" (click)="modal.close('view-employees')">View
-                Employees</button>
-            <button type="button" class="btn btn-success" (click)="modal.close('view-checks')">Show All Checks</button>
+        <button type="button" class="btn btn-outline-primary" (click)="modal.close('export')">Download CSV</button>
+        <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+    </div>
+</ng-template>
+
+<!-- Add Employee Modal -->
+<ng-template #addEmployeeModal let-modal>
+    <div class="modal-header bg-light">
+        <h5 class="modal-title fw-bold mb-0">➕ Onboard Employee — {{ selectedCompany?.name }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <form (ngSubmit)="saveNewEmployee(modal)">
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="newEmployee.name" name="empName"
+                    placeholder="e.g. Alex Morgan" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Role / Job Title <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="newEmployee.role" name="empRole"
+                    placeholder="e.g. Senior Analyst" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Email Address</label>
+                <input type="email" class="form-control" [(ngModel)]="newEmployee.email" name="empEmail"
+                    placeholder="e.g. alex.morgan@example.com">
+            </div>
+            <div class="modal-footer px-0 pb-0 mt-4 d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
+                <button type="submit" class="btn btn-primary" [disabled]="!newEmployee.name || !newEmployee.role">Save
+                    Employee</button>
+            </div>
+        </form>
+    </div>
+</ng-template>
+
+<!-- Company Settings Modal -->
+<ng-template #companySettingsModal let-modal>
+    <div class="modal-header bg-light">
+        <h5 class="modal-title fw-bold mb-0">⚙️ Settings — {{ selectedCompany?.name }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                <div>
+                    <h6 class="mb-1 fw-semibold">Automatic Direct Deposit</h6>
+                    <p class="text-muted small mb-0">Disburse payroll checks directly via ACH on pay dates</p>
+                </div>
+                <div class="form-check form-switch fs-5">
+                    <input class="form-check-input" type="checkbox" role="switch" checked>
+                </div>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                <div>
+                    <h6 class="mb-1 fw-semibold">Overtime Auto-Calculation (1.5x)</h6>
+                    <p class="text-muted small mb-0">Apply standard 1.5x rate for hours logged beyond 40 hours/week</p>
+                </div>
+                <div class="form-check form-switch fs-5">
+                    <input class="form-check-input" type="checkbox" role="switch" checked>
+                </div>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
+                <div>
+                    <h6 class="mb-1 fw-semibold">Email Paystub Notifications</h6>
+                    <p class="text-muted small mb-0">Send PDF remittance notifications to employees on check issue</p>
+                </div>
+                <div class="form-check form-switch fs-5">
+                    <input class="form-check-input" type="checkbox" role="switch" checked>
+                </div>
+            </div>
         </div>
+    </div>
+    <div class="modal-footer d-flex justify-content-between">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveSettings(modal)">Save Preferences</button>
     </div>
 </ng-template>
 
