@@ -1,26 +1,23 @@
-import { Component, inject, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StorageService } from '../storage.service';
-// Import CDK Dialog services
-import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog';
-import { NasalSprays2EditComponent, type NasalSpray2Record, type NasalSprays2EditResult, type NasalSprays2EditData } from './nasal-sprays2-edit.component';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ModalHistoryService } from '../modal-history.service';
+import { NasalSprays2EditComponent, type NasalSpray2Record, type NasalSprays2EditResult } from './nasal-sprays2-edit.component';
 
-export type { NasalSpray2Record, NasalSprays2EditResult, NasalSprays2EditData };
+export type { NasalSpray2Record, NasalSprays2EditResult };
 
 @Component({
     selector: 'app-nasal-sprays2',
     standalone: true,
-    imports: [CommonModule, DialogModule],
+    imports: [CommonModule, NgbModalModule],
     templateUrl: './nasal-sprays2.component.html',
     styleUrl: './nasal-sprays2.component.scss'
 })
-export class NasalSprays2Component implements OnInit, OnDestroy {
-    // 1. Inject the Angular CDK Dialog service to manage modal overlay views.
-    private dialog = inject(Dialog);
+export class NasalSprays2Component implements OnInit {
+    private modalService = inject(NgbModal);
+    private modalHistory = inject(ModalHistoryService);
     private storageService = inject(StorageService);
-
-    // Keep track of the currently opened dialog reference to check for unsaved changes.
-    activeDialogRef: DialogRef<NasalSprays2EditResult, NasalSprays2EditComponent> | null = null;
 
     readonly pageSize = 8;
     currentPage = signal(1);
@@ -31,26 +28,9 @@ export class NasalSprays2Component implements OnInit, OnDestroy {
         await this.loadData();
     }
 
-    // 2. Custom check used by the pendingChangesGuard when navigating away or clicking browser back.
-    hasUnsavedChanges(): boolean {
-        const comp = this.activeDialogRef?.componentInstance;
-        return !!comp && typeof comp.hasUnsavedChanges === 'function' && comp.hasUnsavedChanges();
-    }
-
-    canDeactivate(): boolean | Promise<boolean> {
-        const comp = this.activeDialogRef?.componentInstance;
-        if (comp && typeof comp.hasUnsavedChanges === 'function' && comp.hasUnsavedChanges()) {
-            // Open the native HTML dialog in the child component and return the result promise
-            return comp.confirmDiscardWithHtmlDialog();
-        }
-        return true;
-    }
-
     private async loadData() {
-        // Retrieve standard records from IndexedDB storage.
         const count = await this.storageService.getCount('nasalSprays2');
         if (count === 0) {
-            // Generate exactly 20 sample mock nasal sprays if none exist.
             const initialSprays = this.generateNasalSprays(20);
             await this.storageService.saveAll('nasalSprays2', initialSprays);
         }
@@ -105,30 +85,26 @@ export class NasalSprays2Component implements OnInit, OnDestroy {
         }
     }
 
-    // 3. Open the edit dialog when a spray brand name is clicked.
     openEditModal(spray: NasalSpray2Record): void {
-        // Open the dialog overlay, configure width, disable backdrop dismissal, and pass DIALOG_DATA.
-        const dialogRef = this.dialog.open<NasalSprays2EditResult, NasalSprays2EditData, NasalSprays2EditComponent>(NasalSprays2EditComponent, {
-            width: '550px',
-            disableClose: true, // Prevents closing the dialog by clicking outside the backdrop or hitting ESC.
-            closeOnNavigation: false, // Prevent the dialog from auto-closing before the CanDeactivate guard runs.
-            data: {
-                spray: spray,
-                allowDelete: true
-            }
+        const modalRef = this.modalService.open(NasalSprays2EditComponent, {
+            centered: true,
+            backdrop: 'static',
+            keyboard: true,
+            size: 'lg',
+            scrollable: true,
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
-        this.activeDialogRef = dialogRef;
+        this.modalHistory.registerModal(modalRef);
 
-        // Subscribe to the closed observable to handle the results (save, delete, or cancel).
-        dialogRef.closed.subscribe(async (result) => {
-            this.activeDialogRef = null;
+        modalRef.componentInstance.spray = structuredClone(spray);
+        modalRef.componentInstance.allowDelete = true;
 
+        void modalRef.result.then(async (result: NasalSprays2EditResult) => {
             if (!result) {
-                return; // User cancelled editing (closed dialog without save/delete result payload).
+                return;
             }
 
             if (result.action === 'save') {
-                // Save updated record back to IndexedDB.
                 await this.storageService.save('nasalSprays2', result.spray);
                 this.nasalSprays.update(current => {
                     const idx = current.findIndex(c => c.id === result.spray.id);
@@ -140,18 +116,15 @@ export class NasalSprays2Component implements OnInit, OnDestroy {
                     return current;
                 });
             } else if (result.action === 'delete') {
-                // Delete record from IndexedDB.
                 await this.storageService.delete('nasalSprays2', result.spray.id);
                 this.nasalSprays.update(current => current.filter(c => c.id !== result.spray.id));
-                // Recalculate page boundaries if we deleted the last item on the current page.
                 if (this.currentPage() > this.totalPages()) {
                     this.currentPage.set(this.totalPages());
                 }
             }
-        });
+        }).catch(() => undefined);
     }
 
-    // 4. Open the add dialog to create a new nasal spray record.
     openAddModal(): void {
         const newSpray: NasalSpray2Record = {
             id: this.getNextId(),
@@ -166,38 +139,31 @@ export class NasalSprays2Component implements OnInit, OnDestroy {
             lastOpened: ''
         };
 
-        const dialogRef = this.dialog.open<NasalSprays2EditResult, NasalSprays2EditData, NasalSprays2EditComponent>(NasalSprays2EditComponent, {
-            width: '550px',
-            disableClose: true,
-            closeOnNavigation: false,
-            data: {
-                spray: newSpray,
-                allowDelete: false
-            }
+        const modalRef = this.modalService.open(NasalSprays2EditComponent, {
+            centered: true,
+            backdrop: 'static',
+            keyboard: true,
+            size: 'lg',
+            scrollable: true,
+            beforeDismiss: () => this.modalHistory.handleBeforeDismiss(modalRef)
         });
-        this.activeDialogRef = dialogRef;
+        this.modalHistory.registerModal(modalRef);
 
-        dialogRef.closed.subscribe(async (result) => {
-            this.activeDialogRef = null;
+        modalRef.componentInstance.spray = newSpray;
+        modalRef.componentInstance.allowDelete = false;
 
+        void modalRef.result.then(async (result: NasalSprays2EditResult) => {
             if (!result || result.action !== 'save') {
-                return; // User cancelled adding
+                return;
             }
 
-            // Save new record to IndexedDB
             await this.storageService.save('nasalSprays2', result.spray);
             this.nasalSprays.update(current => [result.spray, ...current]);
-            this.currentPage.set(1); // Navigate to page 1 to see the new spray
-        });
+            this.currentPage.set(1);
+        }).catch(() => undefined);
     }
 
     private getNextId(): number {
         return this.nasalSprays().length > 0 ? Math.max(...this.nasalSprays().map(c => c.id)) + 1 : 3000;
-    }
-
-    ngOnDestroy(): void {
-        if (this.activeDialogRef) {
-            this.activeDialogRef.close();
-        }
     }
 }

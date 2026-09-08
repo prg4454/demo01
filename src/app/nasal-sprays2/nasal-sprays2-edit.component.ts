@@ -1,8 +1,8 @@
-import { Component, inject, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, Input, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-// Import CDK Dialog services
-import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalHistoryService } from '../modal-history.service';
 
 export interface NasalSpray2Record {
     id: number;
@@ -17,13 +17,6 @@ export interface NasalSpray2Record {
     lastOpened: string;
 }
 
-export interface NasalSprays2EditData {
-    spray: NasalSpray2Record;
-    allowDelete?: boolean;
-}
-
-
-
 export interface NasalSprays2EditResult {
     action: 'save' | 'delete';
     spray: NasalSpray2Record;
@@ -35,6 +28,8 @@ export interface ChangedField {
     after: string;
 }
 
+type TrackedFieldKey = keyof Omit<NasalSpray2Record, 'id'>;
+
 @Component({
     selector: 'app-nasal-sprays2-edit',
     standalone: true,
@@ -43,248 +38,174 @@ export interface ChangedField {
     styleUrl: './nasal-sprays2-edit.component.scss'
 })
 export class NasalSprays2EditComponent implements OnInit {
-    // 1. Inject DialogRef to enable closing the dialog and sending a result back.
-    dialogRef = inject<DialogRef<NasalSprays2EditResult>>(DialogRef);
+    activeModal = inject(NgbActiveModal);
+    private modalService = inject(NgbModal);
+    private modalHistory = inject(ModalHistoryService);
 
-    // 2. Inject DIALOG_DATA to retrieve the custom input object passed when opening this dialog.
-    data = inject<NasalSprays2EditData>(DIALOG_DATA);
+    @ViewChild('deleteConfirmModal') private deleteConfirmModal?: TemplateRef<unknown>;
+    @ViewChild('unsavedChangesModal') private unsavedChangesModal?: TemplateRef<unknown>;
 
-    // Reference to the HTML native <dialog> element for unsaved changes warning.
-    @ViewChild('unsavedDialog') unsavedDialogEl!: ElementRef<HTMLDialogElement>;
-    private unsavedResolver: ((discard: boolean) => void) | null = null;
+    @Input({ required: true }) spray!: NasalSpray2Record;
+    @Input() allowDelete = false;
 
-    // Reference to the HTML native <dialog> element for delete confirmation.
-    @ViewChild('deleteConfirmDialog') deleteConfirmDialogEl!: ElementRef<HTMLDialogElement>;
-    private deleteResolver: ((confirm: boolean) => void) | null = null;
+    editDraft: NasalSpray2Record | null = null;
+    originalDraft: NasalSpray2Record | null = null;
+    saveAttempted = false;
 
-    private historyPushed = false;
-    private closingFromPopState = false;
-    private ignoreNextPopState = false;
-
-    editDraft!: NasalSpray2Record;
-    originalDraft!: NasalSpray2Record;
     readonly categories: NasalSpray2Record['category'][] = ['Steroid', 'Saline', 'Antihistamine', 'Decongestant'];
 
     ngOnInit(): void {
-        // Clone the data to avoid mutating the list row before save is confirmed.
-        const spray = this.data.spray;
-        this.editDraft = {
-            ...structuredClone(spray),
-            lastOpened: spray.lastOpened || ''
-        };
-        this.originalDraft = structuredClone(this.editDraft);
-
-        // Push history state so browser back button works like cancel button
-        if (typeof window !== 'undefined') {
-            window.history.pushState({ nasalSprays2Dialog: true }, '');
-            this.historyPushed = true;
-            this.closingFromPopState = false;
-        }
+        this.editDraft = structuredClone(this.spray);
+        this.originalDraft = structuredClone(this.spray);
     }
 
-    private closeDialog(result?: NasalSprays2EditResult): void {
-        if (this.historyPushed) {
-            this.historyPushed = false;
-            if (this.closingFromPopState) {
-                this.closingFromPopState = false;
-            } else if (typeof window !== 'undefined') {
-                this.ignoreNextPopState = true;
-                window.history.back();
-            }
-        }
-        this.dialogRef.close(result);
-    }
-
-    @HostListener('window:popstate', ['$event'])
-    onPopState(event: PopStateEvent): void {
-        if (this.ignoreNextPopState) {
-            this.ignoreNextPopState = false;
-            return;
-        }
-
-        // Browser back button pressed while dialog is open -> act like cancel button
-        this.closingFromPopState = true;
-        this.cancel();
-    }
-
-    onUnsavedCancel(event: Event): void {
-        event.preventDefault();
-        this.closeUnsavedDialog(false);
-    }
-
-    onDeleteConfirmCancel(event: Event): void {
-        event.preventDefault();
-        this.closeDeleteDialog(false);
-    }
-
-    @HostListener('window:keydown.escape', ['$event'])
-    onEscape(event: Event): void {
-        if (this.unsavedDialogEl?.nativeElement?.open) {
-            event.preventDefault();
-            this.closeUnsavedDialog(false);
-            return;
-        }
-        if (this.deleteConfirmDialogEl?.nativeElement?.open) {
-            event.preventDefault();
-            this.closeDeleteDialog(false);
-            return;
-        }
-        event.preventDefault();
-        this.cancel();
-    }
-
-    // 3. Listen to beforeunload event (browser refresh or tab closure) to alert user.
-    @HostListener('window:beforeunload', ['$event'])
-    onBeforeUnload(event: BeforeUnloadEvent): void {
-        if (this.hasUnsavedChanges()) {
-            event.preventDefault();
-            event.returnValue = ''; // Trigger default browser reload confirmation dialog
-        }
-    }
-
-    // 4. Compare current draft form properties against initial values to check for unsaved edits.
-    hasUnsavedChanges(): boolean {
-        return JSON.stringify(this.editDraft) !== JSON.stringify(this.originalDraft);
-    }
-
-    // 5. Gather the delta list comparing old values vs modified values.
-    getUnsavedChanges(): ChangedField[] {
-        const changes: ChangedField[] = [];
-        const before = this.originalDraft;
-        const after = this.editDraft;
-
-        if (before.brandName !== after.brandName) {
-            changes.push({ label: 'Brand Name', before: before.brandName, after: after.brandName });
-        }
-        if (before.genericName !== after.genericName) {
-            changes.push({ label: 'Generic Name', before: before.genericName, after: after.genericName });
-        }
-        if (before.strength !== after.strength) {
-            changes.push({ label: 'Strength', before: before.strength, after: after.strength });
-        }
-        if (before.category !== after.category) {
-            changes.push({ label: 'Category', before: before.category, after: after.category });
-        }
-        if (before.dose !== after.dose) {
-            changes.push({ label: 'Dose', before: before.dose, after: after.dose });
-        }
-        if (before.usage !== after.usage) {
-            changes.push({ label: 'Usage', before: before.usage, after: after.usage });
-        }
-        if (before.comments !== after.comments) {
-            changes.push({ label: 'Comments', before: before.comments, after: after.comments });
-        }
-        if (before.manufacturer !== after.manufacturer) {
-            changes.push({ label: 'Manufacturer', before: before.manufacturer, after: after.manufacturer });
-        }
-        if (before.lastOpened !== after.lastOpened) {
-            changes.push({ label: 'Last Opened', before: before.lastOpened, after: after.lastOpened });
-        }
-        return changes;
-    }
-
-    // 6. Open the native HTML <dialog> element for unsaved changes and return a Promise.
-    confirmDiscardWithHtmlDialog(): Promise<boolean> {
-        return new Promise<boolean>((resolve) => {
-            this.unsavedResolver = resolve;
-            const dialog = this.unsavedDialogEl.nativeElement;
-            dialog.showModal();
-        });
-    }
-
-    // 7. Called by click events on the native HTML unsaved warning dialog action buttons.
-    closeUnsavedDialog(discard: boolean): void {
-        const dialog = this.unsavedDialogEl.nativeElement;
-        dialog.close();
-        if (this.unsavedResolver) {
-            this.unsavedResolver(discard);
-            this.unsavedResolver = null;
-        }
-    }
-
-    // 8. Open the native HTML <dialog> element for delete confirmation and return a Promise.
-    confirmDeleteWithHtmlDialog(): Promise<boolean> {
-        return new Promise<boolean>((resolve) => {
-            this.deleteResolver = resolve;
-            const dialog = this.deleteConfirmDialogEl.nativeElement;
-            dialog.showModal();
-        });
-    }
-
-    // 9. Called by click events on the native HTML delete confirmation dialog action buttons.
-    closeDeleteDialog(confirm: boolean): void {
-        const dialog = this.deleteConfirmDialogEl.nativeElement;
-        dialog.close();
-        if (this.deleteResolver) {
-            this.deleteResolver(confirm);
-            this.deleteResolver = null;
-        }
-    }
-
-    // Standard client-side validator to disable Save if any required text fields are empty.
     canSave(): boolean {
-        if (!this.editDraft) return false;
-        return (this.editDraft.brandName?.trim() ?? '').length > 0
-            && (this.editDraft.genericName?.trim() ?? '').length > 0
-            && (this.editDraft.strength?.trim() ?? '').length > 0
-            && (this.editDraft.dose?.trim() ?? '').length > 0
-            && (this.editDraft.usage?.trim() ?? '').length > 0;
+        if (!this.editDraft) {
+            return false;
+        }
+
+        return (this.editDraft.brandName ?? '').trim().length > 0
+            && (this.editDraft.genericName ?? '').trim().length > 0
+            && (this.editDraft.strength ?? '').trim().length > 0
+            && (this.editDraft.dose ?? '').trim().length > 0
+            && (this.editDraft.usage ?? '').trim().length > 0;
     }
 
     save(): void {
-        if (!this.canSave()) {
+        this.saveAttempted = true;
+        if (!this.editDraft || !this.canSave()) {
             return;
         }
-        // Close the dialog and pass the saved spray draft back.
-        this.closeDialog({
-            action: 'save',
-            spray: {
-                ...this.editDraft,
-                brandName: (this.editDraft.brandName ?? '').trim(),
-                genericName: (this.editDraft.genericName ?? '').trim(),
-                strength: (this.editDraft.strength ?? '').trim(),
-                dose: (this.editDraft.dose ?? '').trim(),
-                usage: (this.editDraft.usage ?? '').trim(),
-                comments: (this.editDraft.comments ?? '').trim(),
-                manufacturer: (this.editDraft.manufacturer ?? '').trim(),
-                lastOpened: (this.editDraft.lastOpened ?? '').trim()
-            }
-        });
+
+        const updated: NasalSpray2Record = {
+            ...this.editDraft,
+            brandName: this.editDraft.brandName.trim(),
+            genericName: this.editDraft.genericName.trim(),
+            strength: this.editDraft.strength.trim(),
+            dose: this.editDraft.dose.trim(),
+            usage: this.editDraft.usage.trim(),
+            comments: (this.editDraft.comments ?? '').trim(),
+            manufacturer: (this.editDraft.manufacturer ?? '').trim(),
+            lastOpened: (this.editDraft.lastOpened ?? '').trim()
+        };
+
+        this.activeModal.close({ action: 'save', spray: updated } satisfies NasalSprays2EditResult);
     }
 
-    delete(): void {
-        // Open the native HTML delete dialog and wait for confirmation.
-        this.confirmDeleteWithHtmlDialog().then((isConfirmed) => {
-            if (isConfirmed) {
-                // Close the dialog and pass 'delete' action back.
-                this.closeDialog({
-                    action: 'delete',
-                    spray: this.editDraft
+    async requestDelete(): Promise<void> {
+        if (!this.allowDelete || !this.editDraft) {
+            return;
+        }
+
+        const shouldDelete = await this.confirmDeleteWithModal();
+        if (!shouldDelete) {
+            return;
+        }
+
+        this.activeModal.close({ action: 'delete', spray: this.editDraft } satisfies NasalSprays2EditResult);
+    }
+
+    hasUnsavedChanges(): boolean {
+        if (!this.editDraft || !this.originalDraft) {
+            return false;
+        }
+
+        return JSON.stringify(this.editDraft) !== JSON.stringify(this.originalDraft);
+    }
+
+    async handleBeforeDismiss(): Promise<boolean> {
+        if (this.hasUnsavedChanges()) {
+            const shouldDiscard = await this.confirmDiscardChangesWithModal();
+            if (!shouldDiscard) {
+                this.modalHistory.restoreHistoryIfPending();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    async requestCancel(): Promise<void> {
+        if (this.hasUnsavedChanges()) {
+            const shouldDiscard = await this.confirmDiscardChangesWithModal();
+            if (!shouldDiscard) {
+                return;
+            }
+        }
+
+        this.activeModal.close('cancel');
+    }
+
+    getUnsavedChanges(): ChangedField[] {
+        if (!this.editDraft || !this.originalDraft) {
+            return [];
+        }
+
+        const fields: Array<{ key: TrackedFieldKey; label: string }> = [
+            { key: 'brandName', label: 'Brand Name' },
+            { key: 'genericName', label: 'Generic Name' },
+            { key: 'strength', label: 'Strength' },
+            { key: 'category', label: 'Category' },
+            { key: 'dose', label: 'Dose' },
+            { key: 'usage', label: 'Usage' },
+            { key: 'comments', label: 'Comments' },
+            { key: 'manufacturer', label: 'Manufacturer' },
+            { key: 'lastOpened', label: 'Last Opened' }
+        ];
+
+        const changes: ChangedField[] = [];
+        for (const field of fields) {
+            const beforeVal = this.originalDraft[field.key];
+            const afterVal = this.editDraft[field.key];
+            if (beforeVal !== afterVal) {
+                changes.push({
+                    label: field.label,
+                    before: this.formatChangedValue(beforeVal),
+                    after: this.formatChangedValue(afterVal)
                 });
             }
-        });
+        }
+
+        return changes;
     }
 
-    cancel(): void {
-        // If there are unsaved changes, prompt the user with the native HTML dialog first.
-        if (this.hasUnsavedChanges()) {
-            this.confirmDiscardWithHtmlDialog().then(discard => {
-                if (discard) {
-                    this.closeDialog();
-                } else {
-                    // If user pressed browser back and then chose "Keep Editing", restore the history entry
-                    if (this.closingFromPopState) {
-                        this.closingFromPopState = false;
-                        if (typeof window !== 'undefined') {
-                            window.history.pushState({ nasalSprays2Dialog: true }, '');
-                            this.historyPushed = true;
-                        }
-                    }
-                }
-            });
-            return;
+    private confirmDeleteWithModal(): Promise<boolean> {
+        if (!this.deleteConfirmModal) {
+            return Promise.resolve(false);
         }
-        // Close the dialog without passing any result (undefined).
-        this.closeDialog();
+
+        const dialogRef = this.modalService.open(this.deleteConfirmModal, {
+            centered: true,
+            backdrop: 'static',
+            keyboard: false,
+            scrollable: true
+        });
+        this.modalHistory.registerModal(dialogRef);
+
+        return dialogRef.result
+            .then(result => result === 'delete')
+            .catch(() => false);
+    }
+
+    private confirmDiscardChangesWithModal(): Promise<boolean> {
+        if (!this.unsavedChangesModal) {
+            return Promise.resolve(false);
+        }
+
+        const dialogRef = this.modalService.open(this.unsavedChangesModal, {
+            centered: true,
+            backdrop: 'static',
+            keyboard: false,
+            scrollable: true
+        });
+        this.modalHistory.registerModal(dialogRef);
+
+        return dialogRef.result
+            .then(result => result === 'discard')
+            .catch(() => false);
+    }
+
+    private formatChangedValue(value: string | undefined): string {
+        const text = String(value ?? '').trim();
+        return text.length ? text : '(blank)';
     }
 }
