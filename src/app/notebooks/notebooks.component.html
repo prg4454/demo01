@@ -23,28 +23,40 @@
 
 <div class="container text-break">
     @for (notebook of pagedNotebooks; track notebook.id) {
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
-        <div class="mb-1 col-12 col-md-4">
+    <div class="app-grid-row notebooks-grid-row border-bottom">
+        <div class="mb-1">
+            <b>ID</b>
+            {{ notebook.id }}
+        </div>
+        <div class="mb-1">
             <b>Brand</b>
             <button type="button" class="grid-link text-start" (click)="openEditModal(notebook)">
                 {{ notebook.brand }}
             </button>
         </div>
-        <div class="mb-1 col-12 col-md-4">
+        <div class="mb-1">
             <b>Type</b>
             {{ notebook.type }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Pages</b>
             {{ notebook.pages }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Size</b>
             {{ notebook.size }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
             <b>Color</b>
             {{ notebook.color }}
+        </div>
+        <div class="mb-1">
+            <b>Status</b>
+            {{ notebook.status }}
+        </div>
+        <div class="mb-1">
+            <b>Notes</b>
+            {{ notebook.notes || '—' }}
         </div>
     </div>
     }

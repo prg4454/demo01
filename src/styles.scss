@@ -63,6 +63,12 @@ body {
 }
 
 /* Global Modal Styles */
+.modal-dialog.modal-90w,
+.modal-90w .modal-dialog {
+    max-width: 90vw !important;
+    width: 90vw !important;
+}
+
 .app-edit-modal {
     border: 5px solid #198754;
     max-height: calc(100vh - 3.5rem);

@@ -99,7 +99,7 @@ export interface CompanyActionItem {
             }
         }
 
-        @media (min-width: 577px) and (max-width: 991px) {
+        @media (min-width: 577px) and (max-width: 768px) {
             .company-actions-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 0.85rem;

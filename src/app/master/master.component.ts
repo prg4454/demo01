@@ -260,7 +260,8 @@ export class MasterComponent {
         history.pushState(state, '', window.location.href);
 
         const modalRef = this.modalService.open(CompanyActionsModalComponent, {
-            size: 'lg',
+            modalDialogClass: 'modal-90w',
+            windowClass: 'modal-90w',
             centered: true,
             scrollable: true
         });

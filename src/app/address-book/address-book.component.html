@@ -23,24 +23,40 @@
 
 <div class="container text-break">
     @for (person of pagedOccasions; track person.id) {
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
-        <div class="mb-1 col-12 col-md-4">
+    <div class="app-grid-row address-book-grid-row border-bottom">
+        <div class="mb-1">
+            <b>ID</b>
+            {{ person.id }}
+        </div>
+        <div class="mb-1">
             <b>Name</b>
             <button type="button" class="grid-link text-start" (click)="openEditModal(person)">
                 {{ person.personName }}
             </button>
         </div>
-        <div class="mb-1 col-12 col-md-4">
-            <b>Email</b>
-            {{ person.email }}
+        <div class="mb-1">
+            <b>Relationship</b>
+            {{ person.relationship }}
         </div>
-        <div class="mb-1 col-12 col-md-4">
+        <div class="mb-1">
             <b>Phone</b>
             {{ person.phone }}
         </div>
-        <div class="mb-1 col">
-            <b>Relationship</b>
-            {{ person.relationship }}
+        <div class="mb-1">
+            <b>Email</b>
+            {{ person.email }}
+        </div>
+        <div class="mb-1">
+            <b>Birthday</b>
+            {{ person.birthdayDate || '—' }}
+        </div>
+        <div class="mb-1">
+            <b>Anniversary</b>
+            {{ person.anniversaryDate || '—' }}
+        </div>
+        <div class="mb-1">
+            <b>Notes</b>
+            {{ person.notes || '—' }}
         </div>
     </div>
     }

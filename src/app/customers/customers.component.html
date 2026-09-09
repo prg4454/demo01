@@ -24,22 +24,42 @@
 
 <div class="container text-break">
     @for (customer of pagedCustomers; track customer.id) {
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 align-items-start app-grid-row border-bottom">
-        <div class="mb-1 col-12 col-md-4">
+    <div class="app-grid-row customers-grid-row border-bottom">
+        <div class="mb-1">
+            <b>ID</b>
+            {{ customer.id }}
+        </div>
+        <div class="mb-1">
             <b>Name</b>
             <button type="button" class="grid-link text-start" (click)="openEditModal(customer)">
                 {{ customer.name }}
             </button>
         </div>
-        <div class="mb-1 col-12 col-md-4">
-            <b>Email</b>
-            {{ customer.email }}
+        <div class="mb-1">
+            <b>Address</b>
+            {{ customer.address }}
         </div>
-        <div class="mb-1 col-12 col-md-4">
+        <div class="mb-1">
+            <b>City</b>
+            {{ customer.city }}
+        </div>
+        <div class="mb-1">
+            <b>State</b>
+            {{ customer.state }}
+        </div>
+        <div class="mb-1">
+            <b>Zip</b>
+            {{ customer.zip }}
+        </div>
+        <div class="mb-1">
             <b>Phone</b>
             {{ customer.phone }}
         </div>
-        <div class="mb-1 col">
+        <div class="mb-1">
+            <b>Email</b>
+            {{ customer.email }}
+        </div>
+        <div class="mb-1">
             <b>Status</b>
             {{ customer.status }}
         </div>
