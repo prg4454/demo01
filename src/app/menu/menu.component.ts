@@ -47,6 +47,7 @@ export class MenuComponent implements AfterViewInit {
             label: 'Misc2',
             subItems: [
                 { label: 'Customers', path: '/customers' },
+                { label: 'Employees', path: '/employees' },
                 { label: 'World Clocks', path: '/world-clocks' },
                 { label: 'UI Employer Tax', path: '/ui-employer-tax' },
                 { label: 'Nasal Sprays', path: '/nasal-sprays' },

@@ -1,0 +1,77 @@
+<div class="container mt-3 app-grid-container">
+    <div class="sticky-header">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Employees Registry</h2>
+            <div class="d-flex align-items-center gap-2">
+                <app-export-dropdown [rows]="filteredEmployees" fileBaseName="export-employees"
+                    (statusMessage)="exportMessage = $event"></app-export-dropdown>
+                <button type="button" class="btn btn-primary" (click)="openAddModal()">+ Add Employee</button>
+            </div>
+        </div>
+        @if (exportMessage) {
+        <div class="small text-muted mb-2">{{ exportMessage }}</div>
+        }
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="previousPage()"
+                    [disabled]="currentPage <= 1">&lt;&lt;</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="nextPage()"
+                    [disabled]="currentPage >= totalPages">&gt;&gt;</button>
+                <div class="small text-muted">Page {{ currentPage }} of {{ totalPages }}</div>
+                <div class="small text-muted ms-2">Total employees: {{ totalEmployees }}</div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <label for="employeeStatusFilter" class="small fw-semibold text-muted mb-0">Filter Status:</label>
+                <select id="employeeStatusFilter" class="form-select form-select-sm w-auto" [ngModel]="selectedStatus"
+                    (ngModelChange)="onStatusFilterChange($event)">
+                    <option value="All">All Statuses</option>
+                    @for (st of statuses; track st) {
+                    <option [value]="st">{{ st }}</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container text-break">
+    @for (emp of pagedEmployees; track emp.id) {
+    <div class="app-grid-row employees-grid-row border-bottom">
+        <div class="mb-1">
+            <b>ID</b>
+            <span class="fw-semibold">{{ emp.id }}</span>
+        </div>
+        <div class="mb-1">
+            <b>Name</b>
+            <button type="button" class="grid-link text-start" (click)="openEditModal(emp)">
+                {{ emp.name }}
+            </button>
+        </div>
+        <div class="mb-1">
+            <b>Department</b>
+            {{ emp.department }}
+        </div>
+        <div class="mb-1">
+            <b>Role</b>
+            {{ emp.role }}
+        </div>
+        <div class="mb-1">
+            <b>Email</b>
+            {{ emp.email }}
+        </div>
+        <div class="mb-1">
+            <b>Phone</b>
+            {{ emp.phone }}
+        </div>
+        <div class="mb-1">
+            <b>Hire Date</b>
+            {{ emp.hireDate }}
+        </div>
+        <div class="mb-1">
+            <b>Status</b>
+            <span class="status-pill" [class]="'status-pill status-' + emp.status.toLowerCase().replace(' ', '-')">{{
+                emp.status }}</span>
+        </div>
+    </div>
+    }
+</div>

@@ -96,30 +96,30 @@ export class MasterComponent {
 
     private companyEmployeesMap: Record<string, Employee[]> = {
         'C001': [
-            { id: 'E001', name: 'John Doe', role: 'Plant Manager', email: 'john.doe@acme.com' },
-            { id: 'E002', name: 'Jane Smith', role: 'QA Inspector', email: 'jane.smith@acme.com' }
+            { id: 'E001', name: 'John Doe', role: 'Plant Manager', email: 'john.doe@acme.com', status: 'Active' },
+            { id: 'E002', name: 'Jane Smith', role: 'QA Inspector', email: 'jane.smith@acme.com', status: 'On Leave' }
         ],
         'C002': [
-            { id: 'E003', name: 'Hank Scorpio', role: 'CEO & Founder', email: 'hank@globex.com' },
-            { id: 'E004', name: 'Homer Simpson', role: 'Nuclear Technician', email: 'homer@globex.com' }
+            { id: 'E003', name: 'Hank Scorpio', role: 'CEO & Founder', email: 'hank@globex.com', status: 'Active' },
+            { id: 'E004', name: 'Homer Simpson', role: 'Nuclear Technician', email: 'homer@globex.com', status: 'On Leave' }
         ],
         'C003': [
-            { id: 'E005', name: 'Peter Gibbons', role: 'Software Engineer', email: 'peter@initech.com' },
-            { id: 'E006', name: 'Milton Waddams', role: 'Collator', email: 'stapler@initech.com' }
+            { id: 'E005', name: 'Peter Gibbons', role: 'Software Engineer', email: 'peter@initech.com', status: 'Active' },
+            { id: 'E006', name: 'Milton Waddams', role: 'Collator', email: 'stapler@initech.com', status: 'Terminated' }
         ],
         'C004': [
-            { id: 'E007', name: 'Albert Wesker', role: 'Lead Researcher', email: 'wesker@umbrella.com' },
-            { id: 'E008', name: 'Ada Wong', role: 'Security Consultant', email: 'ada@umbrella.com' }
+            { id: 'E007', name: 'Albert Wesker', role: 'Lead Researcher', email: 'wesker@umbrella.com', status: 'Terminated' },
+            { id: 'E008', name: 'Ada Wong', role: 'Security Consultant', email: 'ada@umbrella.com', status: 'Active' }
         ],
         'C005': [
-            { id: 'E009', name: 'Gavin Belson', role: 'CEO', email: 'gavin@hooli.com' },
-            { id: 'E010', name: 'Richard Hendricks', role: 'Developer', email: 'richard@hooli.com' }
+            { id: 'E009', name: 'Gavin Belson', role: 'CEO', email: 'gavin@hooli.com', status: 'Active' },
+            { id: 'E010', name: 'Richard Hendricks', role: 'Developer', email: 'richard@hooli.com', status: 'On Leave' }
         ],
         'C006': [
-            { id: 'E011', name: 'Robert Thorn', role: 'Director', email: 'thorn@soylent.com' }
+            { id: 'E011', name: 'Robert Thorn', role: 'Director', email: 'thorn@soylent.com', status: 'Active' }
         ],
         'C007': [
-            { id: 'E012', name: 'Dr. Evil', role: 'President', email: 'evil@virtucon.com' }
+            { id: 'E012', name: 'Dr. Evil', role: 'President', email: 'evil@virtucon.com', status: 'Active' }
         ]
     };
 
@@ -234,6 +234,9 @@ export class MasterComponent {
     selectTab(tab: 'companies' | 'employees' | 'checks' | 'hours'): void {
         this.activeTab = tab;
         this.isCompanyListVisible = (tab === 'companies');
+        if (tab === 'employees' && this.selectedCompany) {
+            this.selectedCompanyEmployees = this.companyEmployeesMap[this.selectedCompany.id] || [];
+        }
     }
 
     @HostListener('window:popstate')

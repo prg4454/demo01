@@ -13,6 +13,10 @@ export const routes: Routes = [
         canDeactivate: [pendingChangesGuard]
     },
     {
+        path: 'employees',
+        loadComponent: () => import('./employees/employees.component').then((m) => m.EmployeesPageComponent)
+    },
+    {
         path: 'services',
         loadComponent: () => import('./services/services.component').then((m) => m.ServicesComponent),
         canDeactivate: [pendingChangesGuard]

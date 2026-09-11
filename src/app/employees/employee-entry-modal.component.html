@@ -1,0 +1,84 @@
+<div class="app-edit-modal">
+    <div class="modal-header">
+        <h5 class="modal-title">{{ allowDelete ? 'Edit Employee' : 'Add Employee' }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+    </div>
+
+    <div class="modal-body">
+        @if (editDraft) {
+        <div class="row g-3 entry-grid">
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Employee ID</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.id" [disabled]="allowDelete">
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Status</label>
+                <select class="form-select" [(ngModel)]="editDraft.status">
+                    @for (st of statuses; track st) {
+                    <option [value]="st">{{ st }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.name"
+                    [class.is-invalid]="saveAttempted && !editDraft.name.trim().length">
+                @if (saveAttempted && !editDraft.name.trim().length) {
+                <div class="invalid-feedback d-block">Name is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Role / Job Title <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.role"
+                    [class.is-invalid]="saveAttempted && !editDraft.role.trim().length">
+                @if (saveAttempted && !editDraft.role.trim().length) {
+                <div class="invalid-feedback d-block">Role is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Department</label>
+                <select class="form-select" [(ngModel)]="editDraft.department">
+                    @for (dept of departments; track dept) {
+                    <option [value]="dept">{{ dept }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                <input type="email" class="form-control" [(ngModel)]="editDraft.email"
+                    [class.is-invalid]="saveAttempted && !editDraft.email.trim().length">
+                @if (saveAttempted && !editDraft.email.trim().length) {
+                <div class="invalid-feedback d-block">Email is required.</div>
+                }
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Phone Number</label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.phone">
+            </div>
+
+            <div class="col-12 col-md-6 field-block">
+                <label class="form-label">Hire Date</label>
+                <input type="date" class="form-control" [(ngModel)]="editDraft.hireDate">
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="modal-footer d-flex justify-content-between">
+        <div>
+            @if (allowDelete) {
+            <button type="button" class="btn btn-danger" (click)="delete()">Delete</button>
+            }
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!canSave()">Save</button>
+        </div>
+    </div>
+</div>
